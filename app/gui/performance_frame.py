@@ -104,7 +104,7 @@ class PerformanceFrame(HospitalFrame):
         # Metrics container
         metrics_frame = ctk.CTkFrame(
             self,
-            fg_color="transparent"
+            fg_color=self.BACKGROUND
         )
         metrics_frame.pack(
             fill="x",
