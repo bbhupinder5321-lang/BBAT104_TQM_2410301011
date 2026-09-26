@@ -208,35 +208,150 @@ class DashboardFrame(ctk.CTkFrame):
 
     def create_header(self):
 
-        header = ctk.CTkFrame(
+        # =====================================================
+        # PREMIUM HERO HEADER
+        # =====================================================
+        # This is deliberately more than a plain page title.
+        # It acts as the visual "command center" of the dashboard:
+        # greeting + live operational context + Q02 identity +
+        # a clear refresh control.
+        # =====================================================
+
+        hero = ctk.CTkFrame(
             self.main,
+            fg_color=self.CARD_DARK,
+            corner_radius=22,
+            border_width=1,
+            border_color="#1E293B"
+        )
+
+        hero.pack(
+            fill="x",
+            padx=self.PAGE_PAD_X,
+            pady=(self.PAGE_PAD_TOP, 10)
+        )
+
+        # -----------------------------------------------------
+        # Decorative background canvas
+        # -----------------------------------------------------
+
+        hero_canvas = ctk.CTkCanvas(
+            hero,
+            height=158,
+            bg=self.CARD_DARK,
+            highlightthickness=0,
+            bd=0
+        )
+
+        hero_canvas.place(
+            relx=0,
+            rely=0,
+            relwidth=1,
+            relheight=1
+        )
+
+        def draw_hero_background(event=None):
+
+            try:
+                width = max(hero_canvas.winfo_width(), 800)
+                height = max(hero_canvas.winfo_height(), 158)
+
+                hero_canvas.delete("hero-bg")
+
+                # Soft geometric shapes create depth without
+                # introducing random decorative objects.
+                hero_canvas.create_oval(
+                    width - 255,
+                    -105,
+                    width + 75,
+                    225,
+                    fill="#172554",
+                    outline="",
+                    tags="hero-bg"
+                )
+
+                hero_canvas.create_oval(
+                    width - 125,
+                    35,
+                    width + 40,
+                    200,
+                    fill="#1E3A8A",
+                    outline="",
+                    tags="hero-bg"
+                )
+
+                hero_canvas.create_oval(
+                    width - 430,
+                    78,
+                    width - 350,
+                    158,
+                    fill="#0F2A4D",
+                    outline="",
+                    tags="hero-bg"
+                )
+
+                # Fine horizontal line gives the hero a
+                # structured enterprise-dashboard appearance.
+                hero_canvas.create_line(
+                    24,
+                    height - 22,
+                    width - 24,
+                    height - 22,
+                    fill="#1F2937",
+                    width=1,
+                    tags="hero-bg"
+                )
+
+            except Exception:
+                pass
+
+        hero_canvas.bind(
+            "<Configure>",
+            draw_hero_background
+        )
+
+        # -----------------------------------------------------
+        # Content container
+        # -----------------------------------------------------
+
+        content = ctk.CTkFrame(
+            hero,
             fg_color="transparent"
         )
 
-        header.pack(
-            fill="x",
-            padx=self.PAGE_PAD_X,
-            pady=(self.PAGE_PAD_TOP, 8)
+        content.place(
+            relx=0,
+            rely=0,
+            relwidth=1,
+            relheight=1
         )
 
-        header.grid_columnconfigure(
+        content.grid_columnconfigure(
             0,
             weight=1
         )
 
+        content.grid_columnconfigure(
+            1,
+            weight=0
+        )
+
         # -----------------------------------------------------
-        # LEFT: GREETING + CONTEXT
+        # LEFT SIDE
         # -----------------------------------------------------
 
         left = ctk.CTkFrame(
-            header,
+            content,
             fg_color="transparent"
         )
 
         left.grid(
             row=0,
             column=0,
-            sticky="w"
+            rowspan=2,
+            sticky="nsew",
+            padx=(25, 12),
+            pady=(21, 19)
         )
 
         username = self.user.get(
@@ -244,20 +359,37 @@ class DashboardFrame(ctk.CTkFrame):
             "admin"
         )
 
-        display_name = str(username).strip().title()
+        display_name = str(
+            username
+        ).strip().title()
+
+        eyebrow = ctk.CTkLabel(
+            left,
+            text="HOSPITAL OPERATIONS  /  DAILY COMMAND CENTER",
+            text_color="#93C5FD",
+            font=ctk.CTkFont(
+                size=9,
+                weight="bold"
+            )
+        )
+
+        eyebrow.pack(
+            anchor="w"
+        )
 
         greeting = ctk.CTkLabel(
             left,
             text=f"Good day, {display_name}  👋",
-            text_color=self.TEXT_DARK,
+            text_color=self.WHITE,
             font=ctk.CTkFont(
-                size=27,
+                size=28,
                 weight="bold"
             )
         )
 
         greeting.pack(
-            anchor="w"
+            anchor="w",
+            pady=(5, 0)
         )
 
         today_text = datetime.now().strftime(
@@ -267,40 +399,112 @@ class DashboardFrame(ctk.CTkFrame):
         subtitle = ctk.CTkLabel(
             left,
             text=(
-                f"{today_text}  •  Hospital operations overview"
+                f"{today_text}   •   Real-time operational overview"
             ),
-            text_color=self.SECONDARY_TEXT,
+            text_color="#94A3B8",
             font=ctk.CTkFont(
-                size=12
+                size=11
             )
         )
 
         subtitle.pack(
             anchor="w",
-            pady=(5, 0)
+            pady=(4, 0)
         )
 
         # -----------------------------------------------------
-        # RIGHT: Q02 + REFRESH
+        # STATUS STRIP
+        # -----------------------------------------------------
+
+        status_row = ctk.CTkFrame(
+            left,
+            fg_color="transparent"
+        )
+
+        status_row.pack(
+            anchor="w",
+            pady=(13, 0)
+        )
+
+        status = ctk.CTkFrame(
+            status_row,
+            fg_color="#123524",
+            corner_radius=8,
+            border_width=1,
+            border_color="#14532D"
+        )
+
+        status.pack(
+            side="left"
+        )
+
+        status_dot = ctk.CTkLabel(
+            status,
+            text="●",
+            text_color="#34D399",
+            font=ctk.CTkFont(
+                size=8
+            )
+        )
+
+        status_dot.pack(
+            side="left",
+            padx=(9, 3),
+            pady=6
+        )
+
+        status_text = ctk.CTkLabel(
+            status,
+            text="SYSTEM OPERATIONAL",
+            text_color="#86EFAC",
+            font=ctk.CTkFont(
+                size=8,
+                weight="bold"
+            )
+        )
+
+        status_text.pack(
+            side="left",
+            padx=(0, 9),
+            pady=6
+        )
+
+        context = ctk.CTkLabel(
+            status_row,
+            text="  •  Q02 performance monitoring enabled",
+            text_color="#64748B",
+            font=ctk.CTkFont(
+                size=9
+            )
+        )
+
+        context.pack(
+            side="left"
+        )
+
+        # -----------------------------------------------------
+        # RIGHT SIDE
         # -----------------------------------------------------
 
         right = ctk.CTkFrame(
-            header,
+            content,
             fg_color="transparent"
         )
 
         right.grid(
             row=0,
             column=1,
-            sticky="e"
+            sticky="ne",
+            padx=(12, 25),
+            pady=(20, 0)
         )
 
         quality_badge = ctk.CTkFrame(
             right,
-            fg_color=self.PRIMARY_SOFT,
-            corner_radius=10,
+            fg_color="#1E3A8A",
+            corner_radius=9,
             border_width=1,
-            border_color="#DBEAFE"
+            border_color="#3155A6"
         )
 
         quality_badge.pack(
@@ -311,9 +515,9 @@ class DashboardFrame(ctk.CTkFrame):
         quality_label = ctk.CTkLabel(
             quality_badge,
             text="Q02  •  IMPROVE PERFORMANCE",
-            text_color=self.PRIMARY,
+            text_color="#BFDBFE",
             font=ctk.CTkFont(
-                size=10,
+                size=9,
                 weight="bold"
             )
         )
@@ -326,16 +530,15 @@ class DashboardFrame(ctk.CTkFrame):
         self.refresh_button = ctk.CTkButton(
             right,
             text="↻  Refresh",
-            width=105,
+            width=108,
             height=36,
             corner_radius=10,
-            fg_color=self.CARD,
-            hover_color="#F1F5F9",
-            text_color=self.TEXT,
-            border_width=1,
-            border_color=self.BORDER,
+            fg_color=self.PRIMARY,
+            hover_color=self.PRIMARY_DARK,
+            text_color=self.WHITE,
+            border_width=0,
             font=ctk.CTkFont(
-                size=11,
+                size=10,
                 weight="bold"
             ),
             command=self.refresh_dashboard
@@ -343,6 +546,122 @@ class DashboardFrame(ctk.CTkFrame):
 
         self.refresh_button.pack(
             side="left"
+        )
+
+        # -----------------------------------------------------
+        # RIGHT-SIDE MINI METRIC STRIP
+        # -----------------------------------------------------
+
+        snapshot = ctk.CTkFrame(
+            content,
+            fg_color="transparent"
+        )
+
+        snapshot.grid(
+            row=1,
+            column=1,
+            sticky="se",
+            padx=(12, 25),
+            pady=(0, 19)
+        )
+
+        self.create_hero_snapshot(
+            snapshot,
+            "TODAY",
+            str(self.metrics.get("today_patients", 0)),
+            "patients",
+            self.PRIMARY
+        )
+
+        self.create_hero_snapshot(
+            snapshot,
+            "QUEUE",
+            str(self.metrics.get("pending_appointments", 0)),
+            "pending",
+            self.ORANGE
+        )
+
+        self.create_hero_snapshot(
+            snapshot,
+            "BEDS",
+            str(self.metrics.get("occupied_beds", 0)),
+            "occupied",
+            self.GREEN
+        )
+
+        self.after(
+            60,
+            draw_hero_background
+        )
+
+    def create_hero_snapshot(
+        self,
+        parent,
+        label,
+        value,
+        suffix,
+        accent
+    ):
+
+        item = ctk.CTkFrame(
+            parent,
+            fg_color="#162033",
+            corner_radius=9,
+            border_width=1,
+            border_color="#263247"
+        )
+
+        item.pack(
+            side="left",
+            padx=(5, 0)
+        )
+
+        top = ctk.CTkLabel(
+            item,
+            text=label,
+            text_color="#64748B",
+            font=ctk.CTkFont(
+                size=7,
+                weight="bold"
+            )
+        )
+
+        top.pack(
+            anchor="w",
+            padx=10,
+            pady=(7, 0)
+        )
+
+        number = ctk.CTkLabel(
+            item,
+            text=value,
+            text_color=self.WHITE,
+            font=ctk.CTkFont(
+                size=13,
+                weight="bold"
+            )
+        )
+
+        number.pack(
+            side="left",
+            padx=(10, 3),
+            pady=(0, 7)
+        )
+
+        suffix_label = ctk.CTkLabel(
+            item,
+            text=suffix,
+            text_color=accent,
+            font=ctk.CTkFont(
+                size=7,
+                weight="bold"
+            )
+        )
+
+        suffix_label.pack(
+            side="left",
+            padx=(0, 10),
+            pady=(1, 7)
         )
 
     # =========================================================
