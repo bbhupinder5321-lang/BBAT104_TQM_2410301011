@@ -3,6 +3,7 @@ from tkinter import ttk
 
 from app.services.tqm_service import TQMService
 from app.gui.fishbone_frame import FishboneFrame
+from app.gui.pareto_frame import ParetoFrame
 
 
 class TQMFrame(ctk.CTkFrame):
@@ -307,12 +308,18 @@ class TQMFrame(ctk.CTkFrame):
             pady=15
         )
 
-        # Existing TQM tools
+        # =====================================================
+        # TQM TOOLS
+        # =====================================================
+
         self.tabs.add("SIPOC Analysis")
         self.tabs.add("FMEA Analysis")
-
-        # New Fishbone tool
         self.tabs.add("Fishbone Analysis")
+        self.tabs.add("Pareto Analysis")
+
+        # =====================================================
+        # CREATE TAB CONTENT
+        # =====================================================
 
         self.create_sipoc_tab(
             self.tabs.tab("SIPOC Analysis")
@@ -324,6 +331,10 @@ class TQMFrame(ctk.CTkFrame):
 
         self.create_fishbone_tab(
             self.tabs.tab("Fishbone Analysis")
+        )
+
+        self.create_pareto_tab(
+            self.tabs.tab("Pareto Analysis")
         )
 
     # =========================================================
@@ -371,11 +382,31 @@ class TQMFrame(ctk.CTkFrame):
             )
 
         categories = [
-            ("Suppliers", sipoc["suppliers"], self.PRIMARY),
-            ("Inputs", sipoc["inputs"], "#7C3AED"),
-            ("Process", sipoc["process"], "#0891B2"),
-            ("Outputs", sipoc["outputs"], self.SUCCESS),
-            ("Customers", sipoc["customers"], "#F59E0B")
+            (
+                "Suppliers",
+                sipoc["suppliers"],
+                self.PRIMARY
+            ),
+            (
+                "Inputs",
+                sipoc["inputs"],
+                "#7C3AED"
+            ),
+            (
+                "Process",
+                sipoc["process"],
+                "#0891B2"
+            ),
+            (
+                "Outputs",
+                sipoc["outputs"],
+                self.SUCCESS
+            ),
+            (
+                "Customers",
+                sipoc["customers"],
+                "#F59E0B"
+            )
         ]
 
         for column, data in enumerate(categories):
@@ -667,6 +698,21 @@ class TQMFrame(ctk.CTkFrame):
         )
 
         fishbone_frame.pack(
+            fill="both",
+            expand=True
+        )
+
+    # =========================================================
+    # PARETO
+    # =========================================================
+
+    def create_pareto_tab(self, parent):
+
+        pareto_frame = ParetoFrame(
+            parent
+        )
+
+        pareto_frame.pack(
             fill="both",
             expand=True
         )
