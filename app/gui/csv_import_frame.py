@@ -141,6 +141,19 @@ class CSVImportFrame(HospitalFrame):
             pady=20
         )
 
+        # Import workflow status
+        workflow = ctk.CTkFrame(self, fg_color=self.CARD, corner_radius=16, border_width=1, border_color=self.BORDER)
+        workflow.pack(fill="x", padx=30, pady=(0, 15))
+        workflow.grid_columnconfigure(1, weight=1)
+        ctk.CTkLabel(workflow, text="●  WORKFLOW STATUS", text_color=self.PRIMARY, font=ctk.CTkFont(size=8, weight="bold")).grid(row=0, column=0, padx=16, pady=(13, 2), sticky="w")
+        self.file_status_label = ctk.CTkLabel(workflow, text="No file selected", text_color=self.TEXT_DARK, font=ctk.CTkFont(size=10, weight="bold"))
+        self.file_status_label.grid(row=1, column=0, padx=16, pady=(0, 12), sticky="w")
+        self.import_progress = ctk.CTkProgressBar(workflow, height=8, corner_radius=4)
+        self.import_progress.grid(row=1, column=1, padx=16, pady=(0, 12), sticky="ew")
+        self.import_progress.set(0)
+        self.row_count_label = ctk.CTkLabel(workflow, text="0 rows ready", text_color=self.SECONDARY, font=ctk.CTkFont(size=9))
+        self.row_count_label.grid(row=0, column=1, padx=16, pady=(13, 2), sticky="e")
+
         # -----------------------------------------------------
         # Action Buttons
         # -----------------------------------------------------
