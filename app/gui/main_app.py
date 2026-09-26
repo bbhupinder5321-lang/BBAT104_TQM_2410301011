@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from tkinter import messagebox
 
+
 from app.gui.dashboard_frame import DashboardFrame
 from app.gui.patient_frame import PatientFrame
 from app.gui.doctor_frame import DoctorFrame
@@ -14,36 +15,72 @@ from app.gui.tqm_frame import TQMFrame
 
 class MainApplication(ctk.CTk):
 
+    # =========================================================
+    # MEDICARE HOSPITAL MANAGEMENT APPLICATION SHELL
+    # =========================================================
+
+    SIDEBAR = "#111827"
+    SIDEBAR_HOVER = "#1F2937"
+    SIDEBAR_ACTIVE = "#2563EB"
+
+    CONTENT = "#F6F8FC"
+    WHITE = "#FFFFFF"
+    BORDER = "#263244"
+
+    TEXT = "#F8FAFC"
+    MUTED = "#94A3B8"
+
+    GREEN = "#10B981"
+
     def __init__(self, user):
+
         super().__init__()
 
-        self.user = user
+        self.user = user or {
+            "user_id": 1,
+            "username": "admin",
+            "role": "admin"
+        }
 
-        self.title("Hospital Management System")
-        self.geometry("1280x760")
-        self.minsize(1100, 650)
+        self.title(
+            "MediCare Hospital Management System"
+        )
 
-        # Slightly darker background gives the
-        # application a more professional appearance.
-        ctk.set_appearance_mode("dark")
+        self.geometry(
+            "1360x820"
+        )
+
+        self.minsize(
+            1120,
+            700
+        )
+
+        ctk.set_appearance_mode(
+            "dark"
+        )
+
+        ctk.set_default_color_theme(
+            "blue"
+        )
+
+        self.current_page = None
+        self.sidebar_buttons = {}
 
         self.create_layout()
+
         self.show_dashboard()
 
     # =========================================================
-    # MAIN LAYOUT
+    # APPLICATION LAYOUT
     # =========================================================
 
     def create_layout(self):
 
-        # -----------------------------------------------------
-        # SIDEBAR
-        # -----------------------------------------------------
-
         self.sidebar = ctk.CTkFrame(
             self,
-            width=230,
-            corner_radius=0
+            width=244,
+            corner_radius=0,
+            fg_color=self.SIDEBAR
         )
 
         self.sidebar.pack(
@@ -51,204 +88,427 @@ class MainApplication(ctk.CTk):
             fill="y"
         )
 
-        self.sidebar.pack_propagate(False)
+        self.sidebar.pack_propagate(
+            False
+        )
 
-        # Application branding
-        brand_frame = ctk.CTkFrame(
+        self.create_brand()
+
+        self.create_user_card()
+
+        self.create_navigation()
+
+        self.create_sidebar_footer()
+
+        # -----------------------------------------------------
+        # CONTENT AREA
+        # -----------------------------------------------------
+
+        self.content_shell = ctk.CTkFrame(
+            self,
+            corner_radius=0,
+            fg_color=self.CONTENT
+        )
+
+        self.content_shell.pack(
+            side="right",
+            fill="both",
+            expand=True
+        )
+
+        self.content = ctk.CTkFrame(
+            self.content_shell,
+            corner_radius=0,
+            fg_color=self.CONTENT
+        )
+
+        self.content.pack(
+            fill="both",
+            expand=True
+        )
+
+    # =========================================================
+    # BRAND
+    # =========================================================
+
+    def create_brand(self):
+
+        brand = ctk.CTkFrame(
             self.sidebar,
             fg_color="transparent"
         )
 
-        brand_frame.pack(
+        brand.pack(
             fill="x",
             padx=20,
-            pady=(28, 10)
+            pady=(25, 10)
         )
 
-        hospital_icon = ctk.CTkLabel(
-            brand_frame,
-            text="✚",
+        icon = ctk.CTkFrame(
+            brand,
+            width=44,
+            height=44,
+            corner_radius=13,
+            fg_color=self.SIDEBAR_ACTIVE
+        )
+
+        icon.pack(
+            side="left"
+        )
+
+        icon.pack_propagate(
+            False
+        )
+
+        icon_label = ctk.CTkLabel(
+            icon,
+            text="+",
+            text_color=self.WHITE,
             font=ctk.CTkFont(
-                size=32,
+                size=27,
                 weight="bold"
             )
         )
 
-        hospital_icon.pack(
+        icon_label.place(
+            relx=0.5,
+            rely=0.47,
+            anchor="center"
+        )
+
+        text_area = ctk.CTkFrame(
+            brand,
+            fg_color="transparent"
+        )
+
+        text_area.pack(
+            side="left",
+            padx=(11, 0)
+        )
+
+        title = ctk.CTkLabel(
+            text_area,
+            text="MediCare",
+            text_color=self.WHITE,
+            font=ctk.CTkFont(
+                size=19,
+                weight="bold"
+            )
+        )
+
+        title.pack(
             anchor="w"
         )
 
-        title_label = ctk.CTkLabel(
-            brand_frame,
-            text="Hospital\nManagement",
+        subtitle = ctk.CTkLabel(
+            text_area,
+            text="Hospital Management",
+            text_color=self.MUTED,
             font=ctk.CTkFont(
-                size=21,
-                weight="bold"
-            ),
-            justify="left"
+                size=9
+            )
         )
 
-        title_label.pack(
+        subtitle.pack(
             anchor="w",
-            pady=(4, 0)
+            pady=(1, 0)
         )
 
-        subtitle_label = ctk.CTkLabel(
-            brand_frame,
-            text="TQM Performance System",
-            font=ctk.CTkFont(size=11)
+    # =========================================================
+    # USER CARD
+    # =========================================================
+
+    def create_user_card(self):
+
+        username = str(
+            self.user.get(
+                "username",
+                "admin"
+            )
         )
 
-        subtitle_label.pack(
-            anchor="w",
-            pady=(3, 0)
+        role = str(
+            self.user.get(
+                "role",
+                "admin"
+            )
         )
 
-        # -----------------------------------------------------
-        # USER CARD
-        # -----------------------------------------------------
-
-        user_card = ctk.CTkFrame(
+        card = ctk.CTkFrame(
             self.sidebar,
-            corner_radius=12
+            fg_color="#182234",
+            corner_radius=14,
+            border_width=1,
+            border_color="#223047"
         )
 
-        user_card.pack(
+        card.pack(
             fill="x",
             padx=15,
-            pady=(15, 18)
+            pady=(12, 19)
         )
 
-        username = self.user.get(
-            "username",
-            "admin"
+        avatar = ctk.CTkFrame(
+            card,
+            width=38,
+            height=38,
+            corner_radius=19,
+            fg_color="#DBEAFE"
         )
+
+        avatar.pack(
+            side="left",
+            padx=(11, 9),
+            pady=11
+        )
+
+        avatar.pack_propagate(
+            False
+        )
+
+        avatar_label = ctk.CTkLabel(
+            avatar,
+            text=username[:1].upper(),
+            text_color="#1D4ED8",
+            font=ctk.CTkFont(
+                size=14,
+                weight="bold"
+            )
+        )
+
+        avatar_label.place(
+            relx=0.5,
+            rely=0.5,
+            anchor="center"
+        )
+
+        text_area = ctk.CTkFrame(
+            card,
+            fg_color="transparent"
+        )
+
+        text_area.pack(
+            side="left",
+            pady=9
+        )
+
+        name = ctk.CTkLabel(
+            text_area,
+            text=username,
+            text_color=self.WHITE,
+            font=ctk.CTkFont(
+                size=11,
+                weight="bold"
+            )
+        )
+
+        name.pack(
+            anchor="w"
+        )
+
+        role_label = ctk.CTkLabel(
+            text_area,
+            text=f"{role.title()} account",
+            text_color=self.MUTED,
+            font=ctk.CTkFont(
+                size=9
+            )
+        )
+
+        role_label.pack(
+            anchor="w",
+            pady=(2, 0)
+        )
+
+    # =========================================================
+    # NAVIGATION
+    # =========================================================
+
+    def create_navigation(self):
+
+        main_label = ctk.CTkLabel(
+            self.sidebar,
+            text="MAIN MENU",
+            text_color="#64748B",
+            font=ctk.CTkFont(
+                size=9,
+                weight="bold"
+            )
+        )
+
+        main_label.pack(
+            anchor="w",
+            padx=21,
+            pady=(0, 7)
+        )
+
+        self.create_sidebar_button(
+            "⌂",
+            "Dashboard",
+            self.show_dashboard,
+            "dashboard"
+        )
+
+        self.create_sidebar_button(
+            "P",
+            "Patients",
+            self.show_patients,
+            "manage_patients"
+        )
+
+        self.create_sidebar_button(
+            "D",
+            "Doctors",
+            self.show_doctors,
+            "manage_doctors"
+        )
+
+        self.create_sidebar_button(
+            "A",
+            "Appointments",
+            self.show_appointments,
+            "manage_appointments"
+        )
+
+        self.create_sidebar_button(
+            "$",
+            "Billing",
+            self.show_billing,
+            "manage_billing"
+        )
+
+        self.create_sidebar_button(
+            "↥",
+            "CSV Import",
+            self.show_csv_import,
+            "import_csv"
+        )
+
+        self.create_sidebar_button(
+            "R",
+            "Reports",
+            self.show_reports,
+            "view_reports"
+        )
+
+        self.create_sidebar_button(
+            "⌁",
+            "Performance",
+            self.show_performance,
+            "view_performance"
+        )
+
+        quality_label = ctk.CTkLabel(
+            self.sidebar,
+            text="QUALITY MANAGEMENT",
+            text_color="#64748B",
+            font=ctk.CTkFont(
+                size=9,
+                weight="bold"
+            )
+        )
+
+        quality_label.pack(
+            anchor="w",
+            padx=21,
+            pady=(17, 7)
+        )
+
+        self.create_sidebar_button(
+            "Q",
+            "TQM Analysis",
+            self.show_tqm,
+            "view_reports"
+        )
+
+    def create_sidebar_button(
+        self,
+        icon,
+        text,
+        command,
+        permission
+    ):
 
         role = self.user.get(
             "role",
             "admin"
         )
 
-        user_icon = ctk.CTkLabel(
-            user_card,
-            text="●",
-            font=ctk.CTkFont(
-                size=17,
-                weight="bold"
-            )
+        allowed = self.has_permission(
+            role,
+            permission
         )
 
-        user_icon.pack(
-            side="left",
-            padx=(12, 8),
-            pady=12
-        )
+        if not allowed:
+            return
 
-        user_text = ctk.CTkFrame(
-            user_card,
-            fg_color="transparent"
-        )
-
-        user_text.pack(
-            side="left",
-            pady=9
-        )
-
-        user_name_label = ctk.CTkLabel(
-            user_text,
-            text=username,
-            font=ctk.CTkFont(
-                size=13,
-                weight="bold"
-            )
-        )
-
-        user_name_label.pack(
-            anchor="w"
-        )
-
-        role_label = ctk.CTkLabel(
-            user_text,
-            text=f"{role.title()} Account",
-            font=ctk.CTkFont(size=10)
-        )
-
-        role_label.pack(
-            anchor="w"
-        )
-
-        # -----------------------------------------------------
-        # NAVIGATION LABEL
-        # -----------------------------------------------------
-
-        navigation_label = ctk.CTkLabel(
+        button = ctk.CTkButton(
             self.sidebar,
-            text="MAIN MENU",
-            font=ctk.CTkFont(
-                size=10,
-                weight="bold"
-            )
-        )
-
-        navigation_label.pack(
+            text=f"  {icon}     {text}",
+            height=40,
+            corner_radius=10,
             anchor="w",
-            padx=22,
-            pady=(0, 8)
+            fg_color="transparent",
+            hover_color=self.SIDEBAR_HOVER,
+            text_color="#CBD5E1",
+            font=ctk.CTkFont(
+                size=11,
+                weight="bold"
+            ),
+            command=lambda name=text,
+                   action=command:
+                self.navigate(
+                    name,
+                    action
+                )
         )
 
-        # -----------------------------------------------------
-        # NAVIGATION BUTTONS
-        # -----------------------------------------------------
-
-        self.create_sidebar_button(
-            "Dashboard",
-            self.show_dashboard
+        button.pack(
+            fill="x",
+            padx=13,
+            pady=2
         )
 
-        self.create_sidebar_button(
-            "Patients",
-            self.show_patients
+        self.sidebar_buttons[text] = button
+
+    def has_permission(
+        self,
+        role,
+        permission
+    ):
+
+        permissions = {
+
+            "admin": {
+                "dashboard",
+                "manage_patients",
+                "manage_doctors",
+                "manage_appointments",
+                "manage_billing",
+                "import_csv",
+                "view_reports",
+                "view_performance"
+            },
+
+            "staff": {
+                "dashboard",
+                "manage_patients",
+                "manage_appointments",
+                "manage_billing",
+                "view_reports"
+            }
+        }
+
+        return permission in permissions.get(
+            role,
+            set()
         )
 
-        self.create_sidebar_button(
-            "Doctors",
-            self.show_doctors
-        )
+    # =========================================================
+    # SIDEBAR FOOTER
+    # =========================================================
 
-        self.create_sidebar_button(
-            "Appointments",
-            self.show_appointments
-        )
-
-        self.create_sidebar_button(
-            "Billing",
-            self.show_billing
-        )
-
-        self.create_sidebar_button(
-            "CSV Import",
-            self.show_csv_import
-        )
-
-        self.create_sidebar_button(
-            "Reports",
-            self.show_reports
-        )
-
-        self.create_sidebar_button(
-            "Performance",
-            self.show_performance
-        )
-
-        # TQM Analysis
-        self.create_sidebar_button(
-            "TQM Analysis",
-            self.show_tqm
-        )
-
-        # -----------------------------------------------------
-        # SPACER
-        # -----------------------------------------------------
+    def create_sidebar_footer(self):
 
         spacer = ctk.CTkFrame(
             self.sidebar,
@@ -260,63 +520,103 @@ class MainApplication(ctk.CTk):
             expand=True
         )
 
-        # -----------------------------------------------------
-        # LOGOUT
-        # -----------------------------------------------------
-
-        logout_button = ctk.CTkButton(
+        system = ctk.CTkFrame(
             self.sidebar,
-            text="Logout",
+            fg_color="transparent"
+        )
+
+        system.pack(
+            fill="x",
+            padx=20,
+            pady=(0, 8)
+        )
+
+        dot = ctk.CTkLabel(
+            system,
+            text="●",
+            text_color=self.GREEN,
+            font=ctk.CTkFont(
+                size=9
+            )
+        )
+
+        dot.pack(
+            side="left"
+        )
+
+        status = ctk.CTkLabel(
+            system,
+            text=" System online",
+            text_color=self.MUTED,
+            font=ctk.CTkFont(
+                size=9
+            )
+        )
+
+        status.pack(
+            side="left"
+        )
+
+        logout = ctk.CTkButton(
+            self.sidebar,
+            text="⇥   Logout",
             height=40,
-            corner_radius=9,
+            corner_radius=10,
+            anchor="w",
+            fg_color="#182234",
+            hover_color="#273449",
+            text_color="#E2E8F0",
+            font=ctk.CTkFont(
+                size=11,
+                weight="bold"
+            ),
             command=self.logout
         )
 
-        logout_button.pack(
+        logout.pack(
             fill="x",
-            padx=18,
-            pady=(5, 20)
-        )
-
-        # -----------------------------------------------------
-        # CONTENT AREA
-        # -----------------------------------------------------
-
-        self.content = ctk.CTkFrame(
-            self,
-            corner_radius=0
-        )
-
-        self.content.pack(
-            side="right",
-            fill="both",
-            expand=True
+            padx=13,
+            pady=(0, 18)
         )
 
     # =========================================================
-    # SIDEBAR BUTTON
+    # NAVIGATION ENGINE
     # =========================================================
 
-    def create_sidebar_button(
+    def navigate(
         self,
-        text,
+        name,
         command
     ):
 
-        button = ctk.CTkButton(
-            self.sidebar,
-            text=text,
-            height=38,
-            corner_radius=8,
-            anchor="w",
-            command=command
+        self.set_active_navigation(
+            name
         )
 
-        button.pack(
-            fill="x",
-            padx=18,
-            pady=3
-        )
+        command()
+
+    def set_active_navigation(
+        self,
+        active_name
+    ):
+
+        for name, button in self.sidebar_buttons.items():
+
+            if name == active_name:
+
+                button.configure(
+                    fg_color=self.SIDEBAR_ACTIVE,
+                    text_color=self.WHITE
+                )
+
+            else:
+
+                button.configure(
+                    fg_color="transparent",
+                    text_color="#CBD5E1"
+                )
+
+        self.current_page = active_name
 
     # =========================================================
     # CLEAR CONTENT
@@ -325,7 +625,12 @@ class MainApplication(ctk.CTk):
     def clear_content(self):
 
         for widget in self.content.winfo_children():
-            widget.destroy()
+
+            try:
+                widget.destroy()
+
+            except Exception:
+                pass
 
     # =========================================================
     # DASHBOARD
@@ -334,6 +639,10 @@ class MainApplication(ctk.CTk):
     def show_dashboard(self):
 
         self.clear_content()
+
+        self.set_active_navigation(
+            "Dashboard"
+        )
 
         dashboard = DashboardFrame(
             self.content,
@@ -351,13 +660,23 @@ class MainApplication(ctk.CTk):
 
     def show_patients(self):
 
+        if not self.has_permission(
+            self.user.get("role", "admin"),
+            "manage_patients"
+        ):
+            return
+
         self.clear_content()
 
-        patient_frame = PatientFrame(
+        self.set_active_navigation(
+            "Patients"
+        )
+
+        frame = PatientFrame(
             self.content
         )
 
-        patient_frame.pack(
+        frame.pack(
             fill="both",
             expand=True
         )
@@ -368,13 +687,23 @@ class MainApplication(ctk.CTk):
 
     def show_doctors(self):
 
+        if not self.has_permission(
+            self.user.get("role", "admin"),
+            "manage_doctors"
+        ):
+            return
+
         self.clear_content()
 
-        doctor_frame = DoctorFrame(
+        self.set_active_navigation(
+            "Doctors"
+        )
+
+        frame = DoctorFrame(
             self.content
         )
 
-        doctor_frame.pack(
+        frame.pack(
             fill="both",
             expand=True
         )
@@ -385,13 +714,23 @@ class MainApplication(ctk.CTk):
 
     def show_appointments(self):
 
+        if not self.has_permission(
+            self.user.get("role", "admin"),
+            "manage_appointments"
+        ):
+            return
+
         self.clear_content()
 
-        appointment_frame = AppointmentFrame(
+        self.set_active_navigation(
+            "Appointments"
+        )
+
+        frame = AppointmentFrame(
             self.content
         )
 
-        appointment_frame.pack(
+        frame.pack(
             fill="both",
             expand=True
         )
@@ -402,13 +741,23 @@ class MainApplication(ctk.CTk):
 
     def show_billing(self):
 
+        if not self.has_permission(
+            self.user.get("role", "admin"),
+            "manage_billing"
+        ):
+            return
+
         self.clear_content()
 
-        billing_frame = BillingFrame(
+        self.set_active_navigation(
+            "Billing"
+        )
+
+        frame = BillingFrame(
             self.content
         )
 
-        billing_frame.pack(
+        frame.pack(
             fill="both",
             expand=True
         )
@@ -419,13 +768,23 @@ class MainApplication(ctk.CTk):
 
     def show_csv_import(self):
 
+        if not self.has_permission(
+            self.user.get("role", "admin"),
+            "import_csv"
+        ):
+            return
+
         self.clear_content()
 
-        csv_frame = CSVImportFrame(
+        self.set_active_navigation(
+            "CSV Import"
+        )
+
+        frame = CSVImportFrame(
             self.content
         )
 
-        csv_frame.pack(
+        frame.pack(
             fill="both",
             expand=True
         )
@@ -436,13 +795,23 @@ class MainApplication(ctk.CTk):
 
     def show_reports(self):
 
+        if not self.has_permission(
+            self.user.get("role", "admin"),
+            "view_reports"
+        ):
+            return
+
         self.clear_content()
 
-        report_frame = ReportFrame(
+        self.set_active_navigation(
+            "Reports"
+        )
+
+        frame = ReportFrame(
             self.content
         )
 
-        report_frame.pack(
+        frame.pack(
             fill="both",
             expand=True
         )
@@ -453,30 +822,50 @@ class MainApplication(ctk.CTk):
 
     def show_performance(self):
 
+        if not self.has_permission(
+            self.user.get("role", "admin"),
+            "view_performance"
+        ):
+            return
+
         self.clear_content()
 
-        performance_frame = PerformanceFrame(
+        self.set_active_navigation(
+            "Performance"
+        )
+
+        frame = PerformanceFrame(
             self.content
         )
 
-        performance_frame.pack(
+        frame.pack(
             fill="both",
             expand=True
         )
 
     # =========================================================
-    # TQM ANALYSIS
+    # TQM
     # =========================================================
 
     def show_tqm(self):
 
+        if not self.has_permission(
+            self.user.get("role", "admin"),
+            "view_reports"
+        ):
+            return
+
         self.clear_content()
 
-        tqm_frame = TQMFrame(
+        self.set_active_navigation(
+            "TQM Analysis"
+        )
+
+        frame = TQMFrame(
             self.content
         )
 
-        tqm_frame.pack(
+        frame.pack(
             fill="both",
             expand=True
         )
@@ -497,15 +886,17 @@ class MainApplication(ctk.CTk):
 
         self.destroy()
 
+        from app.gui.login_gui import LoginWindow
+
+        login = LoginWindow()
+        login.mainloop()
+
 
 # =============================================================
-# APPLICATION ENTRY POINT
+# DEVELOPMENT ENTRY POINT
 # =============================================================
 
 def main():
-
-    # Development user.
-    # Login integration can be connected here later.
 
     user = {
         "user_id": 1,
@@ -513,7 +904,9 @@ def main():
         "role": "admin"
     }
 
-    app = MainApplication(user)
+    app = MainApplication(
+        user
+    )
 
     app.mainloop()
 
