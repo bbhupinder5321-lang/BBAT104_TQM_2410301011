@@ -20,6 +20,7 @@ class LoginWindow(ctk.CTk):
         self.create_login_ui()
 
     def create_login_ui(self):
+
         # Main container
         self.login_card = ctk.CTkFrame(
             self,
@@ -144,15 +145,36 @@ class LoginWindow(ctk.CTk):
         )
 
         # Enter key
-        self.bind("<Return>", lambda event: self.login())
+        self.bind(
+            "<Return>",
+            lambda event: self.login()
+        )
 
         self.username_entry.focus()
 
     def login(self):
-        username = self.username_entry.get()
+
+        username = self.username_entry.get().strip()
         password = self.password_entry.get()
 
+        if not username or not password:
+
+            self.status_label.configure(
+                text="Please enter username and password.",
+                text_color="#DC2626"
+            )
+
+            return
+
+        self.login_button.configure(
+            state="disabled",
+            text="Signing in..."
+        )
+
+        self.update_idletasks()
+
         try:
+
             user = self.auth_service.login(
                 username,
                 password
@@ -163,27 +185,81 @@ class LoginWindow(ctk.CTk):
                 text_color="#16A34A"
             )
 
-            messagebox.showinfo(
-                "Login Successful",
-                f"Welcome, {user['username']}!\n\n"
-                f"Role: {user['role'].title()}"
+            self.open_main_application(
+                user
             )
 
-            print("Logged in user:", user)
-
-            # Main dashboard will be opened here later.
-
         except ValueError as error:
+
             self.status_label.configure(
                 text=str(error),
                 text_color="#DC2626"
             )
 
-            self.password_entry.delete(0, "end")
+            self.password_entry.delete(
+                0,
+                "end"
+            )
+
             self.password_entry.focus()
+
+            self.login_button.configure(
+                state="normal",
+                text="Login"
+            )
+
+        except Exception as error:
+
+            self.status_label.configure(
+                text="Unable to sign in. Please try again.",
+                text_color="#DC2626"
+            )
+
+            messagebox.showerror(
+                "Login Error",
+                f"An unexpected error occurred.\n\n{error}"
+            )
+
+            self.login_button.configure(
+                state="normal",
+                text="Login"
+            )
+
+    def open_main_application(
+        self,
+        user
+    ):
+
+        try:
+
+            from app.gui.main_app import MainApplication
+
+            self.destroy()
+
+            application = MainApplication(
+                user
+            )
+
+            application.mainloop()
+
+        except Exception as error:
+
+            messagebox.showerror(
+                "Application Error",
+                f"Unable to open the hospital application.\n\n{error}"
+            )
+
+            try:
+                self.login_button.configure(
+                    state="normal",
+                    text="Login"
+                )
+            except Exception:
+                pass
 
 
 if __name__ == "__main__":
+
     ctk.set_appearance_mode("light")
     ctk.set_default_color_theme("blue")
 
