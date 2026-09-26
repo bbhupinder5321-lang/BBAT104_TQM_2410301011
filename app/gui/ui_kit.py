@@ -34,45 +34,6 @@ class HospitalFrame(ctk.CTkFrame):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._page_animation_running = False
-        self.after(80, self.play_page_reveal)
-
-    def play_page_reveal(self):
-        if self._page_animation_running or not self.winfo_exists():
-            return
-        self._page_animation_running = True
-
-        overlay = ctk.CTkFrame(self, fg_color=self.PRIMARY, corner_radius=0)
-        overlay.place(relx=0, rely=0, relwidth=1, relheight=1)
-
-        label = ctk.CTkLabel(
-            overlay,
-            text="MEDICARE  •  LOADING",
-            text_color="#FFFFFF",
-            font=ctk.CTkFont(size=10, weight="bold")
-        )
-        label.place(relx=0.5, rely=0.5, anchor="center")
-
-        steps = 18
-
-        def reveal(step=0):
-            if not overlay.winfo_exists():
-                self._page_animation_running = False
-                return
-            progress = step / steps
-            if progress >= 1:
-                overlay.destroy()
-                self._page_animation_running = False
-                return
-            overlay.place(
-                relx=progress,
-                rely=0,
-                relwidth=max(0.001, 1 - progress),
-                relheight=1
-            )
-            self.after(16, lambda: reveal(step + 1))
-
-        self.after(70, reveal)
 
     def icon_badge(self, parent, icon, size=44, bg=None, fg="#FFFFFF", font_size=20):
         badge = ctk.CTkFrame(
