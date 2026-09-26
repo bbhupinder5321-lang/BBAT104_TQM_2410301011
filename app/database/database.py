@@ -125,10 +125,16 @@ def initialize_database():
             ON doctors(status);
     """)
 
-    # Create the default administrator account
+    # Create demo accounts for the two supported application roles.
+    # These are development/demo credentials for the academic project.
     connection.execute("""
         INSERT OR IGNORE INTO users (username, password, role)
         VALUES ('admin', 'admin123', 'admin')
+    """)
+
+    connection.execute("""
+        INSERT OR IGNORE INTO users (username, password, role)
+        VALUES ('staff', 'staff123', 'staff')
     """)
 
     connection.commit()
