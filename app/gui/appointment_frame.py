@@ -752,7 +752,9 @@ class AppointmentFrame(HospitalFrame):
                 )
             )
 
-            messagebox.showinfo(
+            self.show_toast("Operation completed")
+
+        messagebox.showinfo(
                 "Success",
                 (
                     "Appointment booked successfully.\n"
@@ -790,7 +792,9 @@ class AppointmentFrame(HospitalFrame):
                 self.status_combo.get()
             )
 
-            messagebox.showinfo(
+            self.show_toast("Operation completed")
+
+        messagebox.showinfo(
                 "Success",
                 "Appointment updated successfully."
             )
@@ -846,7 +850,9 @@ class AppointmentFrame(HospitalFrame):
                 "Cancelled"
             )
 
-            messagebox.showinfo(
+            self.show_toast("Operation completed")
+
+        messagebox.showinfo(
                 "Success",
                 "Appointment cancelled successfully."
             )
@@ -877,7 +883,9 @@ class AppointmentFrame(HospitalFrame):
                 self.selected_appointment_id
             )
 
-            messagebox.showinfo(
+            self.show_toast("Operation completed")
+
+        messagebox.showinfo(
                 "Check-in Recorded",
                 "Patient check-in time recorded."
             )
@@ -903,7 +911,9 @@ class AppointmentFrame(HospitalFrame):
                 self.selected_appointment_id
             )
 
-            messagebox.showinfo(
+            self.show_toast("Operation completed")
+
+        messagebox.showinfo(
                 "Consultation Started",
                 "Consultation start time recorded."
             )
