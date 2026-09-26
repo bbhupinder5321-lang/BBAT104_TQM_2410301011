@@ -485,12 +485,11 @@ class PatientFrame(HospitalFrame):
                 date.today().isoformat()
             )
 
-            self.show_toast("Operation completed")
+            self.show_toast("Patient added successfully")
 
-        messagebox.showinfo(
+            messagebox.showinfo(
                 "Success",
-                f"Patient added successfully.
-Patient ID: {patient_id}"
+                f"Patient added successfully.\nPatient ID: {patient_id}"
             )
 
             self.clear_form()
