@@ -611,7 +611,9 @@ class BillingFrame(HospitalFrame):
                 amount
             )
 
-            messagebox.showinfo(
+            self.show_toast("Operation completed")
+
+        messagebox.showinfo(
                 "Success",
                 f"Bill generated successfully.\n\nBill ID: {bill_id}"
             )
@@ -666,7 +668,9 @@ class BillingFrame(HospitalFrame):
                 amount
             )
 
-            messagebox.showinfo(
+            self.show_toast("Operation completed")
+
+        messagebox.showinfo(
                 "Success",
                 "Bill updated successfully."
             )
@@ -708,7 +712,9 @@ class BillingFrame(HospitalFrame):
                 self.selected_bill_id
             )
 
-            messagebox.showinfo(
+            self.show_toast("Operation completed")
+
+        messagebox.showinfo(
                 "Success",
                 "Bill deleted successfully."
             )
