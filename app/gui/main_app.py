@@ -42,8 +42,30 @@ class MainApplication(ctk.CTk):
             "role": "admin"
         }
 
+        self.role = self.user.get("role", "admin")
+
+        self.ROLE_THEME = {
+            "admin": {
+                "accent": "#2563EB",
+                "accent_hover": "#1D4ED8",
+                "soft": "#EFF6FF",
+                "workspace": "Administrator Console"
+            },
+            "staff": {
+                "accent": "#10B981",
+                "accent_hover": "#059669",
+                "soft": "#ECFDF5",
+                "workspace": "Staff Operations"
+            }
+        }.get(self.role, {
+            "accent": "#2563EB",
+            "accent_hover": "#1D4ED8",
+            "soft": "#EFF6FF",
+            "workspace": "Hospital Workspace"
+        })
+
         self.title(
-            "MediCare Hospital Management System"
+            f"MediCare  •  {self.ROLE_THEME['workspace']}"
         )
 
         self.geometry(
@@ -149,7 +171,7 @@ class MainApplication(ctk.CTk):
             width=44,
             height=44,
             corner_radius=13,
-            fg_color=self.SIDEBAR_ACTIVE
+            fg_color=self.ROLE_THEME["accent"]
         )
 
         icon.pack(
@@ -449,7 +471,7 @@ class MainApplication(ctk.CTk):
             corner_radius=10,
             anchor="w",
             fg_color="transparent",
-            hover_color=self.SIDEBAR_HOVER,
+            hover_color=self.ROLE_THEME["accent_hover"],
             text_color="#CBD5E1",
             font=ctk.CTkFont(
                 size=11,
