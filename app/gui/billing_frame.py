@@ -525,6 +525,17 @@ class BillingFrame(HospitalFrame):
     # Load Bills
     # ---------------------------------------------------------
 
+    def update_ux_stats(self):
+        try:
+            items=self.tree.get_children()
+            self.ux_stat_labels["total bills"].configure(text=str(len(items)))
+            joined=" ".join(str(v) for i in items for v in self.tree.item(i,"values")).lower()
+            self.ux_stat_labels["paid"].configure(text=str(joined.count("paid")))
+            self.ux_stat_labels["pending"].configure(text=str(joined.count("pending")))
+            self.ux_stat_labels["selected"].configure(text="Ready" if self.selected_bill_id else "None")
+        except Exception:
+            pass
+
     def load_bills(self):
 
         try:
@@ -569,6 +580,8 @@ class BillingFrame(HospitalFrame):
     # ---------------------------------------------------------
     # Add Bill
     # ---------------------------------------------------------
+
+        self.update_ux_stats()
 
     def add_bill(self):
 
