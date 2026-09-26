@@ -1,4 +1,6 @@
 import customtkinter as ctk
+
+from app.gui.ui_kit import HospitalFrame
 from tkinter import ttk
 
 from app.services.tqm_service import TQMService
@@ -8,7 +10,7 @@ from app.gui.checksheet_frame import ChecksheetFrame
 from app.gui.pdca_frame import PDCAFrame
 
 
-class TQMFrame(ctk.CTkFrame):
+class TQMFrame(HospitalFrame):
 
     # =========================================================
     # COLORS
