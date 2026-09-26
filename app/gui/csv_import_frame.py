@@ -1,4 +1,6 @@
 import customtkinter as ctk
+
+from app.gui.ui_kit import HospitalFrame
 from tkinter import ttk, messagebox, filedialog
 from pathlib import Path
 
@@ -7,7 +9,7 @@ import pandas as pd
 from app.services.csv_import_service import CSVImportService
 
 
-class CSVImportFrame(ctk.CTkFrame):
+class CSVImportFrame(HospitalFrame):
 
     BACKGROUND = "#F6F8FC"
     CARD = "#FFFFFF"
