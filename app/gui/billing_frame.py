@@ -243,7 +243,7 @@ class BillingFrame(HospitalFrame):
 
         self.generate_button = ctk.CTkButton(
             button_frame,
-            text="Generate Bill",
+            text="＋  Generate Bill",
             width=130,
             height=38,
             command=self.add_bill
@@ -286,7 +286,7 @@ class BillingFrame(HospitalFrame):
 
         self.clear_button = ctk.CTkButton(
             button_frame,
-            text="Clear",
+            text="↺  Clear",
             width=100,
             height=38,
             fg_color="#6B7280",
