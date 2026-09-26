@@ -1302,7 +1302,7 @@ class DashboardFrame(ctk.CTkFrame):
     def create_action_tile(self, parent, item, column):
 
         icon, title, subtitle, accent, soft, command = item
-        tile = ctk.CTkFrame(parent, fg_color=self.CARD_ALT, corner_radius=14, border_width=1, border_color=self.BORDER)
+        tile = ctk.CTkFrame(parent, fg_color=self.CARD_SOFT, corner_radius=14, border_width=1, border_color=self.BORDER)
         tile.grid(row=0, column=column, padx=4, sticky="nsew")
 
         icon_box = ctk.CTkFrame(tile, width=34, height=34, corner_radius=10, fg_color=soft)
@@ -1317,7 +1317,7 @@ class DashboardFrame(ctk.CTkFrame):
         def enter(event=None):
             tile.configure(border_color=accent, fg_color=self.WHITE)
         def leave(event=None):
-            tile.configure(border_color=self.BORDER, fg_color=self.CARD_ALT)
+            tile.configure(border_color=self.BORDER, fg_color=self.CARD_SOFT)
         for widget in (tile, *tile.winfo_children()):
             widget.bind("<Button-1>", activate)
             widget.bind("<Enter>", enter)
