@@ -3,12 +3,14 @@ from tkinter import ttk, messagebox
 
 import customtkinter as ctk
 
+from app.gui.ui_kit import HospitalFrame
+
 from app.services.appointment_service import AppointmentService
 from app.services.patient_service import PatientService
 from app.services.doctor_service import DoctorService
 
 
-class AppointmentFrame(ctk.CTkFrame):
+class AppointmentFrame(HospitalFrame):
 
     BACKGROUND = "#F6F8FC"
     CARD = "#FFFFFF"
