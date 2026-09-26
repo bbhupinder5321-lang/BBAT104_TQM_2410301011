@@ -294,6 +294,13 @@ class DashboardFrame(ctk.CTkFrame):
         )
         q02.pack(side="left", padx=(0, 10))
 
+        role_name = str(self.user.get("role", "admin")).title()
+        role_soft = self.GREEN_SOFT if role_name.lower() == "staff" else self.PRIMARY_SOFT
+        role_fg = self.GREEN_DARK if role_name.lower() == "staff" else self.PRIMARY
+        role_pill = ctk.CTkFrame(right, fg_color=role_soft, corner_radius=9, border_width=1, border_color="#D1FAE5" if role_name.lower() == "staff" else "#DBEAFE")
+        role_pill.pack(side="left", padx=(0, 10))
+        ctk.CTkLabel(role_pill, text=f"{role_name.upper()} WORKSPACE", text_color=role_fg, font=ctk.CTkFont(size=8, weight="bold")).pack(padx=11, pady=8)
+
         ctk.CTkLabel(
             q02,
             text="Q02  •  PERFORMANCE",
