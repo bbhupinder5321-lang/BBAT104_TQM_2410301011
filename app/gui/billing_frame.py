@@ -44,7 +44,10 @@ class BillingFrame(HospitalFrame):
         # Header
         header = ctk.CTkFrame(
             self,
-            fg_color="transparent"
+            fg_color=self.CARD,
+            corner_radius=20,
+            border_width=1,
+            border_color=self.BORDER
         )
 
         header.pack(
@@ -55,7 +58,7 @@ class BillingFrame(HospitalFrame):
 
         title = ctk.CTkLabel(
             header,
-            text="Billing Management",
+            text="▣  Billing Management",
             font=ctk.CTkFont(
                 size=30,
                 weight="bold"
