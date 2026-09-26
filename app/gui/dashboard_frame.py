@@ -458,7 +458,7 @@ class DashboardFrame(ctk.CTkFrame):
         for column, data in enumerate(cards):
             self.create_kpi_card(section, data, column)
 
-    def create_kpi_cardundefined
+    def create_kpi_card(
 
     def create_analytics_section(self):
 
@@ -1277,7 +1277,7 @@ class DashboardFrame(ctk.CTkFrame):
         for column, item in enumerate(items):
             self.create_action_tile(actions, item, column)
 
-    def create_action_tileundefined
+    def create_action_tile(
 
     def create_quality_section(self):
 
