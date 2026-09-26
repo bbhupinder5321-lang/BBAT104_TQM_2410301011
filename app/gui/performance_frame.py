@@ -18,7 +18,7 @@ class PerformanceFrame(HospitalFrame):
     def __init__(self, parent):
         super().__init__(
             parent,
-            fg_color="transparent"
+            fg_color=self.BACKGROUND
         )
 
         self.service = PerformanceService()
@@ -34,7 +34,7 @@ class PerformanceFrame(HospitalFrame):
         # Title
         title = ctk.CTkLabel(
             self,
-            text="Q02 Performance Analysis",
+            text="⌁  Q02 Performance Analysis",
             font=ctk.CTkFont(
                 size=28,
                 weight="bold"
