@@ -14,15 +14,15 @@ class TQMFrame(ctk.CTkFrame):
     # COLORS
     # =========================================================
 
-    BACKGROUND = "#F4F7FB"
+    BACKGROUND = "#F6F8FC"
     CARD = "#FFFFFF"
 
     PRIMARY = "#2563EB"
     PRIMARY_HOVER = "#1D4ED8"
 
     TEXT = "#111827"
-    SECONDARY_TEXT = "#6B7280"
-    BORDER = "#E5E7EB"
+    SECONDARY_TEXT = "#64748B"
+    BORDER = "#E6EAF0"
 
     SUCCESS = "#10B981"
     WARNING = "#F59E0B"
@@ -68,7 +68,7 @@ class TQMFrame(ctk.CTkFrame):
 
         header = ctk.CTkFrame(
             self.main,
-            fg_color="transparent"
+            fg_color=self.CARD
         )
 
         header.pack(
@@ -82,7 +82,7 @@ class TQMFrame(ctk.CTkFrame):
             text="TQM Analysis",
             text_color=self.TEXT,
             font=ctk.CTkFont(
-                size=30,
+                size=28,
                 weight="bold"
             )
         )
