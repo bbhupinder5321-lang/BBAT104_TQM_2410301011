@@ -9,11 +9,19 @@ from app.services.csv_import_service import CSVImportService
 
 class CSVImportFrame(ctk.CTkFrame):
 
+    BACKGROUND = "#F6F8FC"
+    CARD = "#FFFFFF"
+    BORDER = "#E6EAF0"
+    TEXT_DARK = "#0F172A"
+    SECONDARY = "#64748B"
+    PRIMARY = "#2563EB"
+    PRIMARY_HOVER = "#1D4ED8"
+
     def __init__(self, parent):
         super().__init__(
             parent,
             corner_radius=0,
-            fg_color="#F4F7FB"
+            fg_color=self.BACKGROUND
         )
 
         self.csv_service = CSVImportService()
@@ -42,10 +50,10 @@ class CSVImportFrame(ctk.CTkFrame):
             header,
             text="CSV Patient Import",
             font=ctk.CTkFont(
-                size=30,
+                size=28,
                 weight="bold"
             ),
-            text_color="#172033"
+            text_color=self.TEXT_DARK
         )
 
         title.pack(anchor="w")
@@ -53,8 +61,8 @@ class CSVImportFrame(ctk.CTkFrame):
         subtitle = ctk.CTkLabel(
             header,
             text="Bulk import patient records using Pandas",
-            font=ctk.CTkFont(size=13),
-            text_color="#6B7280"
+            font=ctk.CTkFont(size=12),
+            text_color=self.SECONDARY
         )
 
         subtitle.pack(anchor="w")
@@ -65,8 +73,10 @@ class CSVImportFrame(ctk.CTkFrame):
 
         file_frame = ctk.CTkFrame(
             self,
-            corner_radius=15,
-            fg_color="white"
+            corner_radius=18,
+            fg_color=self.CARD,
+            border_width=1,
+            border_color=self.BORDER
         )
 
         file_frame.pack(
@@ -146,8 +156,8 @@ class CSVImportFrame(ctk.CTkFrame):
             text="Preview CSV",
             width=120,
             height=38,
-            fg_color="#37445D",
-            hover_color="#4A5872",
+            fg_color="#334155",
+            hover_color="#475569",
             command=self.preview_csv
         )
 
@@ -174,8 +184,8 @@ class CSVImportFrame(ctk.CTkFrame):
             text="Clear",
             width=100,
             height=38,
-            fg_color="#6B7280",
-            hover_color="#555B66",
+            fg_color="#64748B",
+            hover_color="#475569",
             command=self.clear_all
         )
 
