@@ -39,7 +39,10 @@ class DoctorFrame(HospitalFrame):
         # Header
         header = ctk.CTkFrame(
             self,
-            fg_color="transparent"
+            fg_color=self.CARD,
+            corner_radius=20,
+            border_width=1,
+            border_color=self.BORDER
         )
         header.pack(
             fill="x",
@@ -49,7 +52,7 @@ class DoctorFrame(HospitalFrame):
 
         title = ctk.CTkLabel(
             header,
-            text="Doctor Management",
+            text="⚕  Doctor Management",
             font=ctk.CTkFont(size=28, weight="bold"),
             text_color=self.TEXT_DARK
         )
