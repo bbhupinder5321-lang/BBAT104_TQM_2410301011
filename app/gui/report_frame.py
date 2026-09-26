@@ -6,10 +6,19 @@ from app.services.report_service import ReportService
 
 class ReportFrame(ctk.CTkFrame):
 
+    BACKGROUND = "#F6F8FC"
+    CARD = "#FFFFFF"
+    BORDER = "#E6EAF0"
+    TEXT_DARK = "#0F172A"
+    SECONDARY = "#64748B"
+    PRIMARY = "#2563EB"
+    PRIMARY_HOVER = "#1D4ED8"
+
     def __init__(self, parent):
         super().__init__(
             parent,
-            corner_radius=0
+            corner_radius=0,
+            fg_color=self.BACKGROUND
         )
 
         self.service = ReportService()
@@ -30,7 +39,8 @@ class ReportFrame(ctk.CTkFrame):
             font=ctk.CTkFont(
                 size=28,
                 weight="bold"
-            )
+            ),
+            text_color=self.TEXT_DARK
         )
 
         title.pack(
@@ -42,7 +52,8 @@ class ReportFrame(ctk.CTkFrame):
         subtitle = ctk.CTkLabel(
             self,
             text="Optimized reports for hospital performance monitoring",
-            font=ctk.CTkFont(size=14)
+            font=ctk.CTkFont(size=12),
+            text_color=self.SECONDARY
         )
 
         subtitle.pack(
@@ -56,7 +67,10 @@ class ReportFrame(ctk.CTkFrame):
             self,
             text="Refresh Reports",
             command=self.load_reports,
-            width=150
+            width=150,
+            height=38,
+            fg_color=self.PRIMARY,
+            hover_color=self.PRIMARY_HOVER
         )
 
         refresh_button.pack(
@@ -188,7 +202,11 @@ class ReportFrame(ctk.CTkFrame):
 
         card = ctk.CTkFrame(
             self.summary_frame,
-            height=90
+            height=92,
+            fg_color=self.CARD,
+            corner_radius=16,
+            border_width=1,
+            border_color=self.BORDER
         )
 
         card.grid(
