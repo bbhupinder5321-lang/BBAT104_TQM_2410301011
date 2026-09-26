@@ -39,7 +39,10 @@ class CSVImportFrame(HospitalFrame):
 
         header = ctk.CTkFrame(
             self,
-            fg_color="transparent"
+            fg_color=self.CARD,
+            corner_radius=20,
+            border_width=1,
+            border_color=self.BORDER
         )
 
         header.pack(
@@ -50,7 +53,7 @@ class CSVImportFrame(HospitalFrame):
 
         title = ctk.CTkLabel(
             header,
-            text="CSV Patient Import",
+            text="⇧  CSV Patient Import",
             font=ctk.CTkFont(
                 size=28,
                 weight="bold"
