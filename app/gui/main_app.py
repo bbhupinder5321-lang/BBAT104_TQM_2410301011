@@ -94,6 +94,14 @@ class MainApplication(ctk.CTk):
 
         self.show_dashboard()
 
+        # Fast keyboard navigation for power users.
+        self.bind("<Control-Key-1>", lambda e: self.show_dashboard())
+        self.bind("<Control-Key-2>", lambda e: self.show_patients())
+        self.bind("<Control-Key-3>", lambda e: self.show_appointments())
+        self.bind("<Control-Key-4>", lambda e: self.show_billing())
+        self.bind("<Control-Key-5>", lambda e: self.show_reports())
+        self.bind("<Control-Key-r>", lambda e: self.show_dashboard())
+
     def _maximize_window(self):
         try:
             self.state("zoomed")
