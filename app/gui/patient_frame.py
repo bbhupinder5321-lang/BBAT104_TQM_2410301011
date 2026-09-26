@@ -1,12 +1,14 @@
 import tkinter as tk
 import customtkinter as ctk
+
+from app.gui.ui_kit import HospitalFrame
 from tkinter import ttk, messagebox
 from datetime import date
 
 from app.services.patient_service import PatientService
 
 
-class PatientFrame(ctk.CTkFrame):
+class PatientFrame(HospitalFrame):
 
     BACKGROUND = "#F6F8FC"
     CARD = "#FFFFFF"
