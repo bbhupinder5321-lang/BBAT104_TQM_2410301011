@@ -520,9 +520,9 @@ class PatientFrame(HospitalFrame):
                 self.blood_combo.get()
             )
 
-            self.show_toast("Operation completed")
+            self.show_toast("Patient updated successfully")
 
-        messagebox.showinfo(
+            messagebox.showinfo(
                 "Success",
                 "Patient updated successfully."
             )
