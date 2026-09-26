@@ -4,6 +4,8 @@ from tkinter import ttk
 from app.services.tqm_service import TQMService
 from app.gui.fishbone_frame import FishboneFrame
 from app.gui.pareto_frame import ParetoFrame
+from app.gui.checksheet_frame import ChecksheetFrame
+from app.gui.pdca_frame import PDCAFrame
 
 
 class TQMFrame(ctk.CTkFrame):
@@ -89,9 +91,7 @@ class TQMFrame(ctk.CTkFrame):
 
         subtitle = ctk.CTkLabel(
             header,
-            text=(
-                "Quality analysis for Q02 - Improve Performance"
-            ),
+            text="Quality analysis for Q02 - Improve Performance",
             text_color=self.SECONDARY_TEXT,
             font=ctk.CTkFont(size=14)
         )
@@ -140,6 +140,7 @@ class TQMFrame(ctk.CTkFrame):
         )
 
         for column in range(4):
+
             container.grid_columnconfigure(
                 column,
                 weight=1
@@ -316,6 +317,8 @@ class TQMFrame(ctk.CTkFrame):
         self.tabs.add("FMEA Analysis")
         self.tabs.add("Fishbone Analysis")
         self.tabs.add("Pareto Analysis")
+        self.tabs.add("Checksheet")
+        self.tabs.add("PDCA Cycle")
 
         # =====================================================
         # CREATE TAB CONTENT
@@ -335,6 +338,14 @@ class TQMFrame(ctk.CTkFrame):
 
         self.create_pareto_tab(
             self.tabs.tab("Pareto Analysis")
+        )
+
+        self.create_checksheet_tab(
+            self.tabs.tab("Checksheet")
+        )
+
+        self.create_pdca_tab(
+            self.tabs.tab("PDCA Cycle")
         )
 
     # =========================================================
@@ -376,6 +387,7 @@ class TQMFrame(ctk.CTkFrame):
         )
 
         for column in range(5):
+
             grid.grid_columnconfigure(
                 column,
                 weight=1
@@ -640,6 +652,7 @@ class TQMFrame(ctk.CTkFrame):
     def insert_fmea_data(self):
 
         for item in self.fmea_tree.get_children():
+
             self.fmea_tree.delete(item)
 
         rows = self.service.get_fmea_data()
@@ -713,6 +726,36 @@ class TQMFrame(ctk.CTkFrame):
         )
 
         pareto_frame.pack(
+            fill="both",
+            expand=True
+        )
+
+    # =========================================================
+    # CHECKSHEET
+    # =========================================================
+
+    def create_checksheet_tab(self, parent):
+
+        checksheet_frame = ChecksheetFrame(
+            parent
+        )
+
+        checksheet_frame.pack(
+            fill="both",
+            expand=True
+        )
+
+    # =========================================================
+    # PDCA
+    # =========================================================
+
+    def create_pdca_tab(self, parent):
+
+        pdca_frame = PDCAFrame(
+            parent
+        )
+
+        pdca_frame.pack(
             fill="both",
             expand=True
         )
