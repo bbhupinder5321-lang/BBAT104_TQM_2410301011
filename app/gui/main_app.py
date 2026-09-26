@@ -69,12 +69,12 @@ class MainApplication(ctk.CTk):
         )
 
         self.geometry(
-            "1360x820"
+            "1440x900"
         )
 
         self.minsize(
-            1120,
-            700
+            1180,
+            760
         )
 
         ctk.set_appearance_mode(
@@ -85,12 +85,20 @@ class MainApplication(ctk.CTk):
             "blue"
         )
 
+        self.after(120, self._maximize_window)
+
         self.current_page = None
         self.sidebar_buttons = {}
 
         self.create_layout()
 
         self.show_dashboard()
+
+    def _maximize_window(self):
+        try:
+            self.state("zoomed")
+        except Exception:
+            pass
 
     # =========================================================
     # APPLICATION LAYOUT
@@ -644,7 +652,7 @@ class MainApplication(ctk.CTk):
             if name == active_name:
 
                 button.configure(
-                    fg_color=self.SIDEBAR_ACTIVE,
+                    fg_color=self.ROLE_THEME["accent"],
                     text_color=self.WHITE
                 )
 
@@ -715,6 +723,9 @@ class MainApplication(ctk.CTk):
             self.content
         )
 
+        frame.user = self.user
+        frame.role = self.role
+
         frame.pack(
             fill="both",
             expand=True
@@ -741,6 +752,9 @@ class MainApplication(ctk.CTk):
         frame = DoctorFrame(
             self.content
         )
+
+        frame.user = self.user
+        frame.role = self.role
 
         frame.pack(
             fill="both",
@@ -769,6 +783,9 @@ class MainApplication(ctk.CTk):
             self.content
         )
 
+        frame.user = self.user
+        frame.role = self.role
+
         frame.pack(
             fill="both",
             expand=True
@@ -795,6 +812,9 @@ class MainApplication(ctk.CTk):
         frame = BillingFrame(
             self.content
         )
+
+        frame.user = self.user
+        frame.role = self.role
 
         frame.pack(
             fill="both",
@@ -823,6 +843,9 @@ class MainApplication(ctk.CTk):
             self.content
         )
 
+        frame.user = self.user
+        frame.role = self.role
+
         frame.pack(
             fill="both",
             expand=True
@@ -849,6 +872,9 @@ class MainApplication(ctk.CTk):
         frame = ReportFrame(
             self.content
         )
+
+        frame.user = self.user
+        frame.role = self.role
 
         frame.pack(
             fill="both",
@@ -877,6 +903,9 @@ class MainApplication(ctk.CTk):
             self.content
         )
 
+        frame.user = self.user
+        frame.role = self.role
+
         frame.pack(
             fill="both",
             expand=True
@@ -903,6 +932,9 @@ class MainApplication(ctk.CTk):
         frame = TQMFrame(
             self.content
         )
+
+        frame.user = self.user
+        frame.role = self.role
 
         frame.pack(
             fill="both",
