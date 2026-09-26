@@ -445,7 +445,9 @@ class PatientFrame(HospitalFrame):
                 date.today().isoformat()
             )
 
-            messagebox.showinfo(
+            self.show_toast("Operation completed")
+
+        messagebox.showinfo(
                 "Success",
                 f"Patient added successfully.\nPatient ID: {patient_id}"
             )
@@ -478,7 +480,9 @@ class PatientFrame(HospitalFrame):
                 self.blood_combo.get()
             )
 
-            messagebox.showinfo(
+            self.show_toast("Operation completed")
+
+        messagebox.showinfo(
                 "Success",
                 "Patient updated successfully."
             )
@@ -513,7 +517,9 @@ class PatientFrame(HospitalFrame):
                 self.selected_patient_id
             )
 
-            messagebox.showinfo(
+            self.show_toast("Operation completed")
+
+        messagebox.showinfo(
                 "Success",
                 "Patient deleted successfully."
             )
