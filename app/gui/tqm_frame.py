@@ -81,7 +81,7 @@ class TQMFrame(HospitalFrame):
 
         title = ctk.CTkLabel(
             header,
-            text="TQM Analysis",
+            text="✓  TQM Analysis",
             text_color=self.TEXT,
             font=ctk.CTkFont(
                 size=28,
