@@ -1,0 +1,38 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# SQLite databases & temp files
+*.db
+*.sqlite3
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Virtual environments
+venv/
+env/
+.env
+.venv/
+ENV/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Exported outputs and reports
+exports/*.pdf
+exports/*.csv
+!data/sample_patients.csv
+
+# Matplotlib / Plot caches
+*.png
+!assets/*.png
