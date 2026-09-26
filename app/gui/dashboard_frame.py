@@ -206,483 +206,202 @@ class DashboardFrame(ctk.CTkFrame):
     # HEADER
     # =========================================================
 
+
     def create_header(self):
-
-        # =====================================================
-        # PREMIUM HERO HEADER
-        # =====================================================
-        # This is deliberately more than a plain page title.
-        # It acts as the visual "command center" of the dashboard:
-        # greeting + live operational context + Q02 identity +
-        # a clear refresh control.
-        # =====================================================
-
-        hero = ctk.CTkFrame(
+        header = ctk.CTkFrame(
             self.main,
-            fg_color=self.CARD_DARK,
-            corner_radius=22,
-            border_width=1,
-            border_color="#1E293B"
+            fg_color="transparent"
         )
-
-        hero.pack(
+        header.pack(
             fill="x",
             padx=self.PAGE_PAD_X,
-            pady=(self.PAGE_PAD_TOP, 10)
+            pady=(24, 8)
         )
 
-        # -----------------------------------------------------
-        # Decorative background canvas
-        # -----------------------------------------------------
-
-        hero_canvas = ctk.CTkCanvas(
-            hero,
-            height=158,
-            bg=self.CARD_DARK,
-            highlightthickness=0,
-            bd=0
-        )
-
-        hero_canvas.place(
-            relx=0,
-            rely=0,
-            relwidth=1,
-            relheight=1
-        )
-
-        def draw_hero_background(event=None):
-
-            try:
-                width = max(hero_canvas.winfo_width(), 800)
-                height = max(hero_canvas.winfo_height(), 158)
-
-                hero_canvas.delete("hero-bg")
-
-                # Soft geometric shapes create depth without
-                # introducing random decorative objects.
-                hero_canvas.create_oval(
-                    width - 255,
-                    -105,
-                    width + 75,
-                    225,
-                    fill="#172554",
-                    outline="",
-                    tags="hero-bg"
-                )
-
-                hero_canvas.create_oval(
-                    width - 125,
-                    35,
-                    width + 40,
-                    200,
-                    fill="#1E3A8A",
-                    outline="",
-                    tags="hero-bg"
-                )
-
-                hero_canvas.create_oval(
-                    width - 430,
-                    78,
-                    width - 350,
-                    158,
-                    fill="#0F2A4D",
-                    outline="",
-                    tags="hero-bg"
-                )
-
-                # Fine horizontal line gives the hero a
-                # structured enterprise-dashboard appearance.
-                hero_canvas.create_line(
-                    24,
-                    height - 22,
-                    width - 24,
-                    height - 22,
-                    fill="#1F2937",
-                    width=1,
-                    tags="hero-bg"
-                )
-
-            except Exception:
-                pass
-
-        hero_canvas.bind(
-            "<Configure>",
-            draw_hero_background
-        )
-
-        # -----------------------------------------------------
-        # Content container
-        # -----------------------------------------------------
-
-        content = ctk.CTkFrame(
-            hero,
-            fg_color="transparent"
-        )
-
-        content.place(
-            relx=0,
-            rely=0,
-            relwidth=1,
-            relheight=1
-        )
-
-        content.grid_columnconfigure(
-            0,
-            weight=1
-        )
-
-        content.grid_columnconfigure(
-            1,
-            weight=0
-        )
-
-        # -----------------------------------------------------
-        # LEFT SIDE
-        # -----------------------------------------------------
+        header.grid_columnconfigure(0, weight=1)
+        header.grid_columnconfigure(1, weight=0)
 
         left = ctk.CTkFrame(
-            content,
+            header,
             fg_color="transparent"
         )
-
-        left.grid(
-            row=0,
-            column=0,
-            rowspan=2,
-            sticky="nsew",
-            padx=(25, 12),
-            pady=(21, 19)
-        )
-
-        username = self.user.get(
-            "username",
-            "admin"
-        )
-
-        display_name = str(
-            username
-        ).strip().title()
+        left.grid(row=0, column=0, sticky="w")
 
         eyebrow = ctk.CTkLabel(
             left,
-            text="HOSPITAL OPERATIONS  /  DAILY COMMAND CENTER",
-            text_color="#93C5FD",
-            font=ctk.CTkFont(
-                size=9,
-                weight="bold"
-            )
+            text="HOSPITAL OVERVIEW",
+            text_color=self.PRIMARY,
+            font=ctk.CTkFont(size=9, weight="bold")
         )
+        eyebrow.pack(anchor="w")
 
-        eyebrow.pack(
-            anchor="w"
-        )
+        username = str(
+            self.user.get("username", "admin")
+        ).strip().title()
 
         greeting = ctk.CTkLabel(
             left,
-            text=f"Good day, {display_name}  👋",
-            text_color=self.WHITE,
-            font=ctk.CTkFont(
-                size=28,
-                weight="bold"
-            )
+            text=f"Welcome back, {username} 👋",
+            text_color=self.TEXT_DARK,
+            font=ctk.CTkFont(size=26, weight="bold")
         )
+        greeting.pack(anchor="w", pady=(3, 0))
 
-        greeting.pack(
-            anchor="w",
-            pady=(5, 0)
-        )
-
-        today_text = datetime.now().strftime(
-            "%A, %d %B %Y"
-        )
-
+        today_text = datetime.now().strftime("%A, %d %B %Y")
         subtitle = ctk.CTkLabel(
             left,
-            text=(
-                f"{today_text}   •   Real-time operational overview"
-            ),
-            text_color="#94A3B8",
-            font=ctk.CTkFont(
-                size=11
-            )
+            text=f"{today_text}  •  Live hospital operations",
+            text_color=self.SECONDARY_TEXT,
+            font=ctk.CTkFont(size=10)
         )
-
-        subtitle.pack(
-            anchor="w",
-            pady=(4, 0)
-        )
-
-        # -----------------------------------------------------
-        # STATUS STRIP
-        # -----------------------------------------------------
-
-        status_row = ctk.CTkFrame(
-            left,
-            fg_color="transparent"
-        )
-
-        status_row.pack(
-            anchor="w",
-            pady=(13, 0)
-        )
-
-        status = ctk.CTkFrame(
-            status_row,
-            fg_color="#123524",
-            corner_radius=8,
-            border_width=1,
-            border_color="#14532D"
-        )
-
-        status.pack(
-            side="left"
-        )
-
-        status_dot = ctk.CTkLabel(
-            status,
-            text="●",
-            text_color="#34D399",
-            font=ctk.CTkFont(
-                size=8
-            )
-        )
-
-        status_dot.pack(
-            side="left",
-            padx=(9, 3),
-            pady=6
-        )
-
-        status_text = ctk.CTkLabel(
-            status,
-            text="SYSTEM OPERATIONAL",
-            text_color="#86EFAC",
-            font=ctk.CTkFont(
-                size=8,
-                weight="bold"
-            )
-        )
-
-        status_text.pack(
-            side="left",
-            padx=(0, 9),
-            pady=6
-        )
-
-        context = ctk.CTkLabel(
-            status_row,
-            text="  •  Q02 performance monitoring enabled",
-            text_color="#64748B",
-            font=ctk.CTkFont(
-                size=9
-            )
-        )
-
-        context.pack(
-            side="left"
-        )
-
-        # -----------------------------------------------------
-        # RIGHT SIDE
-        # -----------------------------------------------------
+        subtitle.pack(anchor="w", pady=(4, 0))
 
         right = ctk.CTkFrame(
-            content,
+            header,
             fg_color="transparent"
         )
+        right.grid(row=0, column=1, sticky="ne")
 
-        right.grid(
-            row=0,
-            column=1,
-            sticky="ne",
-            padx=(12, 25),
-            pady=(20, 0)
-        )
-
-        quality_badge = ctk.CTkFrame(
+        status = ctk.CTkFrame(
             right,
-            fg_color="#1E3A8A",
+            fg_color=self.GREEN_SOFT,
             corner_radius=9,
             border_width=1,
-            border_color="#3155A6"
+            border_color="#D1FAE5"
         )
+        status.pack(side="left", padx=(0, 10))
 
-        quality_badge.pack(
-            side="left",
-            padx=(0, 9)
-        )
+        ctk.CTkLabel(
+            status,
+            text="●",
+            text_color=self.GREEN,
+            font=ctk.CTkFont(size=8)
+        ).pack(side="left", padx=(9, 4), pady=8)
 
-        quality_label = ctk.CTkLabel(
-            quality_badge,
-            text="Q02  •  IMPROVE PERFORMANCE",
-            text_color="#BFDBFE",
-            font=ctk.CTkFont(
-                size=9,
-                weight="bold"
-            )
-        )
+        ctk.CTkLabel(
+            status,
+            text="SYSTEM ONLINE",
+            text_color=self.GREEN_DARK,
+            font=ctk.CTkFont(size=8, weight="bold")
+        ).pack(side="left", padx=(0, 10), pady=8)
 
-        quality_label.pack(
-            padx=12,
-            pady=8
+        q02 = ctk.CTkFrame(
+            right,
+            fg_color=self.PRIMARY_SOFT,
+            corner_radius=9,
+            border_width=1,
+            border_color="#DBEAFE"
         )
+        q02.pack(side="left", padx=(0, 10))
+
+        ctk.CTkLabel(
+            q02,
+            text="Q02  •  PERFORMANCE",
+            text_color=self.PRIMARY,
+            font=ctk.CTkFont(size=8, weight="bold")
+        ).pack(padx=11, pady=8)
 
         self.refresh_button = ctk.CTkButton(
             right,
             text="↻  Refresh",
-            width=108,
+            width=104,
             height=36,
             corner_radius=10,
             fg_color=self.PRIMARY,
             hover_color=self.PRIMARY_DARK,
             text_color=self.WHITE,
-            border_width=0,
-            font=ctk.CTkFont(
-                size=10,
-                weight="bold"
-            ),
+            font=ctk.CTkFont(size=10, weight="bold"),
             command=self.refresh_dashboard
         )
+        self.refresh_button.pack(side="left")
 
-        self.refresh_button.pack(
-            side="left"
-        )
-
-        # -----------------------------------------------------
-        # RIGHT-SIDE MINI METRIC STRIP
-        # -----------------------------------------------------
-
-        snapshot = ctk.CTkFrame(
-            content,
-            fg_color="transparent"
-        )
-
-        snapshot.grid(
-            row=1,
-            column=1,
-            sticky="se",
-            padx=(12, 25),
-            pady=(0, 19)
-        )
-
-        self.create_hero_snapshot(
-            snapshot,
-            "TODAY",
-            str(self.metrics.get("today_patients", 0)),
-            "patients",
-            self.PRIMARY
-        )
-
-        self.create_hero_snapshot(
-            snapshot,
-            "QUEUE",
-            str(self.metrics.get("pending_appointments", 0)),
-            "pending",
-            self.ORANGE
-        )
-
-        self.create_hero_snapshot(
-            snapshot,
-            "BEDS",
-            str(self.metrics.get("occupied_beds", 0)),
-            "occupied",
-            self.GREEN
-        )
-
-        self.after(
-            60,
-            draw_hero_background
-        )
-
-    def create_hero_snapshot(
-        self,
-        parent,
-        label,
-        value,
-        suffix,
-        accent
-    ):
-
-        item = ctk.CTkFrame(
-            parent,
-            fg_color="#162033",
-            corner_radius=9,
+        strip = ctk.CTkFrame(
+            self.main,
+            fg_color=self.CARD,
+            corner_radius=16,
             border_width=1,
-            border_color="#263247"
+            border_color=self.BORDER
+        )
+        strip.pack(
+            fill="x",
+            padx=self.PAGE_PAD_X,
+            pady=(3, 4)
         )
 
-        item.pack(
-            side="left",
-            padx=(5, 0)
-        )
+        items = [
+            ("TODAY'S PATIENTS", self.metrics.get("today_patients", 0), "Registered today", self.PRIMARY),
+            ("APPOINTMENTS", self.metrics.get("today_appointments", 0), "Scheduled today", self.PURPLE),
+            ("PENDING QUEUE", self.metrics.get("pending_appointments", 0), "Awaiting consultation", self.ORANGE),
+            ("BED CAPACITY", self.metrics.get("total_beds", 0), "Total hospital beds", self.GREEN)
+        ]
 
-        top = ctk.CTkLabel(
-            item,
-            text=label,
-            text_color="#64748B",
-            font=ctk.CTkFont(
-                size=7,
-                weight="bold"
+        for index, (label, value, caption, accent) in enumerate(items):
+            strip.grid_columnconfigure(index, weight=1, uniform="snapshot")
+
+            cell = ctk.CTkFrame(
+                strip,
+                fg_color="transparent"
             )
-        )
-
-        top.pack(
-            anchor="w",
-            padx=10,
-            pady=(7, 0)
-        )
-
-        number = ctk.CTkLabel(
-            item,
-            text=value,
-            text_color=self.WHITE,
-            font=ctk.CTkFont(
-                size=13,
-                weight="bold"
+            cell.grid(
+                row=0,
+                column=index,
+                sticky="ew",
+                padx=18,
+                pady=13
             )
-        )
 
-        number.pack(
-            side="left",
-            padx=(10, 3),
-            pady=(0, 7)
-        )
+            if index > 0:
+                divider = ctk.CTkFrame(
+                    strip,
+                    width=1,
+                    fg_color=self.BORDER
+                )
+                divider.place(
+                    relx=index / 4,
+                    rely=0.22,
+                    relheight=0.56
+                )
 
-        suffix_label = ctk.CTkLabel(
-            item,
-            text=suffix,
-            text_color=accent,
-            font=ctk.CTkFont(
-                size=7,
-                weight="bold"
+            ctk.CTkLabel(
+                cell,
+                text=label,
+                text_color=self.MUTED_TEXT,
+                font=ctk.CTkFont(size=8, weight="bold")
+            ).pack(anchor="w")
+
+            value_row = ctk.CTkFrame(
+                cell,
+                fg_color="transparent"
             )
-        )
+            value_row.pack(anchor="w", pady=(2, 0))
 
-        suffix_label.pack(
-            side="left",
-            padx=(0, 10),
-            pady=(1, 7)
-        )
+            ctk.CTkLabel(
+                value_row,
+                text=f"{int(value):,}",
+                text_color=self.TEXT_DARK,
+                font=ctk.CTkFont(size=18, weight="bold")
+            ).pack(side="left")
 
-    # =========================================================
-    # KPI SECTION
-    # =========================================================
+            ctk.CTkLabel(
+                value_row,
+                text="  " + caption,
+                text_color=accent,
+                font=ctk.CTkFont(size=8, weight="bold")
+            ).pack(side="left", pady=(5, 0))
+
 
     def create_kpi_section(self):
-
         section = ctk.CTkFrame(
             self.main,
             fg_color="transparent"
         )
-
         section.pack(
             fill="x",
             padx=self.PAGE_PAD_X,
-            pady=(13, 5)
+            pady=(17, 4)
         )
 
         for column in range(4):
-
             section.grid_columnconfigure(
                 column,
                 weight=1,
@@ -695,227 +414,51 @@ class DashboardFrame(ctk.CTkFrame):
                 "title": "Patients",
                 "value": self.metrics["today_patients"],
                 "caption": "Registered today",
-                "icon": "P",
+                "icon": "♙",
                 "accent": self.PRIMARY,
                 "soft": self.PRIMARY_SOFT,
-                "action": self.go_patients
+                "action": self.go_patients,
+                "label": "PATIENT FLOW"
             },
             {
                 "key": "appointments",
                 "title": "Appointments",
                 "value": self.metrics["today_appointments"],
                 "caption": "Scheduled today",
-                "icon": "A",
+                "icon": "▦",
                 "accent": self.PURPLE,
                 "soft": self.PURPLE_SOFT,
-                "action": self.go_appointments
+                "action": self.go_appointments,
+                "label": "TODAY"
             },
             {
                 "key": "pending",
                 "title": "Pending",
                 "value": self.metrics["pending_appointments"],
                 "caption": "Awaiting consultation",
-                "icon": "W",
+                "icon": "◷",
                 "accent": self.ORANGE,
                 "soft": self.ORANGE_SOFT,
-                "action": self.go_appointments
+                "action": self.go_appointments,
+                "label": "QUEUE"
             },
             {
                 "key": "beds",
                 "title": "Beds",
                 "value": self.metrics["total_beds"],
                 "caption": "Total hospital beds",
-                "icon": "B",
+                "icon": "▤",
                 "accent": self.GREEN,
                 "soft": self.GREEN_SOFT,
-                "action": None
+                "action": None,
+                "label": "CAPACITY"
             }
         ]
 
         for column, data in enumerate(cards):
+            self.create_kpi_card(section, data, column)
 
-            self.create_kpi_card(
-                section,
-                data,
-                column
-            )
-
-    def create_kpi_card(
-        self,
-        parent,
-        data,
-        column
-    ):
-
-        card = ctk.CTkFrame(
-            parent,
-            fg_color=self.CARD,
-            corner_radius=18,
-            border_width=1,
-            border_color=self.BORDER,
-            cursor="hand2" if data["action"] else "arrow"
-        )
-
-        card.grid(
-            row=0,
-            column=column,
-            padx=5,
-            pady=5,
-            sticky="nsew"
-        )
-
-        # A small colored top accent gives the cards a
-        # commercial dashboard feel without adding noise.
-        accent_strip = ctk.CTkFrame(
-            card,
-            height=4,
-            corner_radius=2,
-            fg_color=data["accent"]
-        )
-
-        accent_strip.pack(
-            fill="x",
-            padx=20,
-            pady=(14, 0)
-        )
-
-        top = ctk.CTkFrame(
-            card,
-            fg_color="transparent"
-        )
-
-        top.pack(
-            fill="x",
-            padx=20,
-            pady=(13, 0)
-        )
-
-        icon = ctk.CTkFrame(
-            top,
-            width=42,
-            height=42,
-            corner_radius=12,
-            fg_color=data["soft"]
-        )
-
-        icon.pack(
-            side="left"
-        )
-
-        icon.pack_propagate(False)
-
-        icon_label = ctk.CTkLabel(
-            icon,
-            text=data["icon"],
-            text_color=data["accent"],
-            font=ctk.CTkFont(
-                size=16,
-                weight="bold"
-            )
-        )
-
-        icon_label.place(
-            relx=0.5,
-            rely=0.5,
-            anchor="center"
-        )
-
-        title = ctk.CTkLabel(
-            top,
-            text=data["title"].upper(),
-            text_color=self.MUTED_TEXT,
-            font=ctk.CTkFont(
-                size=9,
-                weight="bold"
-            )
-        )
-
-        title.pack(
-            side="left",
-            padx=11,
-            pady=(1, 0)
-        )
-
-        # Click hint for cards that navigate.
-        if data["action"]:
-
-            arrow = ctk.CTkLabel(
-                top,
-                text="↗",
-                text_color=self.MUTED_TEXT,
-                font=ctk.CTkFont(
-                    size=14,
-                    weight="bold"
-                )
-            )
-
-            arrow.pack(
-                side="right"
-            )
-
-        value_label = ctk.CTkLabel(
-            card,
-            text="0",
-            text_color=self.TEXT_DARK,
-            font=ctk.CTkFont(
-                size=30,
-                weight="bold"
-            )
-        )
-
-        value_label.pack(
-            anchor="w",
-            padx=20,
-            pady=(13, 0)
-        )
-
-        caption = ctk.CTkLabel(
-            card,
-            text=data["caption"],
-            text_color=self.SECONDARY_TEXT,
-            font=ctk.CTkFont(
-                size=10
-            )
-        )
-
-        caption.pack(
-            anchor="w",
-            padx=20,
-            pady=(1, 18)
-        )
-
-        self.kpi_value_labels[data["key"]] = (
-            value_label,
-            int(data["value"])
-        )
-
-        self.kpi_sub_labels[data["key"]] = caption
-
-        if data["action"]:
-
-            self.bind_recursive(
-                card,
-                "<Button-1>",
-                lambda event, command=data["action"]: command()
-            )
-
-            self.bind_recursive(
-                card,
-                "<Enter>",
-                lambda event, widget=card, color="#F8FBFF":
-                    widget.configure(fg_color=color)
-            )
-
-            self.bind_recursive(
-                card,
-                "<Leave>",
-                lambda event, widget=card:
-                    widget.configure(fg_color=self.CARD)
-            )
-
-    # =========================================================
-    # ANALYTICS SECTION
-    # =========================================================
+    def create_kpi_cardundefined
 
     def create_analytics_section(self):
 
@@ -954,8 +497,8 @@ class DashboardFrame(ctk.CTkFrame):
     # PATIENT / APPOINTMENT FLOW
     # =========================================================
 
-    def create_flow_card(self, parent):
 
+    def create_flow_card(self, parent):
         card = ctk.CTkFrame(
             parent,
             fg_color=self.CARD,
@@ -963,11 +506,10 @@ class DashboardFrame(ctk.CTkFrame):
             border_width=1,
             border_color=self.BORDER
         )
-
         card.grid(
             row=0,
             column=0,
-            padx=(0, 6),
+            padx=(0, 7),
             sticky="nsew"
         )
 
@@ -975,103 +517,58 @@ class DashboardFrame(ctk.CTkFrame):
             card,
             fg_color="transparent"
         )
-
-        header.pack(
-            fill="x",
-            padx=22,
-            pady=(20, 0)
-        )
+        header.pack(fill="x", padx=22, pady=(20, 0))
 
         title_area = ctk.CTkFrame(
             header,
             fg_color="transparent"
         )
+        title_area.pack(side="left")
 
-        title_area.pack(
-            side="left"
-        )
-
-        title = ctk.CTkLabel(
+        ctk.CTkLabel(
             title_area,
             text="Patient & Appointment Flow",
             text_color=self.TEXT_DARK,
-            font=ctk.CTkFont(
-                size=16,
-                weight="bold"
-            )
-        )
+            font=ctk.CTkFont(size=16, weight="bold")
+        ).pack(anchor="w")
 
-        title.pack(
-            anchor="w"
-        )
-
-        subtitle = ctk.CTkLabel(
+        ctk.CTkLabel(
             title_area,
-            text="Today's operational volume",
+            text="Today's operational activity",
             text_color=self.SECONDARY_TEXT,
-            font=ctk.CTkFont(
-                size=10
-            )
-        )
-
-        subtitle.pack(
-            anchor="w",
-            pady=(3, 0)
-        )
+            font=ctk.CTkFont(size=9)
+        ).pack(anchor="w", pady=(3, 0))
 
         legend = ctk.CTkFrame(
             header,
             fg_color="transparent"
         )
+        legend.pack(side="right")
 
-        legend.pack(
-            side="right",
-            anchor="n"
-        )
-
-        self.create_legend_item(
-            legend,
-            "Patients",
-            self.PRIMARY
-        )
-
-        self.create_legend_item(
-            legend,
-            "Appointments",
-            self.PURPLE
-        )
-
-        self.create_legend_item(
-            legend,
-            "Pending",
-            self.ORANGE
-        )
+        self.create_legend_item(legend, "Patients", self.PRIMARY)
+        self.create_legend_item(legend, "Appointments", self.PURPLE)
+        self.create_legend_item(legend, "Pending", self.ORANGE)
 
         self.flow_canvas = ctk.CTkCanvas(
             card,
-            width=640,
-            height=245,
+            width=650,
+            height=255,
             bg=self.CARD,
             highlightthickness=0,
             bd=0
         )
-
         self.flow_canvas.pack(
             fill="x",
             expand=True,
             padx=16,
-            pady=(12, 18)
+            pady=(10, 18)
         )
 
         self.flow_canvas.bind(
             "<Configure>",
             lambda event: self.draw_flow_chart()
         )
-
-        self.flow_canvas.after(
-            40,
-            self.draw_flow_chart
-        )
+        self.flow_canvas.after(40, self.draw_flow_chart)
 
     def create_legend_item(
         self,
@@ -1117,68 +614,37 @@ class DashboardFrame(ctk.CTkFrame):
             padx=(3, 0)
         )
 
-    def draw_flow_chart(self):
 
+    def draw_flow_chart(self):
         if not self.flow_canvas:
             return
 
         canvas = self.flow_canvas
-
         try:
-            width = max(
-                canvas.winfo_width(),
-                500
-            )
-
-            height = max(
-                canvas.winfo_height(),
-                220
-            )
-
+            width = max(canvas.winfo_width(), 500)
+            height = max(canvas.winfo_height(), 220)
         except Exception:
             return
 
         canvas.delete("all")
 
         values = [
-            (
-                "Patients",
-                int(self.metrics.get("today_patients", 0)),
-                self.PRIMARY
-            ),
-            (
-                "Appointments",
-                int(self.metrics.get("today_appointments", 0)),
-                self.PURPLE
-            ),
-            (
-                "Pending",
-                int(self.metrics.get("pending_appointments", 0)),
-                self.ORANGE
-            )
+            ("Patients", int(self.metrics.get("today_patients", 0)), self.PRIMARY),
+            ("Appointments", int(self.metrics.get("today_appointments", 0)), self.PURPLE),
+            ("Pending", int(self.metrics.get("pending_appointments", 0)), self.ORANGE)
         ]
 
-        maximum = max(
-            [item[1] for item in values] + [1]
-        )
-
-        left = 45
+        maximum = max([item[1] for item in values] + [1])
+        left = 50
         right = width - 25
         top = 24
-        bottom = height - 42
-
+        bottom = height - 44
         plot_width = right - left
         plot_height = bottom - top
 
-        # Horizontal guide lines.
         for step in range(5):
-
             ratio = step / 4
-
-            y = bottom - (
-                plot_height * ratio
-            )
-
+            y = bottom - plot_height * ratio
             canvas.create_line(
                 left,
                 y,
@@ -1187,53 +653,31 @@ class DashboardFrame(ctk.CTkFrame):
                 fill=self.GRID,
                 width=1
             )
-
-            tick = int(
-                maximum * ratio
-            )
-
             canvas.create_text(
-                left - 10,
+                left - 12,
                 y,
-                text=str(tick),
+                text=str(int(maximum * ratio)),
                 fill=self.MUTED_TEXT,
                 font=("Segoe UI", 8),
                 anchor="e"
             )
 
         group_width = plot_width / 3
-
-        bar_width = min(
-            62,
-            group_width * 0.35
-        )
-
+        bar_width = min(70, group_width * 0.38)
         self.flow_bars = []
 
         for index, (label, value, color) in enumerate(values):
-
-            center_x = (
-                left
-                + group_width * index
-                + group_width / 2
-            )
-
-            target_height = (
-                0
-                if maximum <= 0
-                else (value / maximum) * plot_height
-            )
-
+            center_x = left + group_width * index + group_width / 2
+            target_height = (value / maximum) * plot_height if maximum else 0
             x1 = center_x - bar_width / 2
             x2 = center_x + bar_width / 2
 
-            # Track
             canvas.create_rectangle(
                 x1,
                 top,
                 x2,
                 bottom,
-                fill="#F3F6FA",
+                fill="#F7F9FC",
                 outline=""
             )
 
@@ -1248,31 +692,28 @@ class DashboardFrame(ctk.CTkFrame):
 
             value_text = canvas.create_text(
                 center_x,
-                bottom - target_height - 12,
+                bottom - target_height - 14,
                 text=str(value),
                 fill=self.TEXT_DARK,
-                font=("Segoe UI", 10, "bold")
+                font=("Segoe UI", 11, "bold")
             )
 
             canvas.create_text(
                 center_x,
-                bottom + 19,
+                bottom + 20,
                 text=label,
                 fill=self.SECONDARY_TEXT,
                 font=("Segoe UI", 9)
             )
 
-            self.flow_bars.append(
-                {
-                    "bar": bar,
-                    "value_text": value_text,
-                    "x1": x1,
-                    "x2": x2,
-                    "bottom": bottom,
-                    "target_height": target_height,
-                    "target_y": bottom - target_height - 12
-                }
-            )
+            self.flow_bars.append({
+                "bar": bar,
+                "value_text": value_text,
+                "x1": x1,
+                "x2": x2,
+                "bottom": bottom,
+                "target_height": target_height
+            })
 
         self.animate_flow_chart()
 
@@ -1331,8 +772,8 @@ class DashboardFrame(ctk.CTkFrame):
     # BED OCCUPANCY
     # =========================================================
 
-    def create_occupancy_card(self, parent):
 
+    def create_occupancy_card(self, parent):
         card = ctk.CTkFrame(
             parent,
             fg_color=self.CARD,
@@ -1340,11 +781,10 @@ class DashboardFrame(ctk.CTkFrame):
             border_width=1,
             border_color=self.BORDER
         )
-
         card.grid(
             row=0,
             column=1,
-            padx=(6, 0),
+            padx=(7, 0),
             sticky="nsew"
         )
 
@@ -1352,137 +792,83 @@ class DashboardFrame(ctk.CTkFrame):
             card,
             fg_color="transparent"
         )
+        header.pack(fill="x", padx=22, pady=(20, 0))
 
-        header.pack(
-            fill="x",
-            padx=22,
-            pady=(20, 0)
-        )
-
-        title = ctk.CTkLabel(
+        ctk.CTkLabel(
             header,
             text="Bed Occupancy",
             text_color=self.TEXT_DARK,
-            font=ctk.CTkFont(
-                size=16,
-                weight="bold"
-            )
-        )
+            font=ctk.CTkFont(size=16, weight="bold")
+        ).pack(side="left")
 
-        title.pack(
-            side="left"
-        )
-
-        live = ctk.CTkLabel(
+        ctk.CTkLabel(
             header,
             text="LIVE",
             text_color=self.GREEN_DARK,
             fg_color=self.GREEN_SOFT,
             corner_radius=6,
-            font=ctk.CTkFont(
-                size=8,
-                weight="bold"
-            )
-        )
+            font=ctk.CTkFont(size=8, weight="bold")
+        ).pack(side="right")
 
-        live.pack(
-            side="right",
-            padx=0,
-            pady=1
-        )
+        ctk.CTkLabel(
+            card,
+            text="Current capacity utilization",
+            text_color=self.SECONDARY_TEXT,
+            font=ctk.CTkFont(size=9)
+        ).pack(anchor="w", padx=22, pady=(3, 0))
 
         self.occupancy_canvas = ctk.CTkCanvas(
             card,
-            width=230,
-            height=180,
+            width=240,
+            height=190,
             bg=self.CARD,
             highlightthickness=0,
             bd=0
         )
-
-        self.occupancy_canvas.pack(
-            pady=(8, 0)
-        )
-
-        self.occupancy_canvas.bind(
-            "<Configure>",
-            lambda event: self.draw_occupancy()
-        )
+        self.occupancy_canvas.pack(pady=(4, 0))
 
         percentage = self.get_occupancy_percentage()
 
         summary = ctk.CTkFrame(
             card,
-            fg_color="transparent"
+            fg_color="#F8FAFD",
+            corner_radius=11
         )
+        summary.pack(fill="x", padx=20, pady=(0, 20))
 
-        summary.pack(
-            fill="x",
-            padx=22,
-            pady=(2, 20)
-        )
+        left = ctk.CTkFrame(summary, fg_color="transparent")
+        left.pack(side="left", padx=12, pady=10)
 
-        left = ctk.CTkFrame(
-            summary,
-            fg_color="transparent"
-        )
+        occupied = int(self.metrics.get("occupied_beds", 0))
+        total = int(self.metrics.get("total_beds", 0))
+        available = max(total - occupied, 0)
 
-        left.pack(
-            side="left"
-        )
-
-        occupied_label = ctk.CTkLabel(
+        ctk.CTkLabel(
             left,
-            text=f"{self.metrics['occupied_beds']} occupied",
+            text=f"{occupied} occupied",
             text_color=self.TEXT_DARK,
-            font=ctk.CTkFont(
-                size=11,
-                weight="bold"
-            )
-        )
+            font=ctk.CTkFont(size=10, weight="bold")
+        ).pack(anchor="w")
 
-        occupied_label.pack(
-            anchor="w"
-        )
-
-        available = max(
-            0,
-            int(self.metrics["total_beds"])
-            - int(self.metrics["occupied_beds"])
-        )
-
-        available_label = ctk.CTkLabel(
+        ctk.CTkLabel(
             left,
             text=f"{available} available",
             text_color=self.SECONDARY_TEXT,
-            font=ctk.CTkFont(
-                size=9
-            )
-        )
+            font=ctk.CTkFont(size=8)
+        ).pack(anchor="w", pady=(2, 0))
 
-        available_label.pack(
-            anchor="w",
-            pady=(2, 0)
-        )
-
-        percentage_label = ctk.CTkLabel(
+        ctk.CTkLabel(
             summary,
             text=f"{percentage:.0f}%",
             text_color=self.GREEN_DARK,
-            font=ctk.CTkFont(
-                size=22,
-                weight="bold"
-            )
-        )
+            font=ctk.CTkFont(size=21, weight="bold")
+        ).pack(side="right", padx=14)
 
-        percentage_label.pack(
-            side="right"
+        self.occupancy_canvas.bind(
+            "<Configure>",
+            lambda event: self.draw_occupancy()
         )
-
-        self.after(
-            80,
-            self.draw_occupancy
-        )
+        self.after(80, self.draw_occupancy)
 
     def get_occupancy_percentage(self):
 
@@ -1681,18 +1067,17 @@ class DashboardFrame(ctk.CTkFrame):
     # WAITING TIME
     # =========================================================
 
-    def create_waiting_card(self, parent):
 
+    def create_waiting_card(self, parent):
         card = ctk.CTkFrame(
             parent,
             fg_color=self.CARD_DARK,
             corner_radius=18
         )
-
         card.grid(
             row=0,
             column=0,
-            padx=(0, 6),
+            padx=(0, 7),
             sticky="nsew"
         )
 
@@ -1700,213 +1085,95 @@ class DashboardFrame(ctk.CTkFrame):
             card,
             fg_color="transparent"
         )
+        top.pack(fill="x", padx=22, pady=(20, 0))
 
-        top.pack(
-            fill="x",
-            padx=22,
-            pady=(20, 0)
-        )
+        title_area = ctk.CTkFrame(top, fg_color="transparent")
+        title_area.pack(side="left")
 
-        title_area = ctk.CTkFrame(
-            top,
-            fg_color="transparent"
-        )
-
-        title_area.pack(
-            side="left"
-        )
-
-        title = ctk.CTkLabel(
+        ctk.CTkLabel(
             title_area,
             text="Average Waiting Time",
             text_color=self.WHITE,
-            font=ctk.CTkFont(
-                size=15,
-                weight="bold"
-            )
-        )
+            font=ctk.CTkFont(size=15, weight="bold")
+        ).pack(anchor="w")
 
-        title.pack(
-            anchor="w"
-        )
-
-        subtitle = ctk.CTkLabel(
+        ctk.CTkLabel(
             title_area,
             text="Check-in → consultation",
             text_color="#9CA3AF",
-            font=ctk.CTkFont(
-                size=9
-            )
-        )
+            font=ctk.CTkFont(size=9)
+        ).pack(anchor="w", pady=(3, 0))
 
-        subtitle.pack(
-            anchor="w",
-            pady=(3, 0)
-        )
-
-        badge = ctk.CTkLabel(
+        ctk.CTkLabel(
             top,
             text="Q02",
             text_color="#BFDBFE",
             fg_color="#1E3A8A",
             corner_radius=7,
-            font=ctk.CTkFont(
-                size=8,
-                weight="bold"
-            )
-        )
-
-        badge.pack(
-            side="right",
-            padx=0,
-            pady=2
-        )
+            font=ctk.CTkFont(size=8, weight="bold")
+        ).pack(side="right")
 
         self.wait_value_label = ctk.CTkLabel(
             card,
             text="0 min",
             text_color=self.WHITE,
-            font=ctk.CTkFont(
-                size=31,
-                weight="bold"
-            )
+            font=ctk.CTkFont(size=34, weight="bold")
         )
+        self.wait_value_label.pack(anchor="w", padx=22, pady=(24, 0))
 
-        self.wait_value_label.pack(
-            anchor="w",
-            padx=22,
-            pady=(22, 0)
-        )
-
-        neutral = ctk.CTkLabel(
+        ctk.CTkLabel(
             card,
             text="Measured from recorded check-in to consultation start.",
             text_color="#9CA3AF",
-            font=ctk.CTkFont(
-                size=9
-            )
-        )
+            font=ctk.CTkFont(size=9)
+        ).pack(anchor="w", padx=22, pady=(3, 19))
 
-        neutral.pack(
-            anchor="w",
-            padx=22,
-            pady=(3, 18)
-        )
-
-        # Visual scale. This is deliberately a neutral
-        # measurement scale, not an invented clinical target.
-        scale = ctk.CTkFrame(
-            card,
-            fg_color="transparent"
-        )
-
-        scale.pack(
-            fill="x",
-            padx=22,
-            pady=(0, 18)
-        )
-
-        scale.grid_columnconfigure(
-            0,
-            weight=1
-        )
+        scale = ctk.CTkFrame(card, fg_color="transparent")
+        scale.pack(fill="x", padx=22, pady=(0, 22))
+        scale.grid_columnconfigure(0, weight=1)
 
         track = ctk.CTkFrame(
             scale,
-            height=7,
+            height=8,
             corner_radius=4,
             fg_color="#273449"
         )
+        track.grid(row=0, column=0, sticky="ew")
 
-        track.grid(
-            row=0,
-            column=0,
-            sticky="ew"
-        )
+        value = max(int(self.metrics.get("average_waiting_seconds", 0)), 0)
+        ratio = min(value / (30 * 60), 1)
 
-        value = max(
-            0,
-            int(
-                self.metrics.get(
-                    "average_waiting_seconds",
-                    0
-                )
-            )
-        )
-
-        # The bar represents the measured value on a
-        # 30-minute visual window. It is not a quality target.
-        ratio = min(
-            value / (30 * 60),
-            1
-        )
-
-        fill = ctk.CTkFrame(
+        ctk.CTkFrame(
             track,
-            height=7,
+            height=8,
             corner_radius=4,
             fg_color=self.PRIMARY
-        )
-
-        fill.place(
+        ).place(
             relx=0,
             rely=0,
             relwidth=ratio,
             relheight=1
         )
 
-        labels = ctk.CTkFrame(
-            scale,
-            fg_color="transparent"
-        )
+        labels = ctk.CTkFrame(scale, fg_color="transparent")
+        labels.grid(row=1, column=0, sticky="ew", pady=(7, 0))
+        labels.grid_columnconfigure(0, weight=1)
+        labels.grid_columnconfigure(1, weight=1)
+        labels.grid_columnconfigure(2, weight=1)
 
-        labels.grid(
-            row=1,
-            column=0,
-            sticky="ew",
-            pady=(6, 0)
-        )
-
-        labels.grid_columnconfigure(
-            0,
-            weight=1
-        )
-
-        labels.grid_columnconfigure(
-            1,
-            weight=1
-        )
-
-        labels.grid_columnconfigure(
-            2,
-            weight=1
-        )
-
-        for column, text in enumerate(
-            ("0 min", "15 min", "30+ min")
-        ):
-
-            label = ctk.CTkLabel(
+        for column, label_text in enumerate(("0 min", "15 min", "30+ min")):
+            ctk.CTkLabel(
                 labels,
-                text=text,
+                text=label_text,
                 text_color="#64748B",
-                font=ctk.CTkFont(
-                    size=8
-                )
-            )
-
-            label.grid(
+                font=ctk.CTkFont(size=8)
+            ).grid(
                 row=0,
                 column=column,
-                sticky="w" if column == 0 else (
-                    "e" if column == 2 else "ew"
-                )
+                sticky="w" if column == 0 else ("e" if column == 2 else "ew")
             )
 
-        self.after(
-            140,
-            self.animate_waiting_time
-        )
+        self.after(140, self.animate_waiting_time)
 
     def animate_waiting_time(self):
 
@@ -1961,8 +1228,8 @@ class DashboardFrame(ctk.CTkFrame):
     # QUICK ACTIONS
     # =========================================================
 
-    def create_quick_actions_card(self, parent):
 
+    def create_quick_actions_card(self, parent):
         card = ctk.CTkFrame(
             parent,
             fg_color=self.CARD,
@@ -1970,222 +1237,47 @@ class DashboardFrame(ctk.CTkFrame):
             border_width=1,
             border_color=self.BORDER
         )
-
         card.grid(
             row=0,
             column=1,
-            padx=(6, 0),
+            padx=(7, 0),
             sticky="nsew"
         )
 
-        header = ctk.CTkFrame(
-            card,
-            fg_color="transparent"
-        )
+        header = ctk.CTkFrame(card, fg_color="transparent")
+        header.pack(fill="x", padx=22, pady=(20, 5))
 
-        header.pack(
-            fill="x",
-            padx=22,
-            pady=(20, 4)
-        )
-
-        title = ctk.CTkLabel(
+        ctk.CTkLabel(
             header,
             text="Quick Actions",
             text_color=self.TEXT_DARK,
-            font=ctk.CTkFont(
-                size=15,
-                weight="bold"
-            )
-        )
+            font=ctk.CTkFont(size=15, weight="bold")
+        ).pack(side="left")
 
-        title.pack(
-            side="left"
-        )
-
-        hint = ctk.CTkLabel(
+        ctk.CTkLabel(
             header,
-            text="Open a workspace",
+            text="Shortcuts",
             text_color=self.MUTED_TEXT,
-            font=ctk.CTkFont(
-                size=9
-            )
-        )
+            font=ctk.CTkFont(size=9)
+        ).pack(side="right")
 
-        hint.pack(
-            side="right"
-        )
-
-        actions = ctk.CTkFrame(
-            card,
-            fg_color="transparent"
-        )
-
-        actions.pack(
-            fill="x",
-            padx=16,
-            pady=(7, 18)
-        )
+        actions = ctk.CTkFrame(card, fg_color="transparent")
+        actions.pack(fill="x", padx=16, pady=(5, 18))
 
         for column in range(4):
-
-            actions.grid_columnconfigure(
-                column,
-                weight=1,
-                uniform="quick"
-            )
+            actions.grid_columnconfigure(column, weight=1, uniform="quick")
 
         items = [
-            (
-                "P",
-                "Patients",
-                "Manage records",
-                self.PRIMARY,
-                self.PRIMARY_SOFT,
-                self.go_patients
-            ),
-            (
-                "A",
-                "Appointments",
-                "View schedule",
-                self.PURPLE,
-                self.PURPLE_SOFT,
-                self.go_appointments
-            ),
-            (
-                "R",
-                "Reports",
-                "View analytics",
-                self.CYAN,
-                self.CYAN_SOFT,
-                self.go_reports
-            ),
-            (
-                "↻",
-                "Refresh",
-                "Update metrics",
-                self.GREEN,
-                self.GREEN_SOFT,
-                self.refresh_dashboard
-            )
+            ("♙", "Patients", "Records", self.PRIMARY, self.PRIMARY_SOFT, self.go_patients),
+            ("▦", "Appointments", "Schedule", self.PURPLE, self.PURPLE_SOFT, self.go_appointments),
+            ("▤", "Reports", "Analytics", self.CYAN, self.CYAN_SOFT, self.go_reports),
+            ("↻", "Refresh", "Metrics", self.GREEN, self.GREEN_SOFT, self.refresh_dashboard)
         ]
 
         for column, item in enumerate(items):
+            self.create_action_tile(actions, item, column)
 
-            self.create_action_tile(
-                actions,
-                item,
-                column
-            )
-
-    def create_action_tile(
-        self,
-        parent,
-        item,
-        column
-    ):
-
-        icon_text, title, subtitle, accent, soft, command = item
-
-        tile = ctk.CTkFrame(
-            parent,
-            fg_color=self.CARD_SOFT,
-            corner_radius=13,
-            border_width=1,
-            border_color="#EEF1F5",
-            cursor="hand2"
-        )
-
-        tile.grid(
-            row=0,
-            column=column,
-            padx=4,
-            pady=4,
-            sticky="nsew"
-        )
-
-        icon = ctk.CTkFrame(
-            tile,
-            width=35,
-            height=35,
-            corner_radius=10,
-            fg_color=soft
-        )
-
-        icon.pack(
-            pady=(12, 8)
-        )
-
-        icon.pack_propagate(False)
-
-        icon_label = ctk.CTkLabel(
-            icon,
-            text=icon_text,
-            text_color=accent,
-            font=ctk.CTkFont(
-                size=13,
-                weight="bold"
-            )
-        )
-
-        icon_label.place(
-            relx=0.5,
-            rely=0.5,
-            anchor="center"
-        )
-
-        title_label = ctk.CTkLabel(
-            tile,
-            text=title,
-            text_color=self.TEXT_DARK,
-            font=ctk.CTkFont(
-                size=10,
-                weight="bold"
-            )
-        )
-
-        title_label.pack()
-
-        subtitle_label = ctk.CTkLabel(
-            tile,
-            text=subtitle,
-            text_color=self.MUTED_TEXT,
-            font=ctk.CTkFont(
-                size=8
-            )
-        )
-
-        subtitle_label.pack(
-            pady=(2, 12)
-        )
-
-        self.bind_recursive(
-            tile,
-            "<Button-1>",
-            lambda event, action=command: action()
-        )
-
-        self.bind_recursive(
-            tile,
-            "<Enter>",
-            lambda event, widget=tile:
-                widget.configure(
-                    fg_color="#F1F5FA"
-                )
-        )
-
-        self.bind_recursive(
-            tile,
-            "<Leave>",
-            lambda event, widget=tile:
-                widget.configure(
-                    fg_color=self.CARD_SOFT
-                )
-        )
-
-    # =========================================================
-    # QUALITY / Q02 SECTION
-    # =========================================================
+    def create_action_tileundefined
 
     def create_quality_section(self):
 
