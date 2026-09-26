@@ -229,7 +229,7 @@ class PerformanceFrame(HospitalFrame):
 
         run_button = ctk.CTkButton(
             button_frame,
-            text="Run Performance Test",
+            text="▶  Run Performance Test",
             height=40,
             command=self.run_performance_test
         )
