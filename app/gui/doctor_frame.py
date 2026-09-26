@@ -8,11 +8,19 @@ from app.services.doctor_service import DoctorService
 
 class DoctorFrame(ctk.CTkFrame):
 
+    BACKGROUND = "#F6F8FC"
+    CARD = "#FFFFFF"
+    BORDER = "#E6EAF0"
+    TEXT_DARK = "#0F172A"
+    SECONDARY = "#64748B"
+    PRIMARY = "#2563EB"
+    PRIMARY_HOVER = "#1D4ED8"
+
     def __init__(self, parent):
         super().__init__(
             parent,
             corner_radius=0,
-            fg_color="#F4F7FB"
+            fg_color=self.BACKGROUND
         )
 
         self.service = DoctorService()
@@ -40,16 +48,16 @@ class DoctorFrame(ctk.CTkFrame):
         title = ctk.CTkLabel(
             header,
             text="Doctor Management",
-            font=ctk.CTkFont(size=30, weight="bold"),
-            text_color="#172033"
+            font=ctk.CTkFont(size=28, weight="bold"),
+            text_color=self.TEXT_DARK
         )
         title.pack(anchor="w")
 
         subtitle = ctk.CTkLabel(
             header,
             text="Manage doctors, specializations and availability",
-            font=ctk.CTkFont(size=13),
-            text_color="#6B7280"
+            font=ctk.CTkFont(size=11),
+            text_color=self.SECONDARY
         )
         subtitle.pack(
             anchor="w",
@@ -62,8 +70,10 @@ class DoctorFrame(ctk.CTkFrame):
 
         form_card = ctk.CTkFrame(
             self,
-            corner_radius=15,
-            fg_color="white"
+            corner_radius=18,
+            fg_color=self.CARD,
+            border_width=1,
+            border_color=self.BORDER
         )
         form_card.pack(
             fill="x",
@@ -269,8 +279,10 @@ class DoctorFrame(ctk.CTkFrame):
 
         table_card = ctk.CTkFrame(
             self,
-            corner_radius=15,
-            fg_color="white"
+            corner_radius=18,
+            fg_color=self.CARD,
+            border_width=1,
+            border_color=self.BORDER
         )
 
         table_card.pack(
