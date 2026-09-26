@@ -2,6 +2,7 @@ import customtkinter as ctk
 from tkinter import messagebox
 
 from app.services.auth_service import AuthService
+from app.database.database import initialize_database
 
 
 class LoginWindow(ctk.CTk):
@@ -9,6 +10,7 @@ class LoginWindow(ctk.CTk):
     def __init__(self):
         super().__init__()
 
+        initialize_database()
         self.auth_service = AuthService()
 
         self.title("Hospital Management System - Login")
