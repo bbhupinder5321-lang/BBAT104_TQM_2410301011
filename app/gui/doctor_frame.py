@@ -518,7 +518,9 @@ class DoctorFrame(HospitalFrame):
                 self.status_combo.get()
             )
 
-            messagebox.showinfo(
+            self.show_toast("Operation completed")
+
+        messagebox.showinfo(
                 "Success",
                 f"Doctor added successfully.\nDoctor ID: {doctor_id}"
             )
@@ -549,7 +551,9 @@ class DoctorFrame(HospitalFrame):
                 self.status_combo.get()
             )
 
-            messagebox.showinfo(
+            self.show_toast("Operation completed")
+
+        messagebox.showinfo(
                 "Success",
                 "Doctor updated successfully."
             )
@@ -584,7 +588,9 @@ class DoctorFrame(HospitalFrame):
                 self.selected_doctor_id
             )
 
-            messagebox.showinfo(
+            self.show_toast("Operation completed")
+
+        messagebox.showinfo(
                 "Success",
                 "Doctor deleted successfully."
             )
