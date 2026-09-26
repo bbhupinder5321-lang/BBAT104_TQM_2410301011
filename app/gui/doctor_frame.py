@@ -221,7 +221,7 @@ class DoctorFrame(HospitalFrame):
 
         add_button = ctk.CTkButton(
             button_frame,
-            text="Add Doctor",
+            text="＋  Add Doctor",
             width=115,
             height=36,
             command=self.add_doctor
@@ -264,7 +264,7 @@ class DoctorFrame(HospitalFrame):
 
         clear_button = ctk.CTkButton(
             button_frame,
-            text="Clear",
+            text="↺  Clear",
             width=100,
             height=36,
             fg_color="#E5E7EB",
