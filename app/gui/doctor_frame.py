@@ -3,10 +3,12 @@ from tkinter import ttk, messagebox
 
 import customtkinter as ctk
 
+from app.gui.ui_kit import HospitalFrame
+
 from app.services.doctor_service import DoctorService
 
 
-class DoctorFrame(ctk.CTkFrame):
+class DoctorFrame(HospitalFrame):
 
     BACKGROUND = "#F6F8FC"
     CARD = "#FFFFFF"
