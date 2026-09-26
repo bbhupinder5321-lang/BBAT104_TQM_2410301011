@@ -285,7 +285,7 @@ class AppointmentFrame(HospitalFrame):
 
         add_button = ctk.CTkButton(
             button_frame,
-            text="Book Appointment",
+            text="＋  Book Appointment",
             width=135,
             height=36,
             command=self.add_appointment
@@ -313,7 +313,7 @@ class AppointmentFrame(HospitalFrame):
 
         cancel_button = ctk.CTkButton(
             button_frame,
-            text="Cancel Appointment",
+            text="×  Cancel Appointment",
             width=145,
             height=36,
             fg_color="#B42318",
@@ -358,7 +358,7 @@ class AppointmentFrame(HospitalFrame):
 
         clear_button = ctk.CTkButton(
             button_frame,
-            text="Clear",
+            text="↺  Clear",
             width=90,
             height=36,
             fg_color="#E5E7EB",
