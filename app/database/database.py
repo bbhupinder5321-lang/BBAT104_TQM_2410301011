@@ -94,8 +94,14 @@ def initialize_database():
         CREATE INDEX IF NOT EXISTS idx_patients_phone
             ON patients(phone);
 
+        CREATE INDEX IF NOT EXISTS idx_patients_registration_date
+            ON patients(registration_date);
+
         CREATE INDEX IF NOT EXISTS idx_appointments_date
             ON appointments(appointment_date);
+
+        CREATE INDEX IF NOT EXISTS idx_appointments_date_status
+            ON appointments(appointment_date, status);
 
         CREATE INDEX IF NOT EXISTS idx_appointments_patient
             ON appointments(patient_id);
@@ -103,8 +109,20 @@ def initialize_database():
         CREATE INDEX IF NOT EXISTS idx_appointments_doctor
             ON appointments(doctor_id);
 
+        CREATE INDEX IF NOT EXISTS idx_appointments_waiting_times
+            ON appointments(check_in_time, consultation_start_time);
+
         CREATE INDEX IF NOT EXISTS idx_bills_patient
             ON bills(patient_id);
+
+        CREATE INDEX IF NOT EXISTS idx_bills_date
+            ON bills(bill_date);
+
+        CREATE INDEX IF NOT EXISTS idx_doctors_specialization
+            ON doctors(specialization);
+
+        CREATE INDEX IF NOT EXISTS idx_doctors_status
+            ON doctors(status);
     """)
 
     # Create the default administrator account
