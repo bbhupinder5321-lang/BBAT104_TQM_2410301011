@@ -90,7 +90,7 @@ class AppointmentFrame(HospitalFrame):
         )
 
         # -----------------------------------------------------
-        # Form Card
+        # Live operations snapshot\n        snapshot = ctk.CTkFrame(self, fg_color="transparent")\n        snapshot.pack(fill="x", padx=30, pady=(0, 15))\n        for column in range(4):\n            snapshot.grid_columnconfigure(column, weight=1, uniform="uxstats")\n        self.ux_stat_labels = {}\n        card = ctk.CTkFrame(snapshot, fg_color=self.CARD, corner_radius=15, border_width=1, border_color=self.BORDER)\n        card.grid(row=0, column=0, padx=(0 if 0==0 else 5, 5 if 0<3 else 0), sticky="ew")\n        ctk.CTkLabel(card, text="◷  TOTAL", text_color=self.SECONDARY, font=ctk.CTkFont(size=8, weight="bold")).pack(anchor="w", padx=13, pady=(11, 3))\n        self.ux_stat_labels["total"] = ctk.CTkLabel(card, text="0", text_color=self.TEXT_DARK, font=ctk.CTkFont(size=20, weight="bold"))\n        self.ux_stat_labels["total"].pack(anchor="w", padx=13, pady=(0, 11))\n        card = ctk.CTkFrame(snapshot, fg_color=self.CARD, corner_radius=15, border_width=1, border_color=self.BORDER)\n        card.grid(row=0, column=1, padx=(0 if 1==0 else 5, 5 if 1<3 else 0), sticky="ew")\n        ctk.CTkLabel(card, text="◷  SCHEDULED", text_color=self.SECONDARY, font=ctk.CTkFont(size=8, weight="bold")).pack(anchor="w", padx=13, pady=(11, 3))\n        self.ux_stat_labels["scheduled"] = ctk.CTkLabel(card, text="0", text_color=self.TEXT_DARK, font=ctk.CTkFont(size=20, weight="bold"))\n        self.ux_stat_labels["scheduled"].pack(anchor="w", padx=13, pady=(0, 11))\n        card = ctk.CTkFrame(snapshot, fg_color=self.CARD, corner_radius=15, border_width=1, border_color=self.BORDER)\n        card.grid(row=0, column=2, padx=(0 if 2==0 else 5, 5 if 2<3 else 0), sticky="ew")\n        ctk.CTkLabel(card, text="◷  COMPLETED", text_color=self.SECONDARY, font=ctk.CTkFont(size=8, weight="bold")).pack(anchor="w", padx=13, pady=(11, 3))\n        self.ux_stat_labels["completed"] = ctk.CTkLabel(card, text="0", text_color=self.TEXT_DARK, font=ctk.CTkFont(size=20, weight="bold"))\n        self.ux_stat_labels["completed"].pack(anchor="w", padx=13, pady=(0, 11))\n        card = ctk.CTkFrame(snapshot, fg_color=self.CARD, corner_radius=15, border_width=1, border_color=self.BORDER)\n        card.grid(row=0, column=3, padx=(0 if 3==0 else 5, 5 if 3<3 else 0), sticky="ew")\n        ctk.CTkLabel(card, text="◷  WAITING", text_color=self.SECONDARY, font=ctk.CTkFont(size=8, weight="bold")).pack(anchor="w", padx=13, pady=(11, 3))\n        self.ux_stat_labels["waiting"] = ctk.CTkLabel(card, text="0", text_color=self.TEXT_DARK, font=ctk.CTkFont(size=20, weight="bold"))\n        self.ux_stat_labels["waiting"].pack(anchor="w", padx=13, pady=(0, 11))\n\n        # Form Card
         # -----------------------------------------------------
 
         form_card = ctk.CTkFrame(
@@ -601,7 +601,7 @@ class AppointmentFrame(HospitalFrame):
             font=("Segoe UI", 10, "bold")
         )
 
-    def create_label(
+    def update_ux_stats(self):\n        try:\n            items = self.tree.get_children()\n            self.ux_stat_labels["total"].configure(text=str(len(items)))\n            vals=[self.tree.item(i, "values") for i in items]\n            joined=" ".join(str(v) for row in vals for v in row).lower()\n            self.ux_stat_labels["scheduled"].configure(text=str(joined.count("scheduled")))\n            self.ux_stat_labels["completed"].configure(text=str(joined.count("completed")))\n            self.ux_stat_labels["waiting"].configure(text=str(joined.count("waiting")))\n            selected = self.selected_appointment_id\n            self.ux_stat_labels["selected"].configure(text="Ready" if selected else "None")\n        except Exception:\n            pass\n\n    def create_label(
         self,
         parent,
         text,
@@ -1002,6 +1002,8 @@ class AppointmentFrame(HospitalFrame):
                     waiting_text
                 )
             )
+
+        self.update_ux_stats()
 
     def format_waiting_time(self, seconds):
         if seconds is None:
