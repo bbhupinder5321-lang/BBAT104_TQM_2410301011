@@ -559,7 +559,7 @@ class PatientFrame(HospitalFrame):
 
             self.show_toast("Operation completed")
 
-        messagebox.showinfo(
+            messagebox.showinfo(
                 "Success",
                 "Patient deleted successfully."
             )
