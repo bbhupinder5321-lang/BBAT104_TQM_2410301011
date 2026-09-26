@@ -51,7 +51,10 @@ class AppointmentFrame(HospitalFrame):
 
         header = ctk.CTkFrame(
             self,
-            fg_color="transparent"
+            fg_color=self.CARD,
+            corner_radius=20,
+            border_width=1,
+            border_color=self.BORDER
         )
 
         header.pack(
@@ -62,7 +65,7 @@ class AppointmentFrame(HospitalFrame):
 
         title = ctk.CTkLabel(
             header,
-            text="Appointment Management",
+            text="◷  Appointment Management",
             font=ctk.CTkFont(
                 size=30,
                 weight="bold"
