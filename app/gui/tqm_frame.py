@@ -1,7 +1,8 @@
 import customtkinter as ctk
-from tkinter import ttk, messagebox
+from tkinter import ttk
 
 from app.services.tqm_service import TQMService
+from app.gui.fishbone_frame import FishboneFrame
 
 
 class TQMFrame(ctk.CTkFrame):
@@ -306,8 +307,12 @@ class TQMFrame(ctk.CTkFrame):
             pady=15
         )
 
+        # Existing TQM tools
         self.tabs.add("SIPOC Analysis")
         self.tabs.add("FMEA Analysis")
+
+        # New Fishbone tool
+        self.tabs.add("Fishbone Analysis")
 
         self.create_sipoc_tab(
             self.tabs.tab("SIPOC Analysis")
@@ -315,6 +320,10 @@ class TQMFrame(ctk.CTkFrame):
 
         self.create_fmea_tab(
             self.tabs.tab("FMEA Analysis")
+        )
+
+        self.create_fishbone_tab(
+            self.tabs.tab("Fishbone Analysis")
         )
 
     # =========================================================
@@ -647,6 +656,21 @@ class TQMFrame(ctk.CTkFrame):
             foreground="#166534"
         )
 
+    # =========================================================
+    # FISHBONE
+    # =========================================================
+
+    def create_fishbone_tab(self, parent):
+
+        fishbone_frame = FishboneFrame(
+            parent
+        )
+
+        fishbone_frame.pack(
+            fill="both",
+            expand=True
+        )
+
 
 # =============================================================
 # STANDALONE TEST
@@ -658,10 +682,19 @@ if __name__ == "__main__":
     ctk.set_default_color_theme("blue")
 
     root = ctk.CTk()
-    root.title("TQM Analysis")
-    root.geometry("1400x850")
 
-    frame = TQMFrame(root)
+    root.title(
+        "TQM Analysis"
+    )
+
+    root.geometry(
+        "1400x850"
+    )
+
+    frame = TQMFrame(
+        root
+    )
+
     frame.pack(
         fill="both",
         expand=True
