@@ -66,7 +66,34 @@ class PatientFrame(HospitalFrame):
         )
         subtitle.pack(anchor="w", pady=(2, 0))
 
-        # Live operations snapshot\n        snapshot = ctk.CTkFrame(self, fg_color="transparent")\n        snapshot.pack(fill="x", padx=30, pady=(0, 15))\n        for column in range(4):\n            snapshot.grid_columnconfigure(column, weight=1, uniform="uxstats")\n        self.ux_stat_labels = {}\n        card = ctk.CTkFrame(snapshot, fg_color=self.CARD, corner_radius=15, border_width=1, border_color=self.BORDER)\n        card.grid(row=0, column=0, padx=(0 if 0==0 else 5, 5 if 0<3 else 0), sticky="ew")\n        ctk.CTkLabel(card, text="♙  TOTAL RECORDS", text_color=self.SECONDARY, font=ctk.CTkFont(size=8, weight="bold")).pack(anchor="w", padx=13, pady=(11, 3))\n        self.ux_stat_labels["patients"] = ctk.CTkLabel(card, text="0", text_color=self.TEXT_DARK, font=ctk.CTkFont(size=20, weight="bold"))\n        self.ux_stat_labels["patients"].pack(anchor="w", padx=13, pady=(0, 11))\n        card = ctk.CTkFrame(snapshot, fg_color=self.CARD, corner_radius=15, border_width=1, border_color=self.BORDER)\n        card.grid(row=0, column=1, padx=(0 if 1==0 else 5, 5 if 1<3 else 0), sticky="ew")\n        ctk.CTkLabel(card, text="♙  MALE", text_color=self.SECONDARY, font=ctk.CTkFont(size=8, weight="bold")).pack(anchor="w", padx=13, pady=(11, 3))\n        self.ux_stat_labels["male"] = ctk.CTkLabel(card, text="0", text_color=self.TEXT_DARK, font=ctk.CTkFont(size=20, weight="bold"))\n        self.ux_stat_labels["male"].pack(anchor="w", padx=13, pady=(0, 11))\n        card = ctk.CTkFrame(snapshot, fg_color=self.CARD, corner_radius=15, border_width=1, border_color=self.BORDER)\n        card.grid(row=0, column=2, padx=(0 if 2==0 else 5, 5 if 2<3 else 0), sticky="ew")\n        ctk.CTkLabel(card, text="♙  FEMALE", text_color=self.SECONDARY, font=ctk.CTkFont(size=8, weight="bold")).pack(anchor="w", padx=13, pady=(11, 3))\n        self.ux_stat_labels["female"] = ctk.CTkLabel(card, text="0", text_color=self.TEXT_DARK, font=ctk.CTkFont(size=20, weight="bold"))\n        self.ux_stat_labels["female"].pack(anchor="w", padx=13, pady=(0, 11))\n        card = ctk.CTkFrame(snapshot, fg_color=self.CARD, corner_radius=15, border_width=1, border_color=self.BORDER)\n        card.grid(row=0, column=3, padx=(0 if 3==0 else 5, 5 if 3<3 else 0), sticky="ew")\n        ctk.CTkLabel(card, text="♙  SELECTED", text_color=self.SECONDARY, font=ctk.CTkFont(size=8, weight="bold")).pack(anchor="w", padx=13, pady=(11, 3))\n        self.ux_stat_labels["selected"] = ctk.CTkLabel(card, text="0", text_color=self.TEXT_DARK, font=ctk.CTkFont(size=20, weight="bold"))\n        self.ux_stat_labels["selected"].pack(anchor="w", padx=13, pady=(0, 11))\n\n        # Form card
+        # Live operations snapshot
+        snapshot = ctk.CTkFrame(self, fg_color="transparent")
+        snapshot.pack(fill="x", padx=30, pady=(0, 15))
+        for column in range(4):
+            snapshot.grid_columnconfigure(column, weight=1, uniform="uxstats")
+        self.ux_stat_labels = {}
+        card = ctk.CTkFrame(snapshot, fg_color=self.CARD, corner_radius=15, border_width=1, border_color=self.BORDER)
+        card.grid(row=0, column=0, padx=(0 if 0==0 else 5, 5 if 0<3 else 0), sticky="ew")
+        ctk.CTkLabel(card, text="♙  TOTAL RECORDS", text_color=self.SECONDARY, font=ctk.CTkFont(size=8, weight="bold")).pack(anchor="w", padx=13, pady=(11, 3))
+        self.ux_stat_labels["patients"] = ctk.CTkLabel(card, text="0", text_color=self.TEXT_DARK, font=ctk.CTkFont(size=20, weight="bold"))
+        self.ux_stat_labels["patients"].pack(anchor="w", padx=13, pady=(0, 11))
+        card = ctk.CTkFrame(snapshot, fg_color=self.CARD, corner_radius=15, border_width=1, border_color=self.BORDER)
+        card.grid(row=0, column=1, padx=(0 if 1==0 else 5, 5 if 1<3 else 0), sticky="ew")
+        ctk.CTkLabel(card, text="♙  MALE", text_color=self.SECONDARY, font=ctk.CTkFont(size=8, weight="bold")).pack(anchor="w", padx=13, pady=(11, 3))
+        self.ux_stat_labels["male"] = ctk.CTkLabel(card, text="0", text_color=self.TEXT_DARK, font=ctk.CTkFont(size=20, weight="bold"))
+        self.ux_stat_labels["male"].pack(anchor="w", padx=13, pady=(0, 11))
+        card = ctk.CTkFrame(snapshot, fg_color=self.CARD, corner_radius=15, border_width=1, border_color=self.BORDER)
+        card.grid(row=0, column=2, padx=(0 if 2==0 else 5, 5 if 2<3 else 0), sticky="ew")
+        ctk.CTkLabel(card, text="♙  FEMALE", text_color=self.SECONDARY, font=ctk.CTkFont(size=8, weight="bold")).pack(anchor="w", padx=13, pady=(11, 3))
+        self.ux_stat_labels["female"] = ctk.CTkLabel(card, text="0", text_color=self.TEXT_DARK, font=ctk.CTkFont(size=20, weight="bold"))
+        self.ux_stat_labels["female"].pack(anchor="w", padx=13, pady=(0, 11))
+        card = ctk.CTkFrame(snapshot, fg_color=self.CARD, corner_radius=15, border_width=1, border_color=self.BORDER)
+        card.grid(row=0, column=3, padx=(0 if 3==0 else 5, 5 if 3<3 else 0), sticky="ew")
+        ctk.CTkLabel(card, text="♙  SELECTED", text_color=self.SECONDARY, font=ctk.CTkFont(size=8, weight="bold")).pack(anchor="w", padx=13, pady=(11, 3))
+        self.ux_stat_labels["selected"] = ctk.CTkLabel(card, text="0", text_color=self.TEXT_DARK, font=ctk.CTkFont(size=20, weight="bold"))
+        self.ux_stat_labels["selected"].pack(anchor="w", padx=13, pady=(0, 11))
+
+        # Form card
         form_card = ctk.CTkFrame(
             self,
             corner_radius=18,
@@ -414,7 +441,20 @@ class PatientFrame(HospitalFrame):
             font=("Segoe UI", 10, "bold")
         )
 
-    def update_ux_stats(self):\n        try:\n            items = self.tree.get_children()\n            self.ux_stat_labels["patients"].configure(text=str(len(items)))\n            male=sum(1 for i in items if str(self.tree.item(i, "values")[3]).lower()=="male")\n            female=sum(1 for i in items if str(self.tree.item(i, "values")[3]).lower()=="female")\n            self.ux_stat_labels["male"].configure(text=str(male))\n            self.ux_stat_labels["female"].configure(text=str(female))\n            selected = self.selected_patient_id\n            self.ux_stat_labels["selected"].configure(text="Ready" if selected else "None")\n        except Exception:\n            pass\n\n    def create_label(self, parent, text, row, column):
+    def update_ux_stats(self):
+        try:
+            items = self.tree.get_children()
+            self.ux_stat_labels["patients"].configure(text=str(len(items)))
+            male=sum(1 for i in items if str(self.tree.item(i, "values")[3]).lower()=="male")
+            female=sum(1 for i in items if str(self.tree.item(i, "values")[3]).lower()=="female")
+            self.ux_stat_labels["male"].configure(text=str(male))
+            self.ux_stat_labels["female"].configure(text=str(female))
+            selected = self.selected_patient_id
+            self.ux_stat_labels["selected"].configure(text="Ready" if selected else "None")
+        except Exception:
+            pass
+
+    def create_label(self, parent, text, row, column):
         label = ctk.CTkLabel(
             parent,
             text=text,
@@ -449,7 +489,8 @@ class PatientFrame(HospitalFrame):
 
         messagebox.showinfo(
                 "Success",
-                f"Patient added successfully.\nPatient ID: {patient_id}"
+                f"Patient added successfully.
+Patient ID: {patient_id}"
             )
 
             self.clear_form()
