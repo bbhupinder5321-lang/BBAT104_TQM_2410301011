@@ -8,11 +8,19 @@ from app.services.patient_service import PatientService
 
 class PatientFrame(ctk.CTkFrame):
 
+    BACKGROUND = "#F6F8FC"
+    CARD = "#FFFFFF"
+    BORDER = "#E6EAF0"
+    TEXT_DARK = "#0F172A"
+    SECONDARY = "#64748B"
+    PRIMARY = "#2563EB"
+    PRIMARY_HOVER = "#1D4ED8"
+
     def __init__(self, parent):
         super().__init__(
             parent,
             corner_radius=0,
-            fg_color="#F4F7FB"
+            fg_color=self.BACKGROUND
         )
 
         self.service = PatientService()
@@ -40,24 +48,26 @@ class PatientFrame(ctk.CTkFrame):
         title = ctk.CTkLabel(
             header,
             text="Patient Management",
-            font=ctk.CTkFont(size=30, weight="bold"),
-            text_color="#172033"
+            font=ctk.CTkFont(size=28, weight="bold"),
+            text_color=self.TEXT_DARK
         )
         title.pack(anchor="w")
 
         subtitle = ctk.CTkLabel(
             header,
             text="Register, search and manage patient records",
-            font=ctk.CTkFont(size=13),
-            text_color="#6B7280"
+            font=ctk.CTkFont(size=11),
+            text_color=self.SECONDARY
         )
         subtitle.pack(anchor="w", pady=(2, 0))
 
         # Form card
         form_card = ctk.CTkFrame(
             self,
-            corner_radius=15,
-            fg_color="white"
+            corner_radius=18,
+            fg_color=self.CARD,
+            border_width=1,
+            border_color=self.BORDER
         )
         form_card.pack(
             fill="x",
@@ -72,8 +82,8 @@ class PatientFrame(ctk.CTkFrame):
         form_title = ctk.CTkLabel(
             form_card,
             text="Patient Details",
-            font=ctk.CTkFont(size=17, weight="bold"),
-            text_color="#172033"
+            font=ctk.CTkFont(size=15, weight="bold"),
+            text_color=self.TEXT_DARK
         )
         form_title.grid(
             row=0,
@@ -251,8 +261,10 @@ class PatientFrame(ctk.CTkFrame):
         # Table card
         table_card = ctk.CTkFrame(
             self,
-            corner_radius=15,
-            fg_color="white"
+            corner_radius=18,
+            fg_color=self.CARD,
+            border_width=1,
+            border_color=self.BORDER
         )
         table_card.pack(
             fill="both",
@@ -275,8 +287,8 @@ class PatientFrame(ctk.CTkFrame):
         search_title = ctk.CTkLabel(
             search_frame,
             text="Patient Records",
-            font=ctk.CTkFont(size=17, weight="bold"),
-            text_color="#172033"
+            font=ctk.CTkFont(size=15, weight="bold"),
+            text_color=self.TEXT_DARK
         )
         search_title.pack(side="left")
 
