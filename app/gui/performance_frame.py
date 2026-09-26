@@ -1,10 +1,12 @@
 import customtkinter as ctk
+
+from app.gui.ui_kit import HospitalFrame
 from tkinter import messagebox
 
 from app.services.performance_service import PerformanceService
 
 
-class PerformanceFrame(ctk.CTkFrame):
+class PerformanceFrame(HospitalFrame):
 
     BACKGROUND = "#F6F8FC"
     CARD = "#FFFFFF"
