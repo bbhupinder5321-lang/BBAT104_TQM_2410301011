@@ -158,7 +158,7 @@ class CSVImportFrame(HospitalFrame):
 
         self.preview_button = ctk.CTkButton(
             button_frame,
-            text="Preview CSV",
+            text="▤  Preview CSV",
             width=120,
             height=38,
             fg_color="#334155",
@@ -173,7 +173,7 @@ class CSVImportFrame(HospitalFrame):
 
         self.import_button = ctk.CTkButton(
             button_frame,
-            text="Import Patients",
+            text="⇧  Import Patients",
             width=130,
             height=38,
             command=self.import_csv
@@ -186,7 +186,7 @@ class CSVImportFrame(HospitalFrame):
 
         self.clear_button = ctk.CTkButton(
             button_frame,
-            text="Clear",
+            text="↺  Clear",
             width=100,
             height=38,
             fg_color="#64748B",
