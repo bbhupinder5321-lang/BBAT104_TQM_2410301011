@@ -56,7 +56,7 @@ class MainApplication(ctk.CTk):
         )
 
         ctk.set_appearance_mode(
-            "dark"
+            "light"
         )
 
         ctk.set_default_color_theme(
@@ -350,42 +350,42 @@ class MainApplication(ctk.CTk):
         )
 
         self.create_sidebar_button(
-            "P",
+            "♙",
             "Patients",
             self.show_patients,
             "manage_patients"
         )
 
         self.create_sidebar_button(
-            "D",
+            "⚕",
             "Doctors",
             self.show_doctors,
             "manage_doctors"
         )
 
         self.create_sidebar_button(
-            "A",
+            "◷",
             "Appointments",
             self.show_appointments,
             "manage_appointments"
         )
 
         self.create_sidebar_button(
-            "$",
+            "▣",
             "Billing",
             self.show_billing,
             "manage_billing"
         )
 
         self.create_sidebar_button(
-            "↥",
+            "⇧",
             "CSV Import",
             self.show_csv_import,
             "import_csv"
         )
 
         self.create_sidebar_button(
-            "R",
+            "▤",
             "Reports",
             self.show_reports,
             "view_reports"
@@ -415,7 +415,7 @@ class MainApplication(ctk.CTk):
         )
 
         self.create_sidebar_button(
-            "Q",
+            "✓",
             "TQM Analysis",
             self.show_tqm,
             "view_reports"
@@ -468,6 +468,23 @@ class MainApplication(ctk.CTk):
             padx=13,
             pady=2
         )
+
+        def on_enter(_event):
+            if self.current_page != text:
+                button.configure(
+                    fg_color=self.SIDEBAR_HOVER,
+                    text_color=self.WHITE
+                )
+
+        def on_leave(_event):
+            if self.current_page != text:
+                button.configure(
+                    fg_color="transparent",
+                    text_color="#CBD5E1"
+                )
+
+        button.bind("<Enter>", on_enter)
+        button.bind("<Leave>", on_leave)
 
         self.sidebar_buttons[text] = button
 
