@@ -458,7 +458,29 @@ class DashboardFrame(ctk.CTkFrame):
         for column, data in enumerate(cards):
             self.create_kpi_card(section, data, column)
 
-    def create_kpi_card(
+    def create_kpi_card(self, parent, data, column):
+
+        card = ctk.CTkFrame(parent, fg_color=self.CARD, corner_radius=18, border_width=1, border_color=self.BORDER)
+        card.grid(row=0, column=column, padx=(0 if column == 0 else 6, 6 if column < 3 else 0), sticky="nsew")
+
+        icon_wrap = ctk.CTkFrame(card, width=42, height=42, corner_radius=12, fg_color=data["soft"])
+        icon_wrap.pack_propagate(False)
+        icon_wrap.pack(anchor="w", padx=18, pady=(18, 12))
+        ctk.CTkLabel(icon_wrap, text=data["icon"], text_color=data["accent"], font=ctk.CTkFont(size=17, weight="bold")).pack(expand=True)
+
+        ctk.CTkLabel(card, text=data["title"], text_color=self.MUTED_TEXT, font=ctk.CTkFont(size=9, weight="bold")).pack(anchor="w", padx=18)
+        value_label = ctk.CTkLabel(card, text="0", text_color=self.TEXT_DARK, font=ctk.CTkFont(size=25, weight="bold"))
+        value_label.pack(anchor="w", padx=18, pady=(3, 0))
+        ctk.CTkLabel(card, text=data["caption"], text_color=self.SECONDARY_TEXT, font=ctk.CTkFont(size=9)).pack(anchor="w", padx=18, pady=(1, 18))
+
+        if data.get("action"):
+            def activate(event=None):
+                data["action"]()
+            for widget in (card, *card.winfo_children()):
+                widget.bind("<Button-1>", activate)
+
+        self.animate_kpi(value_label, int(data["value"]))
+
 
     def create_analytics_section(self):
 
@@ -1277,7 +1299,30 @@ class DashboardFrame(ctk.CTkFrame):
         for column, item in enumerate(items):
             self.create_action_tile(actions, item, column)
 
-    def create_action_tile(
+    def create_action_tile(self, parent, item, column):
+
+        icon, title, subtitle, accent, soft, command = item
+        tile = ctk.CTkFrame(parent, fg_color=self.CARD_ALT, corner_radius=14, border_width=1, border_color=self.BORDER)
+        tile.grid(row=0, column=column, padx=4, sticky="nsew")
+
+        icon_box = ctk.CTkFrame(tile, width=34, height=34, corner_radius=10, fg_color=soft)
+        icon_box.pack_propagate(False)
+        icon_box.pack(anchor="w", padx=12, pady=(12, 8))
+        ctk.CTkLabel(icon_box, text=icon, text_color=accent, font=ctk.CTkFont(size=14, weight="bold")).pack(expand=True)
+        ctk.CTkLabel(tile, text=title, text_color=self.TEXT_DARK, font=ctk.CTkFont(size=10, weight="bold")).pack(anchor="w", padx=12)
+        ctk.CTkLabel(tile, text=subtitle, text_color=self.MUTED_TEXT, font=ctk.CTkFont(size=8)).pack(anchor="w", padx=12, pady=(2, 12))
+
+        def activate(event=None):
+            command()
+        def enter(event=None):
+            tile.configure(border_color=accent, fg_color=self.WHITE)
+        def leave(event=None):
+            tile.configure(border_color=self.BORDER, fg_color=self.CARD_ALT)
+        for widget in (tile, *tile.winfo_children()):
+            widget.bind("<Button-1>", activate)
+            widget.bind("<Enter>", enter)
+            widget.bind("<Leave>", leave)
+
 
     def create_quality_section(self):
 
