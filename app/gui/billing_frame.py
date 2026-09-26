@@ -8,11 +8,19 @@ from app.services.patient_service import PatientService
 
 class BillingFrame(ctk.CTkFrame):
 
+    BACKGROUND = "#F6F8FC"
+    CARD = "#FFFFFF"
+    BORDER = "#E6EAF0"
+    TEXT_DARK = "#0F172A"
+    SECONDARY = "#64748B"
+    PRIMARY = "#2563EB"
+    PRIMARY_HOVER = "#1D4ED8"
+
     def __init__(self, parent):
         super().__init__(
             parent,
             corner_radius=0,
-            fg_color="#F4F7FB"
+            fg_color=self.BACKGROUND
         )
 
         self.bill_service = BillService()
@@ -58,8 +66,8 @@ class BillingFrame(ctk.CTkFrame):
         subtitle = ctk.CTkLabel(
             header,
             text="Generate and manage patient bills",
-            font=ctk.CTkFont(size=13),
-            text_color="#6B7280"
+            font=ctk.CTkFont(size=11),
+            text_color=self.SECONDARY
         )
 
         subtitle.pack(anchor="w")
@@ -70,8 +78,10 @@ class BillingFrame(ctk.CTkFrame):
 
         form = ctk.CTkFrame(
             self,
-            corner_radius=15,
-            fg_color="white"
+            corner_radius=18,
+            fg_color=self.CARD,
+            border_width=1,
+            border_color=self.BORDER
         )
 
         form.pack(
@@ -350,8 +360,10 @@ class BillingFrame(ctk.CTkFrame):
 
         table_frame = ctk.CTkFrame(
             self,
-            corner_radius=15,
-            fg_color="white"
+            corner_radius=18,
+            fg_color=self.CARD,
+            border_width=1,
+            border_color=self.BORDER
         )
 
         table_frame.pack(
