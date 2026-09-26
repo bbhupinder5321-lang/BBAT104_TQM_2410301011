@@ -1,4 +1,6 @@
 import customtkinter as ctk
+
+from app.gui.ui_kit import HospitalFrame
 from tkinter import ttk, messagebox
 from datetime import date
 
@@ -6,7 +8,7 @@ from app.services.bill_service import BillService
 from app.services.patient_service import PatientService
 
 
-class BillingFrame(ctk.CTkFrame):
+class BillingFrame(HospitalFrame):
 
     BACKGROUND = "#F6F8FC"
     CARD = "#FFFFFF"
