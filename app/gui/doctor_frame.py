@@ -562,10 +562,9 @@ class DoctorFrame(HospitalFrame):
 
             self.show_toast("Operation completed")
 
-        messagebox.showinfo(
+            messagebox.showinfo(
                 "Success",
-                f"Doctor added successfully.
-Doctor ID: {doctor_id}"
+                f"Doctor added successfully.\nDoctor ID: {doctor_id}"
             )
 
             self.clear_form()
@@ -596,7 +595,7 @@ Doctor ID: {doctor_id}"
 
             self.show_toast("Operation completed")
 
-        messagebox.showinfo(
+            messagebox.showinfo(
                 "Success",
                 "Doctor updated successfully."
             )
@@ -633,7 +632,7 @@ Doctor ID: {doctor_id}"
 
             self.show_toast("Operation completed")
 
-        messagebox.showinfo(
+            messagebox.showinfo(
                 "Success",
                 "Doctor deleted successfully."
             )
