@@ -6,6 +6,13 @@ from app.services.performance_service import PerformanceService
 
 class PerformanceFrame(ctk.CTkFrame):
 
+    BACKGROUND = "#F6F8FC"
+    CARD = "#FFFFFF"
+    BORDER = "#E6EAF0"
+    TEXT_DARK = "#0F172A"
+    SECONDARY = "#64748B"
+    PRIMARY = "#2563EB"
+
     def __init__(self, parent):
         super().__init__(
             parent,
