@@ -1,9 +1,11 @@
 """
 Summary Spline Area Chart Widget for Patient Flow Trends.
-Inspired by Reference Image (KRL Health Care aesthetic):
-- Smooth curved spline line in deep royal navy (#0C2B59)
+Directly crafted after Reference Image 3 (KRL Health Care aesthetic):
+- Smooth Catmull-Rom cubic spline curve in deep royal navy (#0C2B59)
+- Translucent light blue pillar highlighting the peak at May 9
 - Soft translucent gradient area fill below curve
 - Circular dark navy badge floating at the peak with white label '82' and connecting pin
+- Y-axis markers (40, 60, 80, 100) and May 5 - May 13 date labels
 - Clean minimalist grid lines and borderless spines
 """
 
@@ -12,6 +14,37 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from src.config import THEME
+
+
+def catmull_rom_spline(pts, n_points: int = 100):
+    """Generates butter-smooth Catmull-Rom cubic spline interpolation in pure NumPy."""
+    P = np.asarray(pts, dtype=float)
+    # Natural boundary extrapolation for start and end
+    p_start = P[0] - (P[1] - P[0])
+    p_end = P[-1] + (P[-1] - P[-2])
+    P_pad = np.vstack([p_start, P, p_end])
+
+    x_all = []
+    y_all = []
+
+    for i in range(len(P) - 1):
+        p0, p1, p2, p3 = P_pad[i], P_pad[i+1], P_pad[i+2], P_pad[i+3]
+        u = np.linspace(0.0, 1.0, n_points, endpoint=(i == len(P) - 2))
+        u2 = u * u
+        u3 = u2 * u
+
+        # Standard Catmull-Rom blending functions
+        f0 = -0.5 * u3 + 1.0 * u2 - 0.5 * u
+        f1 =  1.5 * u3 - 2.5 * u2 + 1.0
+        f2 = -1.5 * u3 + 2.0 * u2 + 0.5 * u
+        f3 =  0.5 * u3 - 0.5 * u2
+
+        x_seg = f0 * p0[0] + f1 * p1[0] + f2 * p2[0] + f3 * p3[0]
+        y_seg = f0 * p0[1] + f1 * p1[1] + f2 * p2[1] + f3 * p3[1]
+        x_all.extend(x_seg)
+        y_all.extend(y_seg)
+
+    return np.array(x_all), np.array(y_all)
 
 
 class PatientTrendChart(tk.Frame):
@@ -27,81 +60,74 @@ class PatientTrendChart(tk.Frame):
 
     def _build_chart(self):
         plt.style.use("default")
-        # High DPI for crisp rendering
-        self.fig, self.ax = plt.subplots(figsize=(6.4, 2.5), dpi=100)
+        # High DPI for crisp modern rendering
+        self.fig, self.ax = plt.subplots(figsize=(6.4, 2.6), dpi=100)
         self.fig.patch.set_facecolor("white")
         self.ax.set_facecolor("white")
 
-        # Days of the week data with peak at 82
-        days_num = np.array([1, 2, 3, 4, 5, 6, 7])
-        day_labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-        values = np.array([28, 45, 82, 58, 64, 42, 30])  # Peak at 82 on Wednesday
+        # 9 Dates matching Reference Image (May 5 - May 13)
+        days_num = np.arange(9)
+        day_labels = ["May 5", "May 6", "May 7", "May 8", "May 9", "May 10", "May 11", "May 12", "May 13"]
+        # Wave data with peak at May 9 (index 4) = 82
+        values = np.array([48.0, 54.0, 50.0, 62.0, 82.0, 53.0, 59.0, 56.0, 75.0])
 
-        # Smooth spline interpolation
-        x_smooth = np.linspace(days_num.min(), days_num.max(), 300)
-        try:
-            from scipy.interpolate import make_interp_spline
-            spline = make_interp_spline(days_num, values, k=3)
-            y_smooth = np.clip(spline(x_smooth), 0, None)
-        except Exception:
-            # Polyfit fallback
-            z = np.polyfit(days_num, values, 4)
-            p = np.poly1d(z)
-            y_smooth = np.clip(p(x_smooth), 0, None)
+        # Generate smooth cubic spline
+        pts = np.column_stack([days_num, values])
+        x_smooth, y_smooth = catmull_rom_spline(pts, n_points=80)
+        y_smooth = np.clip(y_smooth, 0, None)
 
-        # Plot sleek royal navy curve
+        # 1. Translucent highlight pillar behind the peak at May 9 (x = 4)
+        peak_x = 4.0
+        peak_y = 82.0
+        self.ax.axvspan(peak_x - 0.28, peak_x + 0.28, ymin=0, ymax=peak_y / 115.0,
+                        facecolor="#EBF4FE", edgecolor="none", alpha=0.95, zorder=1)
+
+        # 2. Sleek royal navy spline curve (#0C2B59)
         line_color = "#0C2B59"
         self.ax.plot(x_smooth, y_smooth, color=line_color, linewidth=2.8, zorder=3)
-        self.ax.fill_between(x_smooth, y_smooth, color="#1E5DB4", alpha=0.10, zorder=2)
+        self.ax.fill_between(x_smooth, y_smooth, color="#1E5DB4", alpha=0.08, zorder=2)
 
-        # Secondary subtle comparison line (e.g. previous week)
-        y_prev = values * 0.72 + np.array([4, 6, -5, 8, 3, 2, 5])
-        try:
-            from scipy.interpolate import make_interp_spline
-            spline_prev = make_interp_spline(days_num, y_prev, k=3)
-            y_prev_smooth = np.clip(spline_prev(x_smooth), 0, None)
-        except Exception:
-            z_prev = np.polyfit(days_num, y_prev, 4)
-            p_prev = np.poly1d(z_prev)
-            y_prev_smooth = np.clip(p_prev(x_smooth), 0, None)
+        # 3. Peak marker and pin badge (82)
+        # Dot on curve
+        self.ax.plot(peak_x, peak_y, "o", color="#0C2B59", markersize=6.5,
+                     markeredgecolor="white", markeredgewidth=2, zorder=5)
 
-        self.ax.plot(x_smooth, y_prev_smooth, color="#CBD5E1", linewidth=1.8, linestyle="--", alpha=0.8, zorder=2)
+        # Dotted vertical connecting pin line
+        badge_y = peak_y + 16.0
+        self.ax.plot([peak_x, peak_x], [peak_y, badge_y - 4],
+                     color="#0C2B59", linewidth=1.5, linestyle=":", zorder=4)
 
-        # Find exact peak coordinates
-        peak_idx = np.argmax(y_smooth)
-        px, py = x_smooth[peak_idx], y_smooth[peak_idx]
-
-        # Draw connecting pin line from curve to circular badge
-        badge_y = py + 12
-        self.ax.plot([px, px], [py, badge_y - 3], color="#0C2B59", linewidth=1.5, linestyle=":", zorder=4)
-
-        # Draw dark navy circular peak badge with text "82"
-        self.ax.plot(px, py, "o", color="#0C2B59", markersize=6, markeredgecolor="white", markeredgewidth=2, zorder=5)
+        # Dark navy circular badge with white "82"
         self.ax.text(
-            px, badge_y, "82",
+            peak_x, badge_y, "82",
             ha="center", va="center",
             fontsize=8.5, fontweight="bold", color="white",
             bbox=dict(boxstyle="circle,pad=0.45", fc="#0C2B59", ec="#0C2B59", lw=1.5),
             zorder=6
         )
 
-        # Minimalist X-axis styling
-        self.ax.set_xticks(days_num)
-        self.ax.set_xticklabels(day_labels, fontsize=8, color="#64748B", fontweight="semibold")
-        self.ax.tick_params(axis="both", which="both", length=0, labelsize=8, colors="#64748B")
-        self.ax.set_ylim(0, 110)
+        # 4. Y-axis styling (40, 60, 80, 100)
+        self.ax.set_yticks([40, 60, 80, 100])
+        self.ax.set_yticklabels(["40", "60", "80", "100"], fontsize=8, color="#94A3B8")
 
-        # Horizontal light grid lines only
+        # 5. X-axis styling (May 5 - May 13)
+        self.ax.set_xticks(days_num)
+        self.ax.set_xticklabels(day_labels, fontsize=8, color="#64748B", fontweight="bold")
+        self.ax.tick_params(axis="both", which="both", length=0, labelsize=8, colors="#64748B")
+        self.ax.set_ylim(20, 115)
+        self.ax.set_xlim(-0.4, 8.4)
+
+        # 6. Horizontal light grid lines only
         self.ax.grid(axis="y", color="#F1F5F9", linestyle="-", linewidth=1)
         self.ax.grid(visible=False, axis="x")
 
-        # Spines removal
+        # 7. Remove border spines for clean minimalist presentation
         for spine in ["top", "right", "left", "bottom"]:
             self.ax.spines[spine].set_visible(False)
 
         self.fig.tight_layout(pad=0.8)
 
-        # Canvas embedding
+        # 8. Canvas embedding
         self.canvas = FigureCanvasTkAgg(self.fig, master=self)
         self.canvas.draw()
         self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)

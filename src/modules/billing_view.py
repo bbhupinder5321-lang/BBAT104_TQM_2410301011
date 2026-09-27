@@ -9,7 +9,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from typing import Optional, Callable
 from src.config import THEME, EXPORTS_DIR
-from src.widgets.ui_kit import HeroMetricCard, PillButton
+from src.widgets.ui_kit import HeroMetricCard, PillButton, RoundedCard
 from src.models.billing import get_invoices, create_invoice, update_payment_status
 from src.models.patient import fast_search_patients
 import pandas as pd
@@ -25,41 +25,49 @@ class BillingView(tk.Frame):
         self.load_invoices()
 
     def _build_ui(self):
-        card = tk.Frame(self, bg="white", highlightthickness=1, highlightbackground=THEME["border"], padx=20, pady=18)
-        card.pack(fill=tk.BOTH, expand=True)
+        container = tk.Frame(self, bg=THEME["background"], padx=4, pady=2)
+        container.pack(fill=tk.BOTH, expand=True)
 
         # 0. Financial Accounting Dashboard KPI Strip
-        kpi_strip = tk.Frame(card, bg="white")
-        kpi_strip.pack(fill=tk.X, pady=(0, 16))
+        kpi_strip = tk.Frame(container, bg=THEME["background"])
+        kpi_strip.pack(fill=tk.X, pady=(0, 10))
 
         self.kpi_billing_cards = {}
         self.kpi_billing_cards["settled"] = HeroMetricCard(
             kpi_strip, title="Settled Revenue", value="₹0.00",
-            sub="● Collected Funds", icon="💰", bg_color="#0D9488"
+            sub="Collected Revenue Funds", icon="💰", bg_color="#059669"
         )
-        self.kpi_billing_cards["settled"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 4))
+        self.kpi_billing_cards["settled"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 5))
 
         self.kpi_billing_cards["pending"] = HeroMetricCard(
             kpi_strip, title="Pending Invoices", value="₹0.00",
-            sub="● Awaiting Settlement", icon="⏳", bg_color="#0284C7"
+            sub="Awaiting Patient Settlement", icon="⏳", bg_color="#F59E0B"
         )
-        self.kpi_billing_cards["pending"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=4)
+        self.kpi_billing_cards["pending"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=5)
 
         self.kpi_billing_cards["invoices"] = HeroMetricCard(
             kpi_strip, title="Invoices Issued", value="0 Invoices",
-            sub="● Itemized Bills", icon="🧾", bg_color="#7C3AED"
+            sub="Itemized Bills with 5% GST", icon="🧾", bg_color="#2563EB"
         )
-        self.kpi_billing_cards["invoices"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=4)
+        self.kpi_billing_cards["invoices"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=5)
 
         self.kpi_billing_cards["rate"] = HeroMetricCard(
             kpi_strip, title="Collection Rate", value="0.0%",
-            sub="● Clearance Ratio", icon="📈", bg_color="#E11D48"
+            sub="Settlement Clearance Ratio", icon="📈", bg_color="#7C3AED"
         )
-        self.kpi_billing_cards["rate"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(4, 0))
+        self.kpi_billing_cards["rate"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(5, 0))
 
-        # Header and filter bar
+        # 1. Main Table Floating Rounded Card
+        main_card = RoundedCard(
+            container, bg_color="#FFFFFF", border_color="#E2E8F0",
+            radius=16, pad_shadow=6, padx=16, pady=14
+        )
+        main_card.pack(fill=tk.BOTH, expand=True)
+        card = main_card.inner
+
+        # 1a. Header and filter bar
         top_strip = tk.Frame(card, bg="white")
-        top_strip.pack(fill=tk.X, pady=(0, 15))
+        top_strip.pack(fill=tk.X, pady=(0, 14))
 
         tk.Label(top_strip, text="Status Filter:", font=("Segoe UI", 9, "bold"), fg=THEME["text"], bg="white").pack(side=tk.LEFT, padx=(0, 6))
 

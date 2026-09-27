@@ -22,7 +22,7 @@ from src.config import THEME
 
 
 def apply_global_styles(root: tk.Tk):
-    """Configures high-end modern ttk styles with spacious rows and clean headers."""
+    """Configures high-end modern ttk styles with spacious rows, clean headers, and polished inputs."""
     style = ttk.Style(root)
     style.theme_use("clam")
 
@@ -30,8 +30,8 @@ def apply_global_styles(root: tk.Tk):
     style.configure(
         "Treeview",
         background="#FFFFFF",
-        foreground="#0C2340",
-        rowheight=36,
+        foreground="#0F172A",
+        rowheight=38,
         fieldbackground="#FFFFFF",
         font=("Segoe UI", 9),
         borderwidth=0,
@@ -39,17 +39,17 @@ def apply_global_styles(root: tk.Tk):
     )
     style.configure(
         "Treeview.Heading",
-        background="#F1F5F9",
-        foreground="#475569",
+        background="#F8FAFC",
+        foreground="#334155",
         font=("Segoe UI", 9, "bold"),
         relief="flat",
         borderwidth=0,
-        padding=(10, 8)
+        padding=(12, 10)
     )
     style.map(
         "Treeview",
         background=[("selected", "#EFF6FF")],
-        foreground=[("selected", "#1E5DB4")]
+        foreground=[("selected", "#2563EB")]
     )
 
     # 2. Modern Minimalist Scrollbar
@@ -58,7 +58,7 @@ def apply_global_styles(root: tk.Tk):
         background="#E2E8F0",
         troughcolor="#F8FAFC",
         borderwidth=0,
-        arrowsize=12,
+        arrowsize=10,
         relief="flat"
     )
     style.map(
@@ -71,9 +71,20 @@ def apply_global_styles(root: tk.Tk):
         "TCombobox",
         fieldbackground="#FFFFFF",
         background="#FFFFFF",
-        foreground="#0C2340",
+        foreground="#0F172A",
         font=("Segoe UI", 9),
-        padding=4
+        padding=6,
+        relief="flat"
+    )
+
+    # 4. Modern Flat Progressbar
+    style.configure(
+        "Horizontal.TProgressbar",
+        troughcolor="#F1F5F9",
+        background="#2563EB",
+        borderwidth=0,
+        thickness=8,
+        relief="flat"
     )
 
 
@@ -141,20 +152,32 @@ class RoundedCard(tk.Canvas):
 
         img = Image.new("RGBA", (sw, sh), (0, 0, 0, 0))
 
-        # 1. Soft blurred drop shadow
+        # 1. Multi-Stage Soft Gaussian Drop Shadow (Ambient diffusion + Key directional)
         s_offset_y = (6 * scale) if is_hovered else (3 * scale)
-        s_blur = (9 * scale) if is_hovered else (5 * scale)
+        s_blur = (10 * scale) if is_hovered else (6 * scale)
         s_alpha = self.hover_shadow_alpha if is_hovered else self.shadow_alpha
 
-        s_img = Image.new("RGBA", (sw, sh), (0, 0, 0, 0))
-        sdraw = ImageDraw.Draw(s_img)
-        sdraw.rounded_rectangle(
+        # 1a. Ambient soft diffuse shadow
+        s_ambient = Image.new("RGBA", (sw, sh), (0, 0, 0, 0))
+        adraw = ImageDraw.Draw(s_ambient)
+        adraw.rounded_rectangle(
+            [card_x1, card_y1 + (2 * scale), card_x2, card_y2 + (2 * scale)],
+            radius=sr,
+            fill=(15, 23, 42, max(6, int(s_alpha * 0.45)))
+        )
+        s_amb_blur = s_ambient.filter(ImageFilter.GaussianBlur((8 * scale) / 2))
+        img.paste(s_amb_blur, (0, 0), s_amb_blur)
+
+        # 1b. Key directional shadow
+        s_key = Image.new("RGBA", (sw, sh), (0, 0, 0, 0))
+        kdraw = ImageDraw.Draw(s_key)
+        kdraw.rounded_rectangle(
             [card_x1, card_y1 + s_offset_y, card_x2, card_y2 + s_offset_y],
             radius=sr,
-            fill=(15, 23, 42, s_alpha)
+            fill=(15, 23, 42, max(10, int(s_alpha * 0.75)))
         )
-        s_blurred = s_img.filter(ImageFilter.GaussianBlur(s_blur / 2))
-        img.paste(s_blurred, (0, 0), s_blurred)
+        s_key_blur = s_key.filter(ImageFilter.GaussianBlur(s_blur / 2))
+        img.paste(s_key_blur, (0, 0), s_key_blur)
 
         # 2. Card Body with crisp rounded rectangle and subtle border
         cdraw = ImageDraw.Draw(img)
@@ -583,15 +606,23 @@ class ModernSearchBox(tk.Frame):
             bg="#FFFFFF", relief="flat", bd=0, width=width, insertbackground=THEME["primary"]
         )
         self.entry.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-
         self.btn_clear = tk.Button(
             self, text="✕", font=("Segoe UI", 8), bg="#FFFFFF", fg="#94A3B8",
             relief="flat", cursor="hand2", bd=0, command=self.clear
         )
         self.btn_clear.pack(side=tk.RIGHT, padx=(4, 0))
 
+        self.entry.bind("<FocusIn>", self._on_focus_in)
+        self.entry.bind("<FocusOut>", self._on_focus_out)
+
         if on_search_callback:
             self.entry.bind("<KeyRelease>", lambda e: on_search_callback(self.search_var.get()))
+
+    def _on_focus_in(self, event=None):
+        self.config(highlightbackground="#2563EB", highlightcolor="#2563EB")
+
+    def _on_focus_out(self, event=None):
+        self.config(highlightbackground="#CBD5E1", highlightcolor="#CBD5E1")
 
     def get(self) -> str:
         return self.search_var.get()
@@ -658,18 +689,6 @@ class ModernCard(RoundedCard):
                          radius=radius, pad_shadow=pad_shadow, padx=padx, pady=pady, **kwargs)
 
 
-class HeroMetricCard(PastelStatCard):
-    """Backward-compatible alias for existing code referencing HeroMetricCard."""
-    def __init__(self, parent, title: str, value: str, sub: str = "", icon: str = "📊",
-                 bg_color: str = "#2563EB", **kwargs):
-        ctype = "blue"
-        if "amber" in bg_color.lower() or "0284c7" in bg_color.lower() or "sky" in bg_color.lower():
-            ctype = "amber"
-        elif "rose" in bg_color.lower() or "e11d48" in bg_color.lower() or "red" in bg_color.lower():
-            ctype = "rose"
-        super().__init__(parent, title=title, value=value, icon=icon, card_type=ctype, sub_text=sub)
-
-
 class AccentLineStatCard(RoundedCard):
     """
     Polished Metric Card with Colored Vertical Left Accent Bar (Image 4 & 5).
@@ -703,7 +722,7 @@ class AccentLineStatCard(RoundedCard):
         col.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         self.lbl_value = tk.Label(
-            col, text=value, font=("Segoe UI", 20, "bold"),
+            col, text=value, font=("Segoe UI", 18, "bold"),
             fg="#0F172A", bg="#FFFFFF"
         )
         self.lbl_value.pack(anchor=tk.W)
@@ -723,6 +742,36 @@ class AccentLineStatCard(RoundedCard):
 
     def set_value(self, val: str):
         self.lbl_value.config(text=val)
+
+    def update_value(self, new_val: str, new_sub: Optional[str] = None):
+        self.lbl_value.config(text=new_val)
+        if new_sub and hasattr(self, "lbl_sub"):
+            self.lbl_sub.config(text=new_sub)
+
+    def config(self, **kwargs):
+        if "text" in kwargs:
+            self.lbl_value.config(text=kwargs.pop("text"))
+        if kwargs:
+            super().config(**kwargs)
+
+    configure = config
+
+
+class HeroMetricCard(AccentLineStatCard):
+    """
+    Polished Clinical Metric Card with Left Color Accent Bar (Matching Reference Screenshots).
+    Provides large bold numbers, crisp titles, and smooth hover elevation.
+    """
+    def __init__(self, parent, title: str, value: str, sub: str = "", icon: str = "📊",
+                 bg_color: str = "#2563EB", **kwargs):
+        super().__init__(
+            parent,
+            value=value,
+            title=title,
+            sub_text=sub,
+            accent_color=bg_color,
+            **kwargs
+        )
 
 
 class OverviewMetricCard(RoundedCard):

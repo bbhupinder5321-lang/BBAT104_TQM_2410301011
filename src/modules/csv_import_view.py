@@ -10,7 +10,7 @@ import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from typing import Optional, Callable
 from src.config import THEME, SAMPLE_CSV_PATH, SLA_TARGETS
-from src.widgets.ui_kit import HeroMetricCard, PillButton
+from src.widgets.ui_kit import HeroMetricCard, PillButton, RoundedCard
 from src.utils.csv_importer import bulk_import_patients_from_csv
 import pandas as pd
 
@@ -30,41 +30,49 @@ class CSVImportView(tk.Frame):
         self._load_sample_csv()
 
     def _build_ui(self):
-        card = tk.Frame(self, bg="white", highlightthickness=1, highlightbackground=THEME["border"], padx=20, pady=18)
-        card.pack(fill=tk.BOTH, expand=True)
+        container = tk.Frame(self, bg=THEME["background"], padx=4, pady=2)
+        container.pack(fill=tk.BOTH, expand=True)
 
         # 0. High-Throughput Ingestion Dashboard KPI Strip
-        kpi_strip = tk.Frame(card, bg="white")
-        kpi_strip.pack(fill=tk.X, pady=(0, 16))
+        kpi_strip = tk.Frame(container, bg=THEME["background"])
+        kpi_strip.pack(fill=tk.X, pady=(0, 10))
 
         self.kpi_csv_cards = {}
         self.kpi_csv_cards["target"] = HeroMetricCard(
             kpi_strip, title="SLA Throughput Target", value="> 500 rps",
-            sub="● Q02 Benchmark", icon="⚡", bg_color="#0D9488"
+            sub="Q02 Performance Benchmark", icon="⚡", bg_color="#059669"
         )
-        self.kpi_csv_cards["target"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 4))
+        self.kpi_csv_cards["target"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 5))
 
         self.kpi_csv_cards["speed"] = HeroMetricCard(
             kpi_strip, title="Last Ingestion Speed", value="612.2 rps",
-            sub="● SQLite WAL Mode", icon="📊", bg_color="#0284C7"
+            sub="Transactional SQLite WAL Mode", icon="📊", bg_color="#2563EB"
         )
-        self.kpi_csv_cards["speed"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=4)
+        self.kpi_csv_cards["speed"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=5)
 
         self.kpi_csv_cards["duplicates"] = HeroMetricCard(
             kpi_strip, title="Collision Guard", value="100% Poka-Yoke",
-            sub="● Auto Duplicate Filter", icon="🛡️", bg_color="#7C3AED"
+            sub="Automated Duplicate Filter", icon="🛡️", bg_color="#7C3AED"
         )
-        self.kpi_csv_cards["duplicates"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=4)
+        self.kpi_csv_cards["duplicates"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=5)
 
         self.kpi_csv_cards["latency"] = HeroMetricCard(
             kpi_strip, title="Batch Latency", value="24.5 ms",
-            sub="● Sub-Second Influx", icon="⏱️", bg_color="#E11D48"
+            sub="Sub-Second Batch Influx", icon="⏱️", bg_color="#E11D48"
         )
-        self.kpi_csv_cards["latency"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(4, 0))
+        self.kpi_csv_cards["latency"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(5, 0))
 
-        # 1. Header Card
+        # 1. Main Ingestion Floating Rounded Card
+        main_card = RoundedCard(
+            container, bg_color="#FFFFFF", border_color="#E2E8F0",
+            radius=16, pad_shadow=6, padx=16, pady=14
+        )
+        main_card.pack(fill=tk.BOTH, expand=True)
+        card = main_card.inner
+
+        # 1a. Header Card
         top_box = tk.Frame(card, bg="white")
-        top_box.pack(fill=tk.X, pady=(0, 15))
+        top_box.pack(fill=tk.X, pady=(0, 14))
 
         tk.Label(top_box, text="Bulk Patient CSV Ingestion Engine (Q02 Throughput)", font=("Segoe UI", 12, "bold"), fg=THEME["text"], bg="white").pack(anchor=tk.W)
         tk.Label(

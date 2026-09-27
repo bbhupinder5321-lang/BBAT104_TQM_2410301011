@@ -165,9 +165,10 @@ class IntegratedLoginView(tk.Frame):
 
         self.txt_user = tk.Entry(
             c, font=("Segoe UI", 10), bg="#F8FAFC",
-            relief="solid", bd=1, insertbackground="#2563EB", fg="#0F172A"
+            relief="flat", bd=0, highlightthickness=1, highlightbackground="#CBD5E1",
+            highlightcolor="#2563EB", insertbackground="#2563EB", fg="#0F172A"
         )
-        self.txt_user.pack(fill=tk.X, pady=(0, 14), ipady=6)
+        self.txt_user.pack(fill=tk.X, pady=(0, 14), ipady=7)
         self.txt_user.focus_set()
 
         # Field 2: Password with Show/Hide Toggle
@@ -181,9 +182,10 @@ class IntegratedLoginView(tk.Frame):
 
         self.txt_pass = tk.Entry(
             pass_row, font=("Segoe UI", 10), show="•",
-            bg="#F8FAFC", relief="solid", bd=1, insertbackground="#2563EB", fg="#0F172A"
+            bg="#F8FAFC", relief="flat", bd=0, highlightthickness=1, highlightbackground="#CBD5E1",
+            highlightcolor="#2563EB", insertbackground="#2563EB", fg="#0F172A"
         )
-        self.txt_pass.pack(side=tk.LEFT, fill=tk.X, expand=True, ipady=6)
+        self.txt_pass.pack(side=tk.LEFT, fill=tk.X, expand=True, ipady=7)
 
         self.btn_eye = tk.Button(
             pass_row, text="👁️", font=("Segoe UI", 9),

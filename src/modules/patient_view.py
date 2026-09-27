@@ -9,7 +9,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from typing import Optional, Callable
 from src.config import THEME, SLA_TARGETS
-from src.widgets.ui_kit import HeroMetricCard, PillButton, ModernCard
+from src.widgets.ui_kit import HeroMetricCard, PillButton, ModernCard, RoundedCard
 from src.models.patient import (
     fast_search_patients, create_patient, update_patient, 
     delete_patient, check_duplicate_phone, get_patient_by_id
@@ -34,42 +34,49 @@ class PatientView(tk.Frame):
         self.load_patients()
 
     def _build_ui(self):
-        # Main Outer White Card
-        card = tk.Frame(self, bg="white", highlightthickness=1, highlightbackground=THEME["border"], padx=20, pady=18)
-        card.pack(fill=tk.BOTH, expand=True)
+        container = tk.Frame(self, bg=THEME["background"], padx=4, pady=2)
+        container.pack(fill=tk.BOTH, expand=True)
 
         # 0. Dashboard KPI Metric Cards Strip
-        kpi_strip = tk.Frame(card, bg="white")
-        kpi_strip.pack(fill=tk.X, pady=(0, 16))
+        kpi_strip = tk.Frame(container, bg=THEME["background"])
+        kpi_strip.pack(fill=tk.X, pady=(0, 10))
 
         self.kpi_patient_cards = {}
         self.kpi_patient_cards["total"] = HeroMetricCard(
             kpi_strip, title="Registered Patients", value="0 Patients",
-            sub="● Active Records", icon="👥", bg_color="#0D9488"
+            sub="Active Records in Database", icon="👥", bg_color="#2563EB"
         )
-        self.kpi_patient_cards["total"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 4))
+        self.kpi_patient_cards["total"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 5))
 
         self.kpi_patient_cards["latency"] = HeroMetricCard(
             kpi_strip, title="Fast Search Speed", value="< 5 ms",
-            sub="● SLA: < 100ms (B-Tree)", icon="⚡", bg_color="#0284C7"
+            sub="SLA: < 100ms (B-Tree Indexed)", icon="⚡", bg_color="#059669"
         )
-        self.kpi_patient_cards["latency"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=4)
+        self.kpi_patient_cards["latency"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=5)
 
         self.kpi_patient_cards["pokayoke"] = HeroMetricCard(
-            kpi_strip, title="Poka-Yoke Protection", value="100% Protected",
-            sub="● Unique Phone & UHID", icon="🛡️", bg_color="#7C3AED"
+            kpi_strip, title="Poka-Yoke Guard", value="100% Active",
+            sub="Unique Phone & UHID Collision Check", icon="🛡️", bg_color="#7C3AED"
         )
-        self.kpi_patient_cards["pokayoke"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=4)
+        self.kpi_patient_cards["pokayoke"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=5)
 
         self.kpi_patient_cards["blood"] = HeroMetricCard(
             kpi_strip, title="Top Blood Group", value="O+ Rh+",
-            sub="● Predominant Donor Type", icon="🩸", bg_color="#E11D48"
+            sub="Predominant Donor Type", icon="🩸", bg_color="#E11D48"
         )
-        self.kpi_patient_cards["blood"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(4, 0))
+        self.kpi_patient_cards["blood"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(5, 0))
 
-        # 1. Top Search and Action Strip
+        # 1. Main Table Floating Rounded Card
+        main_card = RoundedCard(
+            container, bg_color="#FFFFFF", border_color="#E2E8F0",
+            radius=16, pad_shadow=6, padx=16, pady=14
+        )
+        main_card.pack(fill=tk.BOTH, expand=True)
+        card = main_card.inner
+
+        # 1a. Top Search and Action Strip
         top_strip = tk.Frame(card, bg="white")
-        top_strip.pack(fill=tk.X, pady=(0, 15))
+        top_strip.pack(fill=tk.X, pady=(0, 14))
 
         # Search Bar with pill icon
         search_box = tk.Frame(top_strip, bg="#F8FAFC", highlightthickness=1, highlightbackground="#CBD5E1", padx=10, pady=5)
