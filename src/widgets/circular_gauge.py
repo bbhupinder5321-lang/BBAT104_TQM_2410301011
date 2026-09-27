@@ -42,9 +42,20 @@ class CircularGauge(tk.Frame):
         )
         self.lbl_title.pack(anchor=tk.CENTER, pady=(2, 0))
 
+        self._anim_job = None
+        self.bind("<Destroy>", self._on_destroy)
+
         self.draw_gauge()
         if initial_val > 0:
             self.animate_to(initial_val)
+
+    def _on_destroy(self, event=None):
+        if hasattr(self, "_anim_job") and self._anim_job:
+            try:
+                self.after_cancel(self._anim_job)
+            except Exception:
+                pass
+            self._anim_job = None
 
     def draw_gauge(self):
         self.canvas.delete("all")
