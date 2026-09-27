@@ -606,20 +606,30 @@ class MainWindow(tk.Tk):
         self.views["Dashboard"].refresh_dashboard()
 
     def _tick_clock(self):
-        if not self.workspace_frame or not self.workspace_frame.winfo_exists():
+        if not self.winfo_exists() or not self.workspace_frame or not self.workspace_frame.winfo_exists():
             return
         now = datetime.now()
-        self.lbl_clock.config(text=f"🕒 {now.strftime('%I:%M:%S %p')}")
+        try:
+            self.lbl_clock.config(text=f"🕒 {now.strftime('%I:%M:%S %p')}")
 
-        if now.second % 2 == 0:
-            self.sla_pill.config(bg=THEME["success_light"], fg="#047857")
-        else:
-            self.sla_pill.config(bg="#E0F2FE", fg="#0369A1")
+            if now.second % 2 == 0:
+                self.sla_pill.config(bg=THEME["success_light"], fg="#047857")
+            else:
+                self.sla_pill.config(bg="#E0F2FE", fg="#0369A1")
 
-        self.after(1000, self._tick_clock)
+            self._clock_timer = self.after(1000, self._tick_clock)
+        except Exception:
+            pass
 
     def _logout(self):
         """Seamless in-window sign out returning to the integrated login screen."""
+        if hasattr(self, "_clock_timer") and self._clock_timer:
+            try:
+                self.after_cancel(self._clock_timer)
+            except Exception:
+                pass
+            self._clock_timer = None
+
         if hasattr(self, "ecg_wave"):
             self.ecg_wave.stop()
         SessionManager.clear()
@@ -634,6 +644,12 @@ class MainWindow(tk.Tk):
         self.login_view.pack(fill=tk.BOTH, expand=True)
 
     def _on_close(self):
+        if hasattr(self, "_clock_timer") and self._clock_timer:
+            try:
+                self.after_cancel(self._clock_timer)
+            except Exception:
+                pass
+            self._clock_timer = None
         if hasattr(self, "ecg_wave"):
             self.ecg_wave.stop()
         self.destroy()
