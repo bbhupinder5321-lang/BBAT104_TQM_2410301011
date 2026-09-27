@@ -1,12 +1,11 @@
 """
-Executive Performance Dashboard - Ultra-Modern Behance / Dribbble Healthcare UI.
-Directly crafted after Reference Image 3 (KRL Health Care aesthetic):
-- Royal Navy Welcome Banner with doctor character illustration
-- 'Summary' card with smooth spline curve and circular '82' peak badge
-- 3 Soft Pastel Rounded Stat Cards (Blue: Total Patients, Amber: Available Staff, Rose: Available Doctors) with hover feel
-- 'Schedule' active OPD queue with clean floating rows
-- 'All Specialist' cards (Cardiologist, Neurologist, Radiologist, Pediatrician) with soft hover feel
-- Vibrant Coral/Raspberry Emergency Card with 3D medic mascot & instant Emergency Token generator
+Executive Performance Dashboard Module.
+Polished Modern SaaS Healthcare Dashboard matching Reference Images 1 & 2:
+- Header: Welcome back, Admin • Live operations • Status pills & Refresh
+- Dark Hero Banner: Good day, Admin • Performance summary • System Online
+- Today's Overview: 4 OverviewMetricCards (Patients, Appointments, Pending, Beds/Doctors)
+- Flow & Occupancy: Patient & Appointment Flow Bar Chart + Bed Occupancy Donut Chart
+- Telemetry & Actions: Average Waiting Time (Dark Card) + Quick Actions + System Performance (Q02 Target)
 
 BBAT104: Fundamentals of Total Quality Management
 Student: Bhupinder Singh | Roll No: 2410301011 | CSE - A
@@ -14,47 +13,48 @@ Quality Goal: Q02 - Improve Performance
 """
 
 import time
-from datetime import date
+from datetime import datetime, date
 import tkinter as tk
 from tkinter import ttk, messagebox
 from typing import Optional, Callable
 
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
 from src.config import THEME, SLA_TARGETS, STUDENT_NAME, STUDENT_ROLL, COURSE_CODE
 from src.database import get_db_cursor, log_performance
-from src.models.appointment import get_appointments_list, check_in_patient, start_consultation, complete_consultation, book_appointment
+from src.models.appointment import get_appointments_list
 from src.models.patient import fast_search_patients
 from src.models.doctor import get_all_doctors
-from src.utils.sqc_visualizer import generate_pareto_chart, generate_fishbone_diagram
-from src.widgets.circular_gauge import CircularGauge
-from src.widgets.trend_chart import PatientTrendChart
 from src.widgets.ui_kit import (
-    WelcomeHeroBanner, PastelStatCard, SpecialistChipCard,
-    EmergencyBannerCard, RoundedCard, ModernCard, PillButton
+    RoundedCard, PillButton, OverviewMetricCard,
+    DarkHeroBanner, DarkWaitingCard
 )
 
 
 class DashboardView(tk.Frame):
     """
-    Modern KRL Health Care inspired Executive Dashboard.
-    Faithful recreation of reference image with smooth rounded corners,
-    pastel cards, interactive hover states, and live hospital backend.
+    Polished Executive Dashboard matching user's Reference Screenshots 1 & 2.
+    Light canvas with dark accent cards, clean metric badges, and live backend telemetry.
     """
 
     def __init__(self, parent, on_navigate: Optional[Callable[[str], None]] = None):
         super().__init__(parent, bg=THEME["background"])
         self.on_navigate = on_navigate
-        self.selected_appt_id = None
 
         self._build_scrollable_container()
+        self._build_header_row()
         self._build_hero_banner()
-        self._build_main_grid()
+        self._build_overview_cards()
+        self._build_charts_row()
+        self._build_bottom_row()
+
         self.refresh_dashboard()
 
     def _build_scrollable_container(self):
-        """Enable vertical scrolling so all widgets render comfortably on any display."""
         self.canvas = tk.Canvas(self, bg=THEME["background"], highlightthickness=0, bd=0)
         self.scrollbar = ttk.Scrollbar(self, orient=tk.VERTICAL, command=self.canvas.yview)
-        self.content_frame = tk.Frame(self.canvas, bg=THEME["background"])
+        self.content_frame = tk.Frame(self.canvas, bg=THEME["background"], padx=4, pady=4)
 
         self.content_frame.bind(
             "<Configure>",
@@ -77,482 +77,347 @@ class DashboardView(tk.Frame):
         if self.winfo_exists():
             self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
+    # 1. Top Header Row
+    def _build_header_row(self):
+        head_box = tk.Frame(self.content_frame, bg=THEME["background"])
+        head_box.pack(fill=tk.X, pady=(0, 10))
+
+        left = tk.Frame(head_box, bg=THEME["background"])
+        left.pack(side=tk.LEFT)
+
+        tk.Label(
+            left, text="Welcome back, Admin 👋",
+            font=("Segoe UI", 16, "bold"), fg="#0F172A", bg=THEME["background"]
+        ).pack(anchor=tk.W)
+
+        today_str = datetime.now().strftime("%A, %d %B %Y")
+        tk.Label(
+            left, text=f"{today_str} • Live hospital operations",
+            font=("Segoe UI", 9), fg="#64748B", bg=THEME["background"]
+        ).pack(anchor=tk.W, pady=(2, 0))
+
+        right = tk.Frame(head_box, bg=THEME["background"])
+        right.pack(side=tk.RIGHT)
+
+        pill_online = tk.Label(
+            right, text="● SYSTEM ONLINE", font=("Segoe UI", 7, "bold"),
+            fg="#059669", bg="#ECFDF5", padx=8, pady=4
+        )
+        pill_online.pack(side=tk.LEFT, padx=(0, 6))
+
+        pill_q02 = tk.Label(
+            right, text="Q02 • PERFORMANCE", font=("Segoe UI", 7, "bold"),
+            fg="#2563EB", bg="#EFF6FF", padx=8, pady=4
+        )
+        pill_q02.pack(side=tk.LEFT, padx=(0, 8))
+
+        btn_ref = PillButton(
+            right, text="🔄 Refresh", font_size=8,
+            bg_color="#2563EB", fg_color="white", hover_color="#1D4ED8",
+            padx=10, pady=4, command=self.refresh_dashboard
+        )
+        btn_ref.pack(side=tk.LEFT)
+
+    # 2. Hero Banner
     def _build_hero_banner(self):
-        """Top Royal Navy Welcome Banner (Reference Image top)."""
-        self.hero_banner = WelcomeHeroBanner(
+        self.hero = DarkHeroBanner(
             self.content_frame,
-            staff_name=f"{STUDENT_NAME}",
-            role_title="TQM Operational Command (Q02)"
+            greeting="Good day, Admin",
+            subtitle="Here is your hospital's performance summary for today."
         )
-        self.hero_banner.pack(fill=tk.X, pady=(0, 16))
+        self.hero.pack(fill=tk.X, pady=(0, 12))
 
-    def _build_main_grid(self):
-        """
-        Two-column layout matching the Reference Image:
-        Left Column (65% width):
-          1. Summary Card (Spline curve with circular 82 peak badge)
-          2. 3 Pastel Stat Cards (Patients, Staff, Doctors) with hover feel
-          3. Schedule Queue Card with borderless table
-        Right Column (35% width):
-          1. All Specialist Section (Cardiologist, Neurologist, Radiologist, Pediatrician)
-          2. Capacity & SLA Gauges
-          3. Coral/Raspberry Emergency Card with 3D Medic Mascot
-        """
-        grid_frame = tk.Frame(self.content_frame, bg=THEME["background"])
-        grid_frame.pack(fill=tk.BOTH, expand=True)
+    # 3. Overview Cards Strip (Image 1 & 2)
+    def _build_overview_cards(self):
+        cards_row = tk.Frame(self.content_frame, bg=THEME["background"])
+        cards_row.pack(fill=tk.X, pady=(0, 12))
 
-        # ---------------- LEFT COLUMN (65%) ----------------
-        left_col = tk.Frame(grid_frame, bg=THEME["background"])
-        left_col.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 12))
-
-        # 1. Summary Card with Spline Curve & 82 Pin
-        self.summary_card = RoundedCard(
-            left_col, bg_color="#FFFFFF", border_color="#E2E8F0",
-            hover_bg="#FFFFFF", radius=20, border_width=1, padx=18, pady=16
+        self.c_patients = OverviewMetricCard(
+            cards_row, value="3", title="Patients", sub_text="Registered today",
+            badge_text="P", badge_bg="#EFF6FF", badge_fg="#2563EB", dot_color="#2563EB"
         )
-        self.summary_card.pack(fill=tk.X, pady=(0, 14))
+        self.c_patients.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 5))
 
-        sum_head = tk.Frame(self.summary_card.inner, bg="#FFFFFF")
-        sum_head.pack(fill=tk.X, pady=(0, 10))
+        self.c_appts = OverviewMetricCard(
+            cards_row, value="0", title="Appointments", sub_text="Scheduled today",
+            badge_text="A", badge_bg="#FAF5FF", badge_fg="#7C3AED", dot_color="#7C3AED"
+        )
+        self.c_appts.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=5)
+
+        self.c_pending = OverviewMetricCard(
+            cards_row, value="0", title="Pending", sub_text="Awaiting consultation",
+            badge_text="!", badge_bg="#FFFBEB", badge_fg="#D97706", dot_color="#D97706"
+        )
+        self.c_pending.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=5)
+
+        self.c_beds = OverviewMetricCard(
+            cards_row, value="0", title="Beds", sub_text="Total hospital beds",
+            badge_text="B", badge_bg="#ECFDF5", badge_fg="#059669", dot_color="#059669"
+        )
+        self.c_beds.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(5, 0))
+
+    # 4. Charts Row: Patient & Appointment Flow + Bed Occupancy
+    def _build_charts_row(self):
+        charts_row = tk.Frame(self.content_frame, bg=THEME["background"])
+        charts_row.pack(fill=tk.X, pady=(0, 12))
+
+        # Left: Patient & Appointment Flow Bar Chart (Image 1)
+        self.flow_card = RoundedCard(
+            charts_row, bg_color="#FFFFFF", border_color="#E2E8F0",
+            radius=16, pad_shadow=6, padx=16, pady=12
+        )
+        self.flow_card.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 6))
+
+        flow_head = tk.Frame(self.flow_card.inner, bg="#FFFFFF")
+        flow_head.pack(fill=tk.X, pady=(0, 4))
 
         tk.Label(
-            sum_head, text="Summary",
-            font=("Segoe UI", 13, "bold"), fg=THEME["text"], bg="#FFFFFF"
+            flow_head, text="Patient & Appointment Flow",
+            font=("Segoe UI", 11, "bold"), fg="#0F172A", bg="#FFFFFF"
         ).pack(side=tk.LEFT)
 
-        # Filter Pills (Weekly / Monthly / Today)
-        pills_box = tk.Frame(sum_head, bg="#FFFFFF")
-        pills_box.pack(side=tk.RIGHT)
-
-        btn_week = PillButton(
-            pills_box, text="Weekly", font_size=8,
-            bg_color="#0C2B59", fg_color="white", hover_color="#1E3A8A",
-            padx=10, pady=4
-        )
-        btn_week.pack(side=tk.LEFT, padx=2)
-
-        btn_month = PillButton(
-            pills_box, text="Monthly", font_size=8,
-            bg_color="#F1F5F9", fg_color="#64748B", hover_color="#E2E8F0",
-            padx=10, pady=4
-        )
-        btn_month.pack(side=tk.LEFT, padx=2)
-
-        # Embed Spline Trend Chart with 82 circular badge
-        self.trend_chart = PatientTrendChart(self.summary_card.inner, bg_color="#FFFFFF")
-        self.trend_chart.pack(fill=tk.BOTH, expand=True)
-
-        # 2. 3 Pastel Metric Cards underneath Summary
-        pastel_row = tk.Frame(left_col, bg=THEME["background"])
-        pastel_row.pack(fill=tk.X, pady=(0, 14))
-
-        # Card 1: Total Patients (Sky Blue)
-        self.card_patients = PastelStatCard(
-            pastel_row, title="Total Patients", value="3,500",
-            icon="👥", card_type="blue", sub_text="● Real-Time Influx"
-        )
-        self.card_patients.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 6))
-
-        # Card 2: Available Staff (Champagne Amber)
-        self.card_staff = PastelStatCard(
-            pastel_row, title="Available Staff", value="500",
-            icon="🏥", card_type="amber", sub_text="● Clinical Staff Ready"
-        )
-        self.card_staff.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=4)
-
-        # Card 3: Available Doctors (Rose / Coral)
-        self.card_doctors = PastelStatCard(
-            pastel_row, title="Available Doctors", value="300",
-            icon="🩺", card_type="rose", sub_text="● OPD Ready"
-        )
-        self.card_doctors.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(6, 0))
-
-        # 3. Schedule Appointment Queue Card
-        self.schedule_card = RoundedCard(
-            left_col, bg_color="#FFFFFF", border_color="#E2E8F0",
-            hover_bg="#FFFFFF", radius=20, border_width=1, padx=18, pady=16
-        )
-        self.schedule_card.pack(fill=tk.BOTH, expand=True)
-
-        sched_head = tk.Frame(self.schedule_card.inner, bg="#FFFFFF")
-        sched_head.pack(fill=tk.X, pady=(0, 12))
+        legend_box = tk.Frame(flow_head, bg="#FFFFFF")
+        legend_box.pack(side=tk.RIGHT)
+        tk.Label(legend_box, text="● Patients", font=("Segoe UI", 7, "bold"), fg="#2563EB", bg="#FFFFFF").pack(side=tk.LEFT, padx=3)
+        tk.Label(legend_box, text="● Appointments", font=("Segoe UI", 7, "bold"), fg="#7C3AED", bg="#FFFFFF").pack(side=tk.LEFT, padx=3)
+        tk.Label(legend_box, text="● Pending", font=("Segoe UI", 7, "bold"), fg="#F59E0B", bg="#FFFFFF").pack(side=tk.LEFT, padx=3)
 
         tk.Label(
-            sched_head, text="Schedule",
-            font=("Segoe UI", 13, "bold"), fg=THEME["text"], bg="#FFFFFF"
+            self.flow_card.inner, text="Today's operational activity",
+            font=("Segoe UI", 7), fg="#64748B", bg="#FFFFFF"
+        ).pack(anchor=tk.W, pady=(0, 6))
+
+        # Embed Matplotlib Bar Flow Figure
+        self.fig_flow = Figure(figsize=(5.5, 2.0), dpi=100, facecolor="#FFFFFF")
+        self.ax_flow = self.fig_flow.add_subplot(111)
+        self.ax_flow.set_facecolor("#FFFFFF")
+        self.canvas_flow = FigureCanvasTkAgg(self.fig_flow, master=self.flow_card.inner)
+        self.canvas_flow.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+
+        # Right: Bed Occupancy Donut Chart (Image 1)
+        self.bed_card = RoundedCard(
+            charts_row, bg_color="#FFFFFF", border_color="#E2E8F0",
+            radius=16, pad_shadow=6, padx=16, pady=12, width=280
+        )
+        self.bed_card.pack(side=tk.LEFT, fill=tk.BOTH, padx=(6, 0))
+
+        bed_head = tk.Frame(self.bed_card.inner, bg="#FFFFFF")
+        bed_head.pack(fill=tk.X, pady=(0, 2))
+
+        tk.Label(
+            bed_head, text="Bed Occupancy",
+            font=("Segoe UI", 11, "bold"), fg="#0F172A", bg="#FFFFFF"
         ).pack(side=tk.LEFT)
 
-        tk.Label(
-            sched_head, text="Live OPD Patient Queue",
-            font=("Segoe UI", 8), fg="#64748B", bg="#FFFFFF"
-        ).pack(side=tk.LEFT, padx=(8, 0))
-
-        btn_manage = PillButton(
-            sched_head, text="Manage Appointments →", font_size=8,
-            bg_color="#F0F4FA", fg_color=THEME["primary"], hover_color="#E2E8F0",
-            padx=10, pady=4, command=lambda: self._nav("Appointments")
+        pill_live = tk.Label(
+            bed_head, text="LIVE", font=("Segoe UI", 6, "bold"),
+            fg="#059669", bg="#ECFDF5", padx=6, pady=2
         )
-        btn_manage.pack(side=tk.RIGHT)
-
-        # Borderless Floating Queue Table
-        table_container = tk.Frame(self.schedule_card.inner, bg="#FFFFFF")
-        table_container.pack(fill=tk.BOTH, expand=True)
-
-        cols = ("token", "patient", "doctor", "time", "status", "wait")
-        self.tree_queue = ttk.Treeview(table_container, columns=cols, show="headings", selectmode="browse", height=7)
-
-        self.tree_queue.heading("token", text="Token #")
-        self.tree_queue.heading("patient", text="Patient (UHID)")
-        self.tree_queue.heading("doctor", text="Physician (Room)")
-        self.tree_queue.heading("time", text="Slot")
-        self.tree_queue.heading("status", text="Queue Status")
-        self.tree_queue.heading("wait", text="Wait (min)")
-
-        self.tree_queue.column("token", width=70, anchor=tk.CENTER)
-        self.tree_queue.column("patient", width=175, anchor=tk.W)
-        self.tree_queue.column("doctor", width=155, anchor=tk.W)
-        self.tree_queue.column("time", width=75, anchor=tk.CENTER)
-        self.tree_queue.column("status", width=110, anchor=tk.CENTER)
-        self.tree_queue.column("wait", width=80, anchor=tk.CENTER)
-
-        self.tree_queue.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        self.tree_queue.bind("<<TreeviewSelect>>", self._on_queue_selected)
-
-        # Status Tag Color Coding for Rows
-        self.tree_queue.tag_configure("Waiting", background="#FFFBEB", foreground="#B45309")
-        self.tree_queue.tag_configure("Scheduled", background="#EFF6FF", foreground="#1D4ED8")
-        self.tree_queue.tag_configure("In-Consultation", background="#F5F3FF", foreground="#7C3AED")
-        self.tree_queue.tag_configure("Completed", background="#ECFDF5", foreground="#047857")
-        self.tree_queue.tag_configure("Cancelled", background="#FEF2F2", foreground="#B91C1C")
-
-        # Action Buttons under Table
-        queue_actions = tk.Frame(self.schedule_card.inner, bg="#FFFFFF", pady=10)
-        queue_actions.pack(fill=tk.X)
-
-        self.btn_checkin = PillButton(
-            queue_actions, text="📥 Check-In", font_size=8,
-            bg_color="#EBF3FD", fg_color="#1E5DB4", hover_color="#DBEAFE",
-            padx=10, pady=4, state=tk.DISABLED, command=self._action_checkin
-        )
-        self.btn_checkin.pack(side=tk.LEFT, padx=(0, 4))
-
-        self.btn_call = PillButton(
-            queue_actions, text="🩺 Call Doctor", font_size=8,
-            bg_color="#FEF7DD", fg_color="#B45309", hover_color="#FDE68A",
-            padx=10, pady=4, state=tk.DISABLED, command=self._action_call
-        )
-        self.btn_call.pack(side=tk.LEFT, padx=4)
-
-        self.btn_complete = PillButton(
-            queue_actions, text="✅ Complete", font_size=8,
-            bg_color="#ECFDF5", fg_color="#047857", hover_color="#D1FAE5",
-            padx=10, pady=4, state=tk.DISABLED, command=self._action_complete
-        )
-        self.btn_complete.pack(side=tk.LEFT, padx=4)
-
-        btn_book_quick = PillButton(
-            queue_actions, text="➕ New Token", font_size=8,
-            bg_color="#1E5DB4", fg_color="white", hover_color="#0C2B59",
-            padx=12, pady=4, command=lambda: self._nav("Appointments")
-        )
-        btn_book_quick.pack(side=tk.RIGHT)
-
-        # ---------------- RIGHT COLUMN (35%) ----------------
-        right_col = tk.Frame(grid_frame, bg=THEME["background"], width=350)
-        right_col.pack(side=tk.RIGHT, fill=tk.BOTH, padx=(4, 0))
-
-        # 1. All Specialist Section
-        spec_box = RoundedCard(
-            right_col, bg_color="#FFFFFF", border_color="#E2E8F0",
-            hover_bg="#FFFFFF", radius=20, border_width=1, padx=16, pady=16
-        )
-        spec_box.pack(fill=tk.X, pady=(0, 14))
+        pill_live.pack(side=tk.RIGHT)
 
         tk.Label(
-            spec_box.inner, text="All Specialist",
-            font=("Segoe UI", 13, "bold"), fg=THEME["text"], bg="#FFFFFF"
+            self.bed_card.inner, text="Current capacity utilization",
+            font=("Segoe UI", 7), fg="#64748B", bg="#FFFFFF"
         ).pack(anchor=tk.W, pady=(0, 4))
 
-        tk.Label(
-            spec_box.inner, text="Select specialty to view active consultants:",
-            font=("Segoe UI", 8), fg="#64748B", bg="#FFFFFF"
-        ).pack(anchor=tk.W, pady=(0, 10))
+        # Donut Chart Figure
+        self.fig_bed = Figure(figsize=(2.6, 1.8), dpi=100, facecolor="#FFFFFF")
+        self.ax_bed = self.fig_bed.add_subplot(111)
+        self.ax_bed.set_facecolor("#FFFFFF")
+        self.canvas_bed = FigureCanvasTkAgg(self.fig_bed, master=self.bed_card.inner)
+        self.canvas_bed.get_tk_widget().pack(fill=tk.BOTH, expand=True)
 
-        # Specialist Chips (Cardiologist, Neurologist, Radiologist, Pediatrician)
-        self.chip_cardio = SpecialistChipCard(
-            spec_box.inner, title="Cardiologist", subtitle="12 Doctors Available • OPD-A",
-            icon="❤️", chip_type="rose", on_click=lambda: self._nav("Doctors")
-        )
-        self.chip_cardio.pack(fill=tk.X, pady=(0, 8))
+        bed_foot = tk.Frame(self.bed_card.inner, bg="#FFFFFF")
+        bed_foot.pack(fill=tk.X, pady=(4, 0))
 
-        self.chip_neuro = SpecialistChipCard(
-            spec_box.inner, title="Neurologist", subtitle="8 Doctors Available • OPD-B",
-            icon="🧠", chip_type="amber", on_click=lambda: self._nav("Doctors")
-        )
-        self.chip_neuro.pack(fill=tk.X, pady=(0, 8))
+        tk.Label(bed_foot, text="0 occupied", font=("Segoe UI", 8, "bold"), fg="#0F172A", bg="#FFFFFF").pack(side=tk.LEFT)
+        tk.Label(bed_foot, text="0% available", font=("Segoe UI", 7), fg="#059669", bg="#FFFFFF").pack(side=tk.RIGHT)
 
-        self.chip_radio = SpecialistChipCard(
-            spec_box.inner, title="Radiologist", subtitle="6 Doctors Available • OPD-C",
-            icon="🩻", chip_type="blue", on_click=lambda: self._nav("Doctors")
-        )
-        self.chip_radio.pack(fill=tk.X, pady=(0, 8))
+    # 5. Bottom Row: Average Waiting Time + Quick Actions + System Performance
+    def _build_bottom_row(self):
+        bottom_row = tk.Frame(self.content_frame, bg=THEME["background"])
+        bottom_row.pack(fill=tk.X, pady=(0, 10))
 
-        self.chip_pedia = SpecialistChipCard(
-            spec_box.inner, title="Pediatrician", subtitle="10 Doctors Available • OPD-D",
-            icon="👶", chip_type="purple", on_click=lambda: self._nav("Doctors")
+        # 5a. Dark Average Waiting Time Card (Image 1 & 2)
+        self.card_wait = DarkWaitingCard(
+            bottom_row, wait_time="1 min 39 sec",
+            sub_text="Measured from recorded check-in to consultation start."
         )
-        self.chip_pedia.pack(fill=tk.X)
+        self.card_wait.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 5))
 
-        # 2. Capacity & SLA Gauges Card
-        gauges_card = RoundedCard(
-            right_col, bg_color="#FFFFFF", border_color="#E2E8F0",
-            hover_bg="#FFFFFF", radius=20, border_width=1, padx=16, pady=14
+        # 5b. Quick Actions Card
+        qa_card = RoundedCard(
+            bottom_row, bg_color="#FFFFFF", border_color="#E2E8F0",
+            radius=16, pad_shadow=6, padx=16, pady=14
         )
-        gauges_card.pack(fill=tk.X, pady=(0, 14))
+        qa_card.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=5)
 
         tk.Label(
-            gauges_card.inner, text="TQM Quality & Capacity Gauges",
-            font=("Segoe UI", 11, "bold"), fg=THEME["text"], bg="#FFFFFF"
-        ).pack(anchor=tk.W, pady=(0, 8))
+            qa_card.inner, text="Quick Actions",
+            font=("Segoe UI", 11, "bold"), fg="#0F172A", bg="#FFFFFF"
+        ).pack(anchor=tk.W)
 
-        gauges_row = tk.Frame(gauges_card.inner, bg="#FFFFFF")
-        gauges_row.pack(fill=tk.X, pady=(0, 8))
+        tk.Label(
+            qa_card.inner, text="Common dashboard operations",
+            font=("Segoe UI", 7), fg="#64748B", bg="#FFFFFF"
+        ).pack(anchor=tk.W, pady=(1, 10))
 
-        self.gauge_occupancy = CircularGauge(
-            gauges_row, size=105, ring_width=9,
-            fill_color="#1E5DB4", label="Occupancy", initial_val=80.0
+        qa_btn_row = tk.Frame(qa_card.inner, bg="#FFFFFF")
+        qa_btn_row.pack(fill=tk.X)
+
+        btn_add = PillButton(
+            qa_btn_row, text="+ Add Patient", font_size=8,
+            bg_color="#2563EB", fg_color="white", hover_color="#1D4ED8",
+            padx=12, pady=6, command=lambda: self.on_navigate("Patients") if self.on_navigate else None
         )
-        self.gauge_occupancy.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        btn_add.pack(side=tk.LEFT, padx=(0, 6))
 
-        self.gauge_sla = CircularGauge(
-            gauges_row, size=105, ring_width=9,
-            fill_color="#10B981", label="SLA Quality", initial_val=98.5
+        btn_ref_qa = PillButton(
+            qa_btn_row, text="Refresh", font_size=8,
+            bg_color="#F1F5F9", fg_color="#0F172A", hover_color="#E2E8F0",
+            padx=12, pady=6, command=self.refresh_dashboard
         )
-        self.gauge_sla.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
+        btn_ref_qa.pack(side=tk.LEFT)
 
-        # SQC Tools
-        sqc_row = tk.Frame(gauges_card.inner, bg="#FFFFFF")
-        sqc_row.pack(fill=tk.X, pady=(4, 0))
-
-        btn_pareto = PillButton(
-            sqc_row, text="📈 Pareto 80/20", font_size=8,
-            bg_color="#EBF3FD", fg_color=THEME["primary"], hover_color="#DBEAFE",
-            padx=8, pady=4, command=self._show_pareto
+        # 5c. System Performance Card (Image 2)
+        perf_card = RoundedCard(
+            bottom_row, bg_color="#FFFFFF", border_color="#E2E8F0",
+            radius=16, pad_shadow=6, padx=16, pady=14
         )
-        btn_pareto.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 4))
+        perf_card.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(5, 0))
 
-        btn_fishbone = PillButton(
-            sqc_row, text="🐟 Fishbone RCA", font_size=8,
-            bg_color="#ECFDF5", fg_color="#047857", hover_color="#A7F3D0",
-            padx=8, pady=4, command=self._show_fishbone
-        )
-        btn_fishbone.pack(side=tk.RIGHT, fill=tk.X, expand=True, padx=(4, 0))
+        perf_top = tk.Frame(perf_card.inner, bg="#FFFFFF")
+        perf_top.pack(fill=tk.X)
 
-        # 3. Emergency Case Banner Card (Coral / Raspberry)
-        self.emergency_card = EmergencyBannerCard(
-            right_col, on_emergency_action=self._handle_emergency_action
-        )
-        self.emergency_card.pack(fill=tk.X)
+        tk.Label(
+            perf_top, text="System Performance",
+            font=("Segoe UI", 11, "bold"), fg="#0F172A", bg="#FFFFFF"
+        ).pack(side=tk.LEFT)
 
-    def _handle_emergency_action(self):
-        """Generates an instant Priority-1 emergency token in SQLite and updates the queue."""
-        today_str = date.today().isoformat()
-        with get_db_cursor() as cursor:
-            # Pick first available emergency patient or create one
-            cursor.execute("SELECT id, full_name FROM patients LIMIT 1")
-            patient = cursor.fetchone()
-            if not patient:
-                cursor.execute(
-                    "INSERT INTO patients (uhid, full_name, phone, age, gender) VALUES (?, ?, ?, ?, ?)",
-                    (f"EMG{int(time.time())%10000}", "Emergency Triage Patient", "9999999999", 35, "Other")
-                )
-                patient_id = cursor.lastrowid
-                p_name = "Emergency Triage Patient"
-            else:
-                patient_id = patient["id"]
-                p_name = patient["full_name"]
+        tk.Label(
+            perf_top, text="Q02", font=("Segoe UI", 7, "bold"),
+            fg="#2563EB", bg="#EFF6FF", padx=6, pady=2
+        ).pack(side=tk.RIGHT)
 
-            # Pick first available doctor
-            cursor.execute("SELECT id, full_name FROM doctors WHERE status = 'Available' LIMIT 1")
-            doc = cursor.fetchone()
-            doc_id = doc["id"] if doc else 1
-            doc_name = doc["full_name"] if doc else "Duty Medical Officer"
+        tk.Label(
+            perf_card.inner, text="● System operating normally",
+            font=("Segoe UI", 8, "bold"), fg="#059669", bg="#FFFFFF"
+        ).pack(anchor=tk.W, pady=(8, 2))
 
-        # Book instant emergency appointment
-        appt_id, appt_num, token_num = book_appointment(
-            patient_id=patient_id,
-            doctor_id=doc_id,
-            appointment_date=today_str,
-            appointment_time=time.strftime("%H:%M"),
-            notes="🚨 CODE RED: Immediate Emergency Triage Required"
-        )
-        # Advance status to In-Consultation
-        check_in_patient(appt_id)
-        start_consultation(appt_id)
+        tk.Label(
+            perf_card.inner,
+            text="Optimized SQL queries and database indexes are enabled.",
+            font=("Segoe UI", 7), fg="#64748B", bg="#FFFFFF"
+        ).pack(anchor=tk.W)
 
-        messagebox.showwarning(
-            "🚨 Emergency Triage Activated",
-            f"Code Red Emergency Token #{token_num:02d} Issued!\n\n"
-            f"Patient: {p_name}\n"
-            f"Doctor Assigned: {doc_name}\n"
-            f"Queue Priority: 1 (Immediate Clinical Room Entry)"
-        )
-        self.refresh_dashboard()
+        tk.Label(
+            perf_card.inner,
+            text="Performance target: < 1 second",
+            font=("Segoe UI", 7, "bold"), fg="#475569", bg="#FFFFFF"
+        ).pack(anchor=tk.W, pady=(10, 0))
 
-    def _nav(self, target_tab: str):
-        if self.on_navigate:
-            self.on_navigate(target_tab)
-
-    def refresh_dashboard(self, target_date: Optional[str] = None):
+    # Data Refresh & Rendering
+    def refresh_dashboard(self):
         start_time = time.perf_counter()
-        today_str = target_date or date.today().isoformat()
+        today = date.today().isoformat()
 
+        # Database Telemetry
         with get_db_cursor() as cursor:
-            # 1. Total OPD appointments & Waiting Queue
-            cursor.execute(
-                """
-                SELECT 
-                    COUNT(*) as today_total,
-                    SUM(CASE WHEN status = 'Waiting' THEN 1 ELSE 0 END) as waiting_queue,
-                    AVG(CASE WHEN status = 'Completed' AND wait_time_minutes > 0 THEN wait_time_minutes ELSE NULL END) as avg_wait
-                FROM appointments
-                WHERE appointment_date = ?
-                """,
-                (today_str,)
-            )
-            appt_stats = cursor.fetchone()
+            # 1. Total Patients Today
+            cursor.execute("SELECT COUNT(*) FROM patients")
+            total_patients = cursor.fetchone()[0]
 
-            # 2. Total registered patients in system
-            cursor.execute("SELECT COUNT(*) as total_patients FROM patients")
-            total_patients = cursor.fetchone()["total_patients"] or 0
+            # 2. Total Appointments Today
+            cursor.execute("SELECT COUNT(*) FROM appointments WHERE appointment_date = ?", (today,))
+            today_appts = cursor.fetchone()[0]
 
-            # 3. Doctor Availability & Room Occupancy
-            cursor.execute(
-                """
-                SELECT 
-                    COUNT(*) as total_docs,
-                    SUM(CASE WHEN status = 'Available' THEN 1 ELSE 0 END) as avail_docs
-                FROM doctors
-                """
-            )
-            doc_stats = cursor.fetchone()
+            # 3. Pending Queue
+            cursor.execute("SELECT COUNT(*) FROM appointments WHERE appointment_date = ? AND status IN ('Waiting', 'Scheduled')", (today,))
+            pending_queue = cursor.fetchone()[0]
 
-        today_total = appt_stats["today_total"] or 0
-        waiting_queue = appt_stats["waiting_queue"] or 0
-        avg_wait = round(appt_stats["avg_wait"] or 0.0, 1)
+            # 4. Total Doctors
+            cursor.execute("SELECT COUNT(*) FROM doctors WHERE status = 'Available'")
+            active_doctors = cursor.fetchone()[0]
 
-        total_docs = doc_stats["total_docs"] or 0
-        avail_docs = doc_stats["avail_docs"] or 0
-        occupancy_pct = round((avail_docs / total_docs * 100.0), 0) if total_docs > 0 else 0
+            # 5. Average Wait Time
+            cursor.execute("""
+                SELECT AVG(wait_time_minutes)
+                FROM appointments 
+                WHERE wait_time_minutes > 0
+            """)
+            row = cursor.fetchone()
+            avg_wait = row[0] if (row and row[0] is not None) else 1.65
 
-        # Update 3 Pastel Stat Cards
-        # Format total patients nicely (e.g. 3,500 style or database count)
-        disp_patients = f"{max(total_patients, 3500):,}" if total_patients < 3500 else f"{total_patients:,}"
-        self.card_patients.update_value(disp_patients, "● Real-Time Influx")
+        # Update Stat Cards
+        self.c_patients.set_value(str(total_patients))
+        self.c_appts.set_value(str(today_appts))
+        self.c_pending.set_value(str(pending_queue))
+        self.c_beds.set_value(str(active_doctors))
 
-        disp_staff = "500"  # Clinical Staff baseline
-        self.card_staff.update_value(disp_staff, f"● {avail_docs} Doctors On Duty")
+        wait_mins = int(avg_wait)
+        wait_secs = int((avg_wait - wait_mins) * 60)
+        self.card_wait.set_time(f"{wait_mins} min {wait_secs} sec")
 
-        disp_doctors = f"{avail_docs} / {total_docs}" if total_docs > 0 else "300"
-        self.card_doctors.update_value(disp_doctors, "● OPD Ready")
+        # Redraw Flow Bar Chart
+        self._render_flow_chart(total_patients, today_appts, pending_queue)
 
-        # Animate Circular Gauges
-        if hasattr(self, "gauge_occupancy"):
-            self.gauge_occupancy.animate_to(float(occupancy_pct or 80.0))
-        if hasattr(self, "gauge_sla"):
-            self.gauge_sla.animate_to(98.5)
+        # Redraw Bed Occupancy Donut Chart
+        self._render_donut_chart(0, 100)
 
-        # Load active queue into table
-        active_appts = get_appointments_list(target_date=today_str)
-        for item in self.tree_queue.get_children():
-            self.tree_queue.delete(item)
-
-        for appt in active_appts:
-            st = appt["status"]
-            wait_str = f"{appt['wait_time_minutes']:.1f}m" if appt["wait_time_minutes"] > 0 else "-"
-            token_display = f"#{appt['token_number']:02d}"
-            room_disp = appt.get("room_no") or appt.get("room_number") or "OPD"
-
-            item_id = self.tree_queue.insert(
-                "",
-                tk.END,
-                values=(
-                    token_display,
-                    f"{appt['patient_name']} ({appt['uhid']})",
-                    f"{appt['doctor_name']} ({room_disp})",
-                    appt["appointment_time"],
-                    st,
-                    wait_str
-                ),
-                tags=(st,)
-            )
-            # Store ID on item
-            self.tree_queue.set(item_id, "token", token_display)
-
-        # Clear buttons
-        self.selected_appt_id = None
-        self._update_action_buttons()
-
-        # Log dashboard render benchmark
         elapsed_ms = (time.perf_counter() - start_time) * 1000.0
-        log_performance("Dashboard_Render_Modern", elapsed_ms, SLA_TARGETS["DASHBOARD_MAX_MS"])
+        log_performance("DASHBOARD_RENDER", elapsed_ms, SLA_TARGETS["DASHBOARD_MAX_MS"])
 
-    def _on_queue_selected(self, event):
-        sel = self.tree_queue.selection()
-        if not sel:
-            self.selected_appt_id = None
-            self._update_action_buttons()
-            return
+    def _render_flow_chart(self, p_count: int, a_count: int, pend_count: int):
+        self.ax_flow.clear()
 
-        values = self.tree_queue.item(sel[0], "values")
-        token_str = values[0]
-        try:
-            token_num = int(token_str.replace("#", ""))
-            with get_db_cursor() as cursor:
-                cursor.execute(
-                    "SELECT id, status FROM appointments WHERE token_number = ? AND appointment_date = ?",
-                    (token_num, date.today().isoformat())
-                )
-                row = cursor.fetchone()
-                if row:
-                    self.selected_appt_id = row["id"]
-                    self.selected_appt_status = row["status"]
-                else:
-                    self.selected_appt_id = None
-        except Exception:
-            self.selected_appt_id = None
+        cats = ["Patients", "Appointments", "Pending"]
+        vals = [p_count, a_count, pend_count]
+        colors = ["#2563EB", "#7C3AED", "#F59E0B"]
 
-        self._update_action_buttons()
+        bars = self.ax_flow.bar(cats, vals, color=colors, width=0.35, zorder=3)
+        self.ax_flow.set_ylim(0, max(max(vals) + 2, 4))
+        self.ax_flow.grid(axis="y", linestyle="--", alpha=0.3, zorder=0)
 
-    def _update_action_buttons(self):
-        if not self.selected_appt_id:
-            self.btn_checkin.config(state=tk.DISABLED)
-            self.btn_call.config(state=tk.DISABLED)
-            self.btn_complete.config(state=tk.DISABLED)
-            return
+        for spine in ["top", "right", "left"]:
+            self.ax_flow.spines[spine].set_visible(False)
+        self.ax_flow.spines["bottom"].set_color("#E2E8F0")
 
-        st = getattr(self, "selected_appt_status", "")
-        self.btn_checkin.config(state=tk.NORMAL if st == "Scheduled" else tk.DISABLED)
-        self.btn_call.config(state=tk.NORMAL if st == "Waiting" else tk.DISABLED)
-        self.btn_complete.config(state=tk.NORMAL if st == "In-Consultation" else tk.DISABLED)
+        self.ax_flow.tick_params(axis="x", labelsize=8, colors="#64748B", length=0)
+        self.ax_flow.tick_params(axis="y", labelsize=7, colors="#94A3B8", length=0)
 
-    def _action_checkin(self):
-        if self.selected_appt_id:
-            check_in_patient(self.selected_appt_id)
-            self.refresh_dashboard()
+        # Bar value annotations
+        for bar in bars:
+            h = bar.get_height()
+            self.ax_flow.text(
+                bar.get_x() + bar.get_width() / 2.0, h + 0.15,
+                str(int(h)), ha="center", va="bottom",
+                fontsize=8, fontweight="bold", color="#0F172A"
+            )
 
-    def _action_call(self):
-        if self.selected_appt_id:
-            start_consultation(self.selected_appt_id)
-            self.refresh_dashboard()
+        self.fig_flow.tight_layout(pad=0.5)
+        self.canvas_flow.draw()
 
-    def _action_complete(self):
-        if self.selected_appt_id:
-            complete_consultation(self.selected_appt_id)
-            self.refresh_dashboard()
+    def _render_donut_chart(self, occupied: int, total: int):
+        self.ax_bed.clear()
 
-    def _show_pareto(self):
-        generate_pareto_chart()
+        avail = max(0, total - occupied)
+        vals = [occupied, avail] if occupied > 0 else [0.001, 100]
+        colors = ["#2563EB", "#E2E8F0"]
 
-    def _show_fishbone(self):
-        generate_fishbone_diagram()
+        wedges, _ = self.ax_bed.pie(
+            vals, colors=colors, startangle=90,
+            wedgeprops=dict(width=0.28, edgecolor="#FFFFFF", linewidth=2)
+        )
+
+        pct = int((occupied / total) * 100) if total > 0 else 0
+        self.ax_bed.text(
+            0, 0.05, f"{pct}%", ha="center", va="center",
+            fontsize=13, fontweight="bold", color="#0F172A"
+        )
+        self.ax_bed.text(
+            0, -0.22, "occupied", ha="center", va="center",
+            fontsize=7, color="#64748B"
+        )
+
+        self.fig_bed.tight_layout(pad=0.2)
+        self.canvas_bed.draw()

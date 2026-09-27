@@ -668,3 +668,224 @@ class HeroMetricCard(PastelStatCard):
         elif "rose" in bg_color.lower() or "e11d48" in bg_color.lower() or "red" in bg_color.lower():
             ctype = "rose"
         super().__init__(parent, title=title, value=value, icon=icon, card_type=ctype, sub_text=sub)
+
+
+class AccentLineStatCard(RoundedCard):
+    """
+    Polished Metric Card with Colored Vertical Left Accent Bar (Image 4 & 5).
+    Features large bold number, title, and subtext on pure white background.
+    """
+    def __init__(self, parent, value: str, title: str, sub_text: str = "",
+                 accent_color: str = "#2563EB", **kwargs):
+        super().__init__(
+            parent,
+            bg_color="#FFFFFF",
+            border_color="#E2E8F0",
+            hover_bg="#FFFFFF",
+            hover_border="#CBD5E1",
+            radius=14,
+            pad_shadow=5,
+            padx=14,
+            pady=12,
+            **kwargs
+        )
+        self.accent_color = accent_color
+
+        row = tk.Frame(self.inner, bg="#FFFFFF")
+        row.pack(fill=tk.BOTH, expand=True)
+
+        # Left vertical accent line
+        self.accent_bar = tk.Frame(row, bg=accent_color, width=4)
+        self.accent_bar.pack(side=tk.LEFT, fill=tk.Y, padx=(0, 12))
+
+        # Text column
+        col = tk.Frame(row, bg="#FFFFFF")
+        col.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        self.lbl_value = tk.Label(
+            col, text=value, font=("Segoe UI", 20, "bold"),
+            fg="#0F172A", bg="#FFFFFF"
+        )
+        self.lbl_value.pack(anchor=tk.W)
+
+        self.lbl_title = tk.Label(
+            col, text=title, font=("Segoe UI", 9, "bold"),
+            fg="#0F172A", bg="#FFFFFF"
+        )
+        self.lbl_title.pack(anchor=tk.W, pady=(1, 2))
+
+        if sub_text:
+            self.lbl_sub = tk.Label(
+                col, text=sub_text, font=("Segoe UI", 7),
+                fg="#64748B", bg="#FFFFFF"
+            )
+            self.lbl_sub.pack(anchor=tk.W)
+
+    def set_value(self, val: str):
+        self.lbl_value.config(text=val)
+
+
+class OverviewMetricCard(RoundedCard):
+    """
+    Dashboard Overview Card (Image 1 & Image 2).
+    Features top-left rounded square badge with letter/icon, top-right indicator,
+    large metric value, uppercase category title, and subtitle.
+    """
+    def __init__(self, parent, value: str, title: str, sub_text: str = "",
+                 badge_text: str = "P", badge_bg: str = "#EFF6FF", badge_fg: str = "#2563EB",
+                 dot_color: str = "#2563EB", **kwargs):
+        super().__init__(
+            parent,
+            bg_color="#FFFFFF",
+            border_color="#E2E8F0",
+            hover_bg="#FFFFFF",
+            hover_border="#CBD5E1",
+            radius=16,
+            pad_shadow=6,
+            padx=16,
+            pady=14,
+            **kwargs
+        )
+
+        top_row = tk.Frame(self.inner, bg="#FFFFFF")
+        top_row.pack(fill=tk.X, pady=(0, 10))
+
+        # Square rounded badge
+        badge = tk.Label(
+            top_row, text=badge_text, font=("Segoe UI", 9, "bold"),
+            bg=badge_bg, fg=badge_fg, width=3, height=1
+        )
+        badge.pack(side=tk.LEFT)
+
+        if dot_color:
+            dot = tk.Label(
+                top_row, text="●", font=("Segoe UI", 7),
+                fg=dot_color, bg="#FFFFFF"
+            )
+            dot.pack(side=tk.RIGHT)
+
+        self.lbl_value = tk.Label(
+            self.inner, text=value, font=("Segoe UI", 22, "bold"),
+            fg="#0F172A", bg="#FFFFFF"
+        )
+        self.lbl_value.pack(anchor=tk.W)
+
+        self.lbl_title = tk.Label(
+            self.inner, text=title.upper(), font=("Segoe UI", 8, "bold"),
+            fg="#0F172A", bg="#FFFFFF"
+        )
+        self.lbl_title.pack(anchor=tk.W, pady=(2, 2))
+
+        self.lbl_sub = tk.Label(
+            self.inner, text=sub_text, font=("Segoe UI", 7),
+            fg="#64748B", bg="#FFFFFF"
+        )
+        self.lbl_sub.pack(anchor=tk.W)
+
+    def set_value(self, val: str):
+        self.lbl_value.config(text=val)
+
+
+class DarkHeroBanner(RoundedCard):
+    """
+    Polished Dark Navy Welcome Hero Banner (Image 1 & Image 2).
+    Deep dark navy background with clean typography and system status pill.
+    """
+    def __init__(self, parent, greeting: str = "Good day, Admin",
+                 subtitle: str = "Here is your hospital's performance summary for today.",
+                 **kwargs):
+        super().__init__(
+            parent,
+            bg_color="#0F172A",
+            border_color="#1E293B",
+            hover_bg="#0F172A",
+            hover_border="#334155",
+            radius=16,
+            pad_shadow=6,
+            padx=20,
+            pady=16,
+            height=90,
+            **kwargs
+        )
+
+        row = tk.Frame(self.inner, bg="#0F172A")
+        row.pack(fill=tk.BOTH, expand=True)
+
+        left = tk.Frame(row, bg="#0F172A")
+        left.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        tk.Label(
+            left, text=greeting, font=("Segoe UI", 15, "bold"),
+            fg="#FFFFFF", bg="#0F172A"
+        ).pack(anchor=tk.W)
+
+        tk.Label(
+            left, text=subtitle, font=("Segoe UI", 9),
+            fg="#94A3B8", bg="#0F172A"
+        ).pack(anchor=tk.W, pady=(4, 0))
+
+        right = tk.Frame(row, bg="#0F172A")
+        right.pack(side=tk.RIGHT)
+
+        status_pill = tk.Label(
+            right, text="● System Online", font=("Segoe UI", 8, "bold"),
+            fg="#10B981", bg="#064E3B", padx=10, pady=4
+        )
+        status_pill.pack(anchor=tk.E)
+
+
+class DarkWaitingCard(RoundedCard):
+    """
+    Dark Average Waiting Time Card (Image 1 & Image 2).
+    """
+    def __init__(self, parent, wait_time: str = "1 min 39 sec",
+                 sub_text: str = "Measured from recorded check-in to consultation start.",
+                 **kwargs):
+        super().__init__(
+            parent,
+            bg_color="#0F172A",
+            border_color="#1E293B",
+            hover_bg="#0F172A",
+            hover_border="#334155",
+            radius=16,
+            pad_shadow=6,
+            padx=18,
+            pady=16,
+            **kwargs
+        )
+
+        top_row = tk.Frame(self.inner, bg="#0F172A")
+        top_row.pack(fill=tk.X, pady=(0, 6))
+
+        tk.Label(
+            top_row, text="Average Waiting Time", font=("Segoe UI", 11, "bold"),
+            fg="#FFFFFF", bg="#0F172A"
+        ).pack(side=tk.LEFT)
+
+        q_badge = tk.Label(
+            top_row, text="Q02", font=("Segoe UI", 7, "bold"),
+            fg="#38BDF8", bg="#0C4A6E", padx=6, pady=2
+        )
+        q_badge.pack(side=tk.RIGHT)
+
+        self.lbl_time = tk.Label(
+            self.inner, text=wait_time, font=("Segoe UI", 20, "bold"),
+            fg="#FFFFFF", bg="#0F172A"
+        )
+        self.lbl_time.pack(anchor=tk.W, pady=(4, 2))
+
+        self.lbl_sub = tk.Label(
+            self.inner, text=sub_text, font=("Segoe UI", 8),
+            fg="#94A3B8", bg="#0F172A"
+        )
+        self.lbl_sub.pack(anchor=tk.W, pady=(0, 10))
+
+        # Modern progress bar
+        self.pbar_bg = tk.Frame(self.inner, bg="#1E293B", height=6)
+        self.pbar_bg.pack(fill=tk.X)
+        self.pbar_fill = tk.Frame(self.pbar_bg, bg="#2563EB", height=6, width=140)
+        self.pbar_fill.pack(side=tk.LEFT)
+
+    def set_time(self, t_str: str):
+        self.lbl_time.config(text=t_str)
+

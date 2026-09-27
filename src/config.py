@@ -31,31 +31,31 @@ SLA_TARGETS = {
     "CSV_MIN_RPS": 500.0,         # Bulk CSV Ingestion must exceed 500 records/sec
 }
 
-# Modern KRL Healthcare UI Theme Palette (Inspired by Reference Image)
+# Modern SaaS Healthcare UI Theme Palette (Matching Reference Screenshots)
 THEME = {
-    "primary": "#1E5DB4",         # Royal Navy Blue
-    "primary_dark": "#0C2B59",    # Deep Navy
-    "primary_light": "#EBF3FD",   # Soft Pastel Sky Tint
+    "primary": "#2563EB",         # Vibrant SaaS Blue
+    "primary_dark": "#1D4ED8",    # Deep Blue
+    "primary_light": "#EFF6FF",   # Soft Blue Tint
     "secondary": "#0284C7",       # Sky Blue Accent
-    "sidebar_bg": "#0A2346",      # Deep Royal Navy 950
-    "sidebar_hover": "#143869",   # Navy Hover
-    "sidebar_active": "#1C4E91",  # Active Nav Pill
+    "sidebar_bg": "#0B1728",      # Slate Navy 950 (Matching Screenshots)
+    "sidebar_hover": "#1E293B",   # Slate Hover
+    "sidebar_active": "#2563EB",  # Active Vibrant Blue Pill
     "sidebar_text": "#94A3B8",    # Muted Nav Text
     "sidebar_text_active": "#FFFFFF",
-    "hero_navy": "#0A2756",       # Hero Welcome Banner Navy
-    "emergency_coral": "#D93B58", # Rich Coral/Raspberry Emergency Card
-    "pastel_blue": "#EBF3FD",     # Pastel Stat Card 1 (Patients)
-    "pastel_blue_border": "#D2E4F9",
-    "pastel_blue_hover": "#DCEAFB",
-    "pastel_amber": "#FEF7DD",    # Pastel Stat Card 2 (Staff)
-    "pastel_amber_border": "#F8E8B6",
-    "pastel_amber_hover": "#FDF0C6",
-    "pastel_rose": "#FCEEEA",     # Pastel Stat Card 3 (Doctors)
-    "pastel_rose_border": "#F9D8D0",
-    "pastel_rose_hover": "#F9DFD8",
-    "pastel_purple": "#F3EEFA",   # Pastel Specialist Card
-    "pastel_purple_border": "#E4D6F7",
-    "pastel_purple_hover": "#EDE2FA",
+    "hero_navy": "#0F172A",       # Hero Welcome Banner Slate Navy
+    "emergency_coral": "#EF4444", # Vibrant Emergency Alert Red
+    "pastel_blue": "#EFF6FF",     # Pastel Stat Card 1 (Patients)
+    "pastel_blue_border": "#DBEAFE",
+    "pastel_blue_hover": "#E0E7FF",
+    "pastel_amber": "#FFFBEB",    # Pastel Stat Card 2 (Pending)
+    "pastel_amber_border": "#FDE68A",
+    "pastel_amber_hover": "#FEF3C7",
+    "pastel_rose": "#FEF2F2",     # Pastel Stat Card 3 (High Risk)
+    "pastel_rose_border": "#FECACA",
+    "pastel_rose_hover": "#FEE2E2",
+    "pastel_purple": "#FAF5FF",   # Pastel Specialist Card
+    "pastel_purple_border": "#E9D8FD",
+    "pastel_purple_hover": "#F3E8FF",
     "success": "#10B981",         # Emerald Green
     "success_light": "#ECFDF5",
     "warning": "#F59E0B",         # Amber Alert
@@ -64,10 +64,10 @@ THEME = {
     "danger_light": "#FEF2F2",
     "purple": "#8B5CF6",          # Violet Accent
     "purple_light": "#F5F3FF",
-    "background": "#F0F4FA",      # Clean Slate Periwinkle Canvas
+    "background": "#F8FAFC",      # Clean Crisp Canvas
     "surface": "#FFFFFF",         # Pure White Card
     "border": "#E2E8F0",          # Soft Border
-    "text": "#0C2340",            # High Contrast Heading Navy
+    "text": "#0F172A",            # High Contrast Heading Navy
     "text_muted": "#64748B",      # Slate Gray Body
     "font_family": "Segoe UI",
 }

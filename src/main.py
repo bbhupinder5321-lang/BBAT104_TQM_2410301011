@@ -43,13 +43,13 @@ from src.widgets.ui_kit import apply_global_styles, ModernSearchBox, RoundedCard
 
 class IntegratedLoginView(tk.Frame):
     """
-    Connected Full-Page Healthcare Authentication Portal.
+    Connected Full-Page Healthcare Authentication Portal (Image 3).
     Integrated directly into the main desktop application window (No popups).
     Features manual credential inputs, automatic role discovery, and modern 2D styling.
     """
 
     def __init__(self, parent, on_login_success: Callable[[Dict[str, Any]], None]):
-        super().__init__(parent, bg=THEME["sidebar_bg"])
+        super().__init__(parent, bg="#0B1728")
         self.on_login_success = on_login_success
         self.show_password = False
 
@@ -57,115 +57,123 @@ class IntegratedLoginView(tk.Frame):
 
     def _build_ui(self):
         # 1. Left Hero Branding & Academic Attribution (40% width)
-        left_hero = tk.Frame(self, bg=THEME["sidebar_bg"], padx=40, pady=50)
+        left_hero = tk.Frame(self, bg="#0B1728", padx=40, pady=50)
         left_hero.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-        # Center branding container
-        brand_center = tk.Frame(left_hero, bg=THEME["sidebar_bg"])
+        brand_center = tk.Frame(left_hero, bg="#0B1728")
         brand_center.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
         # 2D Medical Badge
         logo_badge = tk.Label(
-            brand_center, text="✚", font=("Segoe UI", 36, "bold"),
-            bg="#1E5DB4", fg="white", width=2, height=1
+            brand_center, text="✚", font=("Segoe UI", 26, "bold"),
+            bg="#2563EB", fg="white", width=2, height=1
         )
-        logo_badge.pack(anchor=tk.W, pady=(0, 16))
+        logo_badge.pack(anchor=tk.W, pady=(0, 14))
 
         tk.Label(
-            brand_center, text="MedCare HMS", font=("Segoe UI", 26, "bold"),
-            fg="white", bg=THEME["sidebar_bg"]
+            brand_center, text="MediCare", font=("Segoe UI", 26, "bold"),
+            fg="white", bg="#0B1728"
         ).pack(anchor=tk.W)
 
         tk.Label(
-            brand_center, text="High-Performance Clinical Management System",
-            font=("Segoe UI", 11), fg="#93C5FD", bg=THEME["sidebar_bg"]
-        ).pack(anchor=tk.W, pady=(2, 22))
+            brand_center, text="Hospital Management System",
+            font=("Segoe UI", 11), fg="#94A3B8", bg="#0B1728"
+        ).pack(anchor=tk.W, pady=(2, 16))
 
-        # Academic Attribution Box
-        acad_box = tk.Frame(
-            brand_center, bg="#0E2C58", padx=18, pady=16,
-            highlightthickness=1, highlightbackground="#194B8A"
+        # TQM Subheader
+        tk.Label(
+            brand_center, text="TQM • Q02 IMPROVE PERFORMANCE",
+            font=("Segoe UI", 8, "bold"), fg="#38BDF8", bg="#0B1728"
+        ).pack(anchor=tk.W, pady=(0, 12))
+
+        # Dark Glass Container with Feature Highlights (Matching Image 3)
+        feat_box = tk.Frame(
+            brand_center, bg="#132238", padx=16, pady=16,
+            highlightthickness=1, highlightbackground="#1E3A5F"
         )
-        acad_box.pack(fill=tk.X, pady=(0, 20))
+        feat_box.pack(fill=tk.X, pady=(0, 20))
 
-        tk.Label(
-            acad_box, text=f"Course: {COURSE_CODE} • Fundamentals of TQM",
-            font=("Segoe UI", 9, "bold"), fg="white", bg="#0E2C58"
-        ).pack(anchor=tk.W)
-
-        tk.Label(
-            acad_box, 
-            text=f"Student: {STUDENT_NAME} | Roll No: {STUDENT_ROLL} | CSE - A",
-            font=("Segoe UI", 8), fg="#94A3B8", bg="#0E2C58"
-        ).pack(anchor=tk.W, pady=(2, 4))
-
-        tk.Label(
-            acad_box, 
-            text=f"Assigned Goal: {QUALITY_GOAL} • Sub-100ms Search & Zero Duplication",
-            font=("Segoe UI", 8, "bold"), fg="#38BDF8", bg="#0E2C58"
-        ).pack(anchor=tk.W)
-
-        # Telemetry Feature Badges
-        pills_box = tk.Frame(brand_center, bg=THEME["sidebar_bg"])
-        pills_box.pack(anchor=tk.W)
-
-        badges = [
-            ("● 24/7 OPD QUEUE ACTIVE", "#10B981", "#064E3B"),
-            ("● SQLITE WAL HIGH-SPEED ENGINE", "#38BDF8", "#0C4A6E"),
-            ("● SUB-100MS B-TREE FAST SEARCH", "#FBBF24", "#78350F"),
-            ("● POKA-YOKE DUPLICATE GUARD", "#C084FC", "#581C87"),
+        features = [
+            ("01", "Patient records", "Fast and organized patient workflows"),
+            ("02", "Appointments", "Scheduling and waiting-time tracking"),
+            ("03", "Quality", "TQM analysis and Q02 performance"),
         ]
+        for num, title, desc in features:
+            row = tk.Frame(feat_box, bg="#132238")
+            row.pack(fill=tk.X, pady=5)
 
-        for text, fg_c, bg_c in badges:
-            lbl = tk.Label(
-                pills_box, text=text, font=("Segoe UI", 7, "bold"),
-                fg=fg_c, bg=bg_c, padx=8, pady=3
-            )
-            lbl.pack(anchor=tk.W, pady=2)
+            tk.Label(
+                row, text=num, font=("Segoe UI", 9, "bold"),
+                fg="#38BDF8", bg="#132238"
+            ).pack(side=tk.LEFT, padx=(0, 10))
+
+            t_col = tk.Frame(row, bg="#132238")
+            t_col.pack(side=tk.LEFT, fill=tk.X, expand=True)
+
+            tk.Label(
+                t_col, text=title, font=("Segoe UI", 9, "bold"),
+                fg="white", bg="#132238"
+            ).pack(anchor=tk.W)
+
+            tk.Label(
+                t_col, text=desc, font=("Segoe UI", 8),
+                fg="#94A3B8", bg="#132238"
+            ).pack(anchor=tk.W)
+
+        # Bottom Secure Note
+        tk.Label(
+            brand_center, text="Secure role-based access • SQLite • Python",
+            font=("Segoe UI", 8), fg="#64748B", bg="#0B1728"
+        ).pack(anchor=tk.W)
 
         # 2. Right Manual Authentication Panel (60% width)
-        right_panel = tk.Frame(self, bg=THEME["background"], padx=30, pady=40)
+        right_panel = tk.Frame(self, bg="#F8FAFC", padx=30, pady=40)
         right_panel.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
 
-        card_wrapper = tk.Frame(right_panel, bg=THEME["background"])
+        card_wrapper = tk.Frame(right_panel, bg="#F8FAFC")
         card_wrapper.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
-        # Main Light Card with Soft Gaussian Drop Shadow
+        # Main Light Card with Soft Gaussian Drop Shadow (Matching Image 3)
         self.auth_card = RoundedCard(
             card_wrapper, bg_color="#FFFFFF", border_color="#E2E8F0",
-            hover_bg="#FFFFFF", radius=18, pad_shadow=8, padx=30, pady=28,
-            width=480, height=480
+            hover_bg="#FFFFFF", radius=18, pad_shadow=8, padx=32, pady=30,
+            width=460, height=470
         )
         self.auth_card.pack()
         c = self.auth_card.inner
 
         tk.Label(
-            c, text="Staff Authentication Portal",
-            font=("Segoe UI", 16, "bold"), fg="#0C2340", bg="#FFFFFF"
+            c, text="WELCOME BACK",
+            font=("Segoe UI", 8, "bold"), fg="#2563EB", bg="#FFFFFF"
         ).pack(anchor=tk.W)
 
         tk.Label(
-            c, text="Enter your hospital staff credentials below to access the system:",
-            font=("Segoe UI", 9), fg="#64748B", bg="#FFFFFF"
-        ).pack(anchor=tk.W, pady=(2, 18))
+            c, text="Sign in to MediCare",
+            font=("Segoe UI", 20, "bold"), fg="#0F172A", bg="#FFFFFF"
+        ).pack(anchor=tk.W, pady=(2, 4))
 
-        # Field 1: Username / Staff ID
         tk.Label(
-            c, text="👤 Staff ID / Username",
-            font=("Segoe UI", 9, "bold"), fg="#0C2340", bg="#FFFFFF"
+            c, text="Enter your credentials to access your workspace.",
+            font=("Segoe UI", 9), fg="#64748B", bg="#FFFFFF"
+        ).pack(anchor=tk.W, pady=(0, 20))
+
+        # Field 1: Username
+        tk.Label(
+            c, text="USERNAME",
+            font=("Segoe UI", 8, "bold"), fg="#475569", bg="#FFFFFF"
         ).pack(anchor=tk.W, pady=(0, 4))
 
         self.txt_user = tk.Entry(
             c, font=("Segoe UI", 10), bg="#F8FAFC",
-            relief="solid", bd=1, insertbackground="#1E5DB4"
+            relief="solid", bd=1, insertbackground="#2563EB", fg="#0F172A"
         )
         self.txt_user.pack(fill=tk.X, pady=(0, 14), ipady=6)
         self.txt_user.focus_set()
 
         # Field 2: Password with Show/Hide Toggle
         tk.Label(
-            c, text="🔒 Password",
-            font=("Segoe UI", 9, "bold"), fg="#0C2340", bg="#FFFFFF"
+            c, text="PASSWORD",
+            font=("Segoe UI", 8, "bold"), fg="#475569", bg="#FFFFFF"
         ).pack(anchor=tk.W, pady=(0, 4))
 
         pass_row = tk.Frame(c, bg="#FFFFFF")
@@ -173,13 +181,13 @@ class IntegratedLoginView(tk.Frame):
 
         self.txt_pass = tk.Entry(
             pass_row, font=("Segoe UI", 10), show="•",
-            bg="#F8FAFC", relief="solid", bd=1, insertbackground="#1E5DB4"
+            bg="#F8FAFC", relief="solid", bd=1, insertbackground="#2563EB", fg="#0F172A"
         )
         self.txt_pass.pack(side=tk.LEFT, fill=tk.X, expand=True, ipady=6)
 
         self.btn_eye = tk.Button(
             pass_row, text="👁️", font=("Segoe UI", 9),
-            bg="#F1F5F9", fg="#0C2340", relief="flat", cursor="hand2", padx=8,
+            bg="#F1F5F9", fg="#0F172A", relief="flat", cursor="hand2", padx=8,
             command=self._toggle_password_visibility
         )
         self.btn_eye.pack(side=tk.LEFT, padx=(4, 0), fill=tk.Y)
@@ -189,37 +197,25 @@ class IntegratedLoginView(tk.Frame):
             c, text="", font=("Segoe UI", 8, "bold"),
             fg="#DC2626", bg="#FFFFFF"
         )
-        self.lbl_error.pack(anchor=tk.W, pady=(0, 8))
+        self.lbl_error.pack(anchor=tk.W, pady=(0, 6))
 
         # Sign In Button
         self.btn_sign = PillButton(
-            c, text="🚀 Authenticate & Enter Portal →", font_size=10,
-            bg_color="#1E5DB4", fg_color="white", hover_color="#0C2B59",
+            c, text="Sign In →", font_size=10,
+            bg_color="#2563EB", fg_color="white", hover_color="#1D4ED8",
             padx=16, pady=8, command=self._do_login
         )
-        self.btn_sign.pack(fill=tk.X, pady=(0, 16))
+        self.btn_sign.pack(fill=tk.X, pady=(0, 18))
 
         # Enter key triggers login
         self.txt_user.bind("<Return>", lambda e: self._do_login())
         self.txt_pass.bind("<Return>", lambda e: self._do_login())
 
-        # Subtle Help Footnote (Small informative note, NO role buttons!)
-        hint_box = tk.Frame(c, bg="#F0F4FA", padx=10, pady=8, highlightthickness=1, highlightbackground="#D2E4F9")
-        hint_box.pack(fill=tk.X)
-
+        # Centered Demo Footnote
         tk.Label(
-            hint_box, text="ℹ️ Hospital Staff Demo Credentials:",
-            font=("Segoe UI", 8, "bold"), fg="#1E5DB4", bg="#F0F4FA"
-        ).pack(anchor=tk.W)
-
-        tk.Label(
-            hint_box,
-            text="• Super Admin: admin / admin123\n"
-                 "• Physician: doctor / doc123\n"
-                 "• Admissions Desk: reception / rec123\n"
-                 "• Cashier Desk: billing / bill123",
-            font=("Segoe UI", 7), fg="#475569", bg="#F0F4FA", justify=tk.LEFT
-        ).pack(anchor=tk.W, pady=(2, 0))
+            c, text="Demo admin account: admin / admin123",
+            font=("Segoe UI", 8), fg="#64748B", bg="#FFFFFF"
+        ).pack(anchor=tk.CENTER)
 
     def _toggle_password_visibility(self):
         self.show_password = not self.show_password
@@ -317,80 +313,86 @@ class MainWindow(tk.Tk):
         self.sidebar.pack(side=tk.LEFT, fill=tk.Y)
         self.sidebar.pack_propagate(False)
 
-        # 1a. Brand Header in Sidebar
-        brand_box = tk.Frame(self.sidebar, bg=THEME["sidebar_bg"], padx=18, pady=20)
+        # 1a. Brand Header in Sidebar (Matching Reference Screenshots)
+        brand_box = tk.Frame(self.sidebar, bg=THEME["sidebar_bg"], padx=18, pady=16)
         brand_box.pack(fill=tk.X)
 
         logo_badge = tk.Label(
-            brand_box, text="✚", font=("Segoe UI", 16, "bold"),
-            bg="#1E5DB4", fg="white", width=2, height=1
+            brand_box, text="✚", font=("Segoe UI", 14, "bold"),
+            bg="#2563EB", fg="white", width=2, height=1
         )
         logo_badge.pack(side=tk.LEFT, padx=(0, 10))
 
         brand_text = tk.Frame(brand_box, bg=THEME["sidebar_bg"])
         brand_text.pack(side=tk.LEFT)
 
-        tk.Label(brand_text, text="MedCare HMS", font=("Segoe UI", 13, "bold"), fg="white", bg=THEME["sidebar_bg"]).pack(anchor=tk.W)
-        tk.Label(brand_text, text="Q02 Performance Pro", font=("Segoe UI", 8), fg="#94A3B8", bg=THEME["sidebar_bg"]).pack(anchor=tk.W)
+        tk.Label(brand_text, text="MediCare", font=("Segoe UI", 13, "bold"), fg="white", bg=THEME["sidebar_bg"]).pack(anchor=tk.W)
+        tk.Label(brand_text, text="Hospital Management", font=("Segoe UI", 8), fg="#94A3B8", bg=THEME["sidebar_bg"]).pack(anchor=tk.W)
 
-        # Divider
-        tk.Frame(self.sidebar, bg="#143869", height=1).pack(fill=tk.X, padx=15, pady=(0, 8))
-
-        # 1b. Live Animated Heartbeat ECG Vitals Widget
-        ecg_card = tk.Frame(self.sidebar, bg="#081C38", padx=10, pady=8)
-        ecg_card.pack(fill=tk.X, padx=12, pady=(0, 10))
-
-        ecg_top = tk.Frame(ecg_card, bg="#081C38")
-        ecg_top.pack(fill=tk.X)
-
-        tk.Label(ecg_top, text="● LIVE VITALS", font=("Segoe UI", 7, "bold"), fg="#10B981", bg="#081C38").pack(side=tk.LEFT)
-        tk.Label(ecg_top, text="74 BPM", font=("Segoe UI", 7, "bold"), fg="#38BDF8", bg="#081C38").pack(side=tk.RIGHT)
-
-        self.ecg_wave = ECGAnimationWidget(ecg_card, width=200, height=30, bg_color="#081C38")
-        self.ecg_wave.pack(anchor=tk.CENTER, pady=(4, 0))
-
-        # 1c. Navigation Menu (Role-Based Access Discovered Automatically)
+        # 1b. User Profile Chip under Brand (Matching Screenshots)
         user_role = self.user_data.get("role", "Admin")
+        name_parts = self.user_data.get("full_name", "User").split()
+        initials = "".join([p[0].upper() for p in name_parts[:2]]) or "A"
+
+        prof_chip = tk.Frame(self.sidebar, bg="#132238", padx=10, pady=8, highlightthickness=1, highlightbackground="#1E3A5F")
+        prof_chip.pack(fill=tk.X, padx=14, pady=(0, 14))
+
+        av_circle = tk.Label(
+            prof_chip, text=initials, font=("Segoe UI", 8, "bold"),
+            bg="#2563EB", fg="white", width=3, height=1
+        )
+        av_circle.pack(side=tk.LEFT, padx=(0, 8))
+
+        prof_info = tk.Frame(prof_chip, bg="#132238")
+        prof_info.pack(side=tk.LEFT, fill=tk.X, expand=True)
+
         tk.Label(
-            self.sidebar, text=f"CLINICAL MENU • {user_role.upper()}",
-            font=("Segoe UI", 7, "bold"), fg="#64748B", bg=THEME["sidebar_bg"], padx=20
+            prof_info, text=self.user_data.get("username", "admin"),
+            font=("Segoe UI", 8, "bold"), fg="white", bg="#132238"
+        ).pack(anchor=tk.W)
+
+        tk.Label(
+            prof_info, text=f"{user_role} account",
+            font=("Segoe UI", 7), fg="#94A3B8", bg="#132238"
+        ).pack(anchor=tk.W)
+
+        dot = tk.Label(prof_chip, text="●", font=("Segoe UI", 7), fg="#10B981", bg="#132238")
+        dot.pack(side=tk.RIGHT)
+
+        # 1c. MAIN MENU Section
+        tk.Label(
+            self.sidebar, text="MAIN MENU",
+            font=("Segoe UI", 7, "bold"), fg="#64748B", bg=THEME["sidebar_bg"], padx=18
         ).pack(anchor=tk.W, pady=(0, 6))
 
-        role_menus = {
-            "Admin": ["Dashboard", "Patients", "Doctors", "Appointments", "Billing", "CSV Import", "Reports", "TQM Audit"],
-            "Doctor": ["Dashboard", "Appointments", "Patients", "Doctors", "TQM Audit"],
-            "Receptionist": ["Dashboard", "Patients", "Appointments", "Billing", "Doctors"],
-            "Billing": ["Dashboard", "Billing", "Patients", "Reports"]
-        }
-        allowed_tabs = role_menus.get(user_role, role_menus["Admin"])
-        all_nav = [
-            ("Dashboard", "📊", "Overview Dashboard"),
-            ("Patients", "👥", "Patients & Search"),
-            ("Doctors", "👨‍⚕️", "Doctor Directory"),
-            ("Appointments", "📅", "OPD Queue & Tokens"),
-            ("Billing", "💳", "Billing & Invoicing"),
-            ("CSV Import", "📥", "Bulk CSV Ingestion"),
-            ("Reports", "📈", "Analytics & Reports"),
-            ("TQM Audit", "🎯", "TQM Quality Audit"),
+        main_menu_items = [
+            ("Dashboard", "📊", "Dashboard"),
+            ("Patients", "👥", "Patients"),
+            ("Doctors", "👨‍⚕️", "Doctors"),
+            ("Appointments", "📅", "Appointments"),
+            ("Billing", "💳", "Billing"),
+            ("CSV Import", "📥", "CSV Import"),
+            ("Reports", "📈", "Reports"),
+            ("Performance", "⚡", "Performance"),
         ]
-        nav_items = [item for item in all_nav if item[0] in allowed_tabs]
 
         self.nav_buttons = {}
-        for tab_id, icon, label in nav_items:
+        for tab_id, icon, label in main_menu_items:
             btn_frame = tk.Frame(self.sidebar, bg=THEME["sidebar_bg"], cursor="hand2")
-            btn_frame.pack(fill=tk.X, padx=10, pady=2)
+            btn_frame.pack(fill=tk.X, padx=12, pady=1)
 
-            indicator = tk.Frame(btn_frame, bg=THEME["sidebar_bg"], width=4)
+            indicator = tk.Frame(btn_frame, bg=THEME["sidebar_bg"], width=3)
             indicator.pack(side=tk.LEFT, fill=tk.Y)
 
             btn_lbl = tk.Label(
-                btn_frame, text=f"  {icon}  {label}", font=("Segoe UI", 9, "bold"),
-                fg=THEME["sidebar_text"], bg=THEME["sidebar_bg"], padx=10, pady=7, anchor=tk.W
+                btn_frame, text=f"  {icon}  {label}", font=("Segoe UI", 8, "bold"),
+                fg=THEME["sidebar_text"], bg=THEME["sidebar_bg"], padx=8, pady=6, anchor=tk.W
             )
             btn_lbl.pack(side=tk.LEFT, fill=tk.X, expand=True)
 
-            btn_frame.bind("<Button-1>", lambda e, tid=tab_id: self._show_view(tid))
-            btn_lbl.bind("<Button-1>", lambda e, tid=tab_id: self._show_view(tid))
+            target_id = "Reports" if tab_id == "Performance" else tab_id
+            btn_frame.bind("<Button-1>", lambda e, tid=target_id: self._show_view(tid))
+            btn_lbl.bind("<Button-1>", lambda e, tid=target_id: self._show_view(tid))
             btn_frame.bind("<Enter>", lambda e, f=btn_frame, l=btn_lbl, tid=tab_id: self._on_hover(f, l, tid, True))
             btn_frame.bind("<Leave>", lambda e, f=btn_frame, l=btn_lbl, tid=tab_id: self._on_hover(f, l, tid, False))
 
@@ -400,42 +402,50 @@ class MainWindow(tk.Tk):
                 "indicator": indicator
             }
 
-        # 1d. Bottom User Profile & Sign Out
-        bottom_box = tk.Frame(self.sidebar, bg="#081C38", padx=14, pady=12)
+        # 1d. QUALITY MANAGEMENT Section
+        tk.Label(
+            self.sidebar, text="QUALITY MANAGEMENT",
+            font=("Segoe UI", 7, "bold"), fg="#64748B", bg=THEME["sidebar_bg"], padx=18
+        ).pack(anchor=tk.W, pady=(12, 6))
+
+        q_frame = tk.Frame(self.sidebar, bg=THEME["sidebar_bg"], cursor="hand2")
+        q_frame.pack(fill=tk.X, padx=12, pady=1)
+
+        q_indicator = tk.Frame(q_frame, bg=THEME["sidebar_bg"], width=3)
+        q_indicator.pack(side=tk.LEFT, fill=tk.Y)
+
+        q_lbl = tk.Label(
+            q_frame, text="  ✓  TQM Analysis", font=("Segoe UI", 8, "bold"),
+            fg=THEME["sidebar_text"], bg=THEME["sidebar_bg"], padx=8, pady=6, anchor=tk.W
+        )
+        q_lbl.pack(side=tk.LEFT, fill=tk.X, expand=True)
+
+        q_frame.bind("<Button-1>", lambda e: self._show_view("TQM Audit"))
+        q_lbl.bind("<Button-1>", lambda e: self._show_view("TQM Audit"))
+        q_frame.bind("<Enter>", lambda e, f=q_frame, l=q_lbl: self._on_hover(f, l, "TQM Audit", True))
+        q_frame.bind("<Leave>", lambda e, f=q_frame, l=q_lbl: self._on_hover(f, l, "TQM Audit", False))
+
+        self.nav_buttons["TQM Audit"] = {
+            "frame": q_frame,
+            "label": q_lbl,
+            "indicator": q_indicator
+        }
+
+        # 1e. Bottom System Online & Logout
+        bottom_box = tk.Frame(self.sidebar, bg=THEME["sidebar_bg"], padx=16, pady=12)
         bottom_box.pack(side=tk.BOTTOM, fill=tk.X)
 
-        prof_row = tk.Frame(bottom_box, bg="#081C38")
-        prof_row.pack(fill=tk.X)
-
-        name_parts = self.user_data.get("full_name", "User").split()
-        initials = "".join([p[0].upper() for p in name_parts[:2]]) or "BS"
-        role_col = {"Admin": "#1E5DB4", "Doctor": "#059669", "Receptionist": "#D97706", "Billing": "#7C3AED"}.get(user_role, "#1E5DB4")
-
-        avatar = tk.Label(
-            prof_row, text=initials, font=("Segoe UI", 8, "bold"),
-            bg=role_col, fg="white", width=3, height=1
-        )
-        avatar.pack(side=tk.LEFT, padx=(0, 8))
-
-        prof_info = tk.Frame(prof_row, bg="#081C38")
-        prof_info.pack(side=tk.LEFT, fill=tk.X, expand=True)
-
         tk.Label(
-            prof_info, text=self.user_data["full_name"][:14],
-            font=("Segoe UI", 8, "bold"), fg="white", bg="#081C38"
-        ).pack(anchor=tk.W)
-
-        tk.Label(
-            prof_info, text=f"● {user_role}",
-            font=("Segoe UI", 7), fg=role_col, bg="#081C38"
-        ).pack(anchor=tk.W)
+            bottom_box, text="● System online", font=("Segoe UI", 7, "bold"),
+            fg="#10B981", bg=THEME["sidebar_bg"]
+        ).pack(anchor=tk.W, pady=(0, 6))
 
         btn_logout = tk.Button(
-            bottom_box, text="🚪 Sign Out", font=("Segoe UI", 8, "bold"),
-            bg="#143869", fg="#EF4444", activebackground="#EF4444", activeforeground="white",
-            relief="flat", cursor="hand2", padx=6, pady=3, command=self._logout
+            bottom_box, text="🚪 Logout", font=("Segoe UI", 8, "bold"),
+            bg="#132238", fg="#EF4444", activebackground="#EF4444", activeforeground="white",
+            relief="flat", cursor="hand2", padx=6, pady=4, command=self._logout
         )
-        btn_logout.pack(fill=tk.X, pady=(8, 0))
+        btn_logout.pack(fill=tk.X)
 
         # 2. Main Right Container
         self.right_container = tk.Frame(self.workspace_frame, bg=THEME["background"])
@@ -497,6 +507,7 @@ class MainWindow(tk.Tk):
         user_chip = tk.Frame(head_right, bg="#F0F4FA", padx=6, pady=3, highlightthickness=1, highlightbackground="#D2E4F9")
         user_chip.pack(side=tk.LEFT)
 
+        role_col = {"Admin": "#2563EB", "Doctor": "#059669", "Receptionist": "#D97706", "Billing": "#7C3AED"}.get(user_role, "#2563EB")
         av_circle = tk.Label(
             user_chip, text=initials, font=("Segoe UI", 8, "bold"),
             bg=role_col, fg="white", width=3, height=1
@@ -555,10 +566,10 @@ class MainWindow(tk.Tk):
         self.lbl_head_sub.config(text=sub_t)
 
         for tid, widgets in self.nav_buttons.items():
-            if tid == tab_id:
-                widgets["frame"].config(bg=THEME["sidebar_active"])
-                widgets["label"].config(bg=THEME["sidebar_active"], fg="white")
-                widgets["indicator"].config(bg="white")
+            if tid == tab_id or (tab_id == "Reports" and tid == "Performance"):
+                widgets["frame"].config(bg="#2563EB")
+                widgets["label"].config(bg="#2563EB", fg="white")
+                widgets["indicator"].config(bg="#2563EB")
             else:
                 widgets["frame"].config(bg=THEME["sidebar_bg"])
                 widgets["label"].config(bg=THEME["sidebar_bg"], fg=THEME["sidebar_text"])
