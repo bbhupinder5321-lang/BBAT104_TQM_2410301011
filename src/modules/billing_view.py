@@ -35,35 +35,34 @@ class BillingView(tk.Frame):
         self.kpi_billing_cards = {}
         self.kpi_billing_cards["settled"] = HeroMetricCard(
             kpi_strip, title="Settled Revenue", value="₹0.00",
-            sub="Collected Revenue Funds", icon="💰", bg_color="#059669"
+            sub="Collected Revenue Funds", icon="💰", bg_color="#84CC16"
         )
-        self.kpi_billing_cards["settled"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 5))
+        self.kpi_billing_cards["settled"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 4))
 
         self.kpi_billing_cards["pending"] = HeroMetricCard(
             kpi_strip, title="Pending Invoices", value="₹0.00",
-            sub="Awaiting Patient Settlement", icon="⏳", bg_color="#F59E0B"
+            sub="Awaiting Patient Settlement", icon="⏳", bg_color="#F97316"
         )
-        self.kpi_billing_cards["pending"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=5)
+        self.kpi_billing_cards["pending"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=4)
 
         self.kpi_billing_cards["invoices"] = HeroMetricCard(
             kpi_strip, title="Invoices Issued", value="0 Invoices",
-            sub="Itemized Bills with 5% GST", icon="🧾", bg_color="#2563EB"
+            sub="Itemized Bills with 5% GST", icon="🧾", bg_color="#0EA5E9"
         )
-        self.kpi_billing_cards["invoices"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=5)
+        self.kpi_billing_cards["invoices"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=4)
 
         self.kpi_billing_cards["rate"] = HeroMetricCard(
             kpi_strip, title="Collection Rate", value="0.0%",
-            sub="Settlement Clearance Ratio", icon="📈", bg_color="#7C3AED"
+            sub="Settlement Clearance Ratio", icon="📈", bg_color="#06B6D4"
         )
-        self.kpi_billing_cards["rate"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(5, 0))
+        self.kpi_billing_cards["rate"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(4, 0))
 
-        # 1. Main Table Floating Rounded Card
-        main_card = RoundedCard(
-            container, bg_color="#FFFFFF", border_color="#E2E8F0",
-            radius=16, pad_shadow=6, padx=16, pady=14
+        # 1. Main Table Container Card
+        card = tk.Frame(
+            container, bg="#FFFFFF", highlightthickness=1, highlightbackground="#E2E8F0",
+            padx=18, pady=16
         )
-        main_card.pack(fill=tk.BOTH, expand=True)
-        card = main_card.inner
+        card.pack(fill=tk.BOTH, expand=True)
 
         # 1a. Header and filter bar
         top_strip = tk.Frame(card, bg="white")
@@ -88,14 +87,14 @@ class BillingView(tk.Frame):
             top_strip, 
             text="💰 Total Settled: ₹0.00 | Pending: ₹0.00", 
             font=("Segoe UI", 9, "bold"),
-            bg=THEME["success_light"], fg="#047857",
+            bg="#DDF2FD", fg="#0284C7",
             padx=12, pady=5, relief="flat"
         )
         self.lbl_revenue.pack(side=tk.LEFT, padx=15)
 
         btn_new_bill = PillButton(
             top_strip, text="🧾 Generate New Patient Bill", font_size=9,
-            bg_color=THEME["primary"], fg_color="white", hover_color=THEME["primary_dark"],
+            bg_color="#003E5C", fg_color="white", hover_color="#002D42",
             padx=14, pady=6, command=self.open_new_bill_modal
         )
         btn_new_bill.pack(side=tk.RIGHT)
@@ -292,10 +291,22 @@ class BillingInvoiceModal(tk.Toplevel):
         self._build_form()
 
     def _build_form(self):
-        form_frame = tk.Frame(self, bg="white", padx=25, pady=20)
-        form_frame.pack(fill=tk.BOTH, expand=True)
+        # 0. Modern Clinical Topbar
+        topbar = tk.Frame(self, bg="#003E5C", padx=20, pady=12)
+        topbar.pack(fill=tk.X)
 
-        tk.Label(form_frame, text="Patient Billing & Invoicing", font=("Segoe UI", 12, "bold"), fg=THEME["primary"], bg="white").pack(anchor=tk.W, pady=(0, 15))
+        tk.Label(
+            topbar, text="✚  Patient Billing & Invoicing", font=("Segoe UI", 12, "bold"),
+            fg="#FFFFFF", bg="#003E5C"
+        ).pack(side=tk.LEFT)
+
+        tk.Label(
+            topbar, text="Itemized Tariff + 5% GST", font=("Segoe UI", 8, "bold"),
+            fg="#38BDF8", bg="#003E5C"
+        ).pack(side=tk.RIGHT)
+
+        form_frame = tk.Frame(self, bg="white", padx=25, pady=16)
+        form_frame.pack(fill=tk.BOTH, expand=True)
 
         tk.Label(form_frame, text="Select Patient *", font=("Segoe UI", 9, "bold"), fg=THEME["text"], bg="white").pack(anchor=tk.W)
         self.cmb_patient = ttk.Combobox(form_frame, state="readonly", width=45)
@@ -342,7 +353,7 @@ class BillingInvoiceModal(tk.Toplevel):
 
         btn_generate = PillButton(
             btn_frame, text="🧾 Generate & Print Bill", font_size=9,
-            bg_color=THEME["primary"], fg_color="white", hover_color=THEME["primary_dark"],
+            bg_color="#003E5C", fg_color="white", hover_color="#002D42",
             padx=16, pady=7, command=self.save_invoice
         )
         btn_generate.pack(side=tk.RIGHT, padx=5)

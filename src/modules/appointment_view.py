@@ -44,35 +44,34 @@ class AppointmentView(tk.Frame):
         self.kpi_appt_cards = {}
         self.kpi_appt_cards["total"] = HeroMetricCard(
             kpi_strip, title="Today's Bookings", value="0 Tokens",
-            sub="Active Clinical Roster", icon="🎟️", bg_color="#2563EB"
+            sub="Active Clinical Roster", icon="📅", bg_color="#0EA5E9"
         )
-        self.kpi_appt_cards["total"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 5))
+        self.kpi_appt_cards["total"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 4))
 
         self.kpi_appt_cards["waiting"] = HeroMetricCard(
             kpi_strip, title="Waiting Lounge", value="0 Patients",
-            sub="Queue In-Service", icon="⏳", bg_color="#059669"
+            sub="Queue In-Service", icon="⏳", bg_color="#F97316"
         )
-        self.kpi_appt_cards["waiting"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=5)
+        self.kpi_appt_cards["waiting"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=4)
 
         self.kpi_appt_cards["consult"] = HeroMetricCard(
             kpi_strip, title="In-Consultation", value="0 Active",
-            sub="Attending Physicians", icon="🩺", bg_color="#7C3AED"
+            sub="Attending Physicians", icon="🩺", bg_color="#84CC16"
         )
-        self.kpi_appt_cards["consult"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=5)
+        self.kpi_appt_cards["consult"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=4)
 
         self.kpi_appt_cards["wait_avg"] = HeroMetricCard(
             kpi_strip, title="Average Wait Time", value="0.0 min",
-            sub="TQM Target < 15.0m (Q02)", icon="⏱️", bg_color="#E11D48"
+            sub="TQM Target < 15.0m (Q02)", icon="⏱️", bg_color="#EF4444"
         )
-        self.kpi_appt_cards["wait_avg"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(5, 0))
+        self.kpi_appt_cards["wait_avg"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(4, 0))
 
-        # 1. Main Table Floating Rounded Card
-        main_card = RoundedCard(
-            container, bg_color="#FFFFFF", border_color="#E2E8F0",
-            radius=16, pad_shadow=6, padx=16, pady=14
+        # 1. Main Table Container Card
+        card = tk.Frame(
+            container, bg="#FFFFFF", highlightthickness=1, highlightbackground="#E2E8F0",
+            padx=18, pady=16
         )
-        main_card.pack(fill=tk.BOTH, expand=True)
-        card = main_card.inner
+        card.pack(fill=tk.BOTH, expand=True)
 
         # 1a. Header Filter Bar & Wait-Time KPI Summary
         top_strip = tk.Frame(card, bg="white")
@@ -113,14 +112,14 @@ class AppointmentView(tk.Frame):
             top_strip, 
             text="⏱️ Avg Wait: -- min | Completed: 0", 
             font=("Segoe UI", 9, "bold"),
-            bg=THEME["primary_light"], fg=THEME["primary"],
+            bg="#DDF2FD", fg="#0284C7",
             padx=12, pady=5, relief="flat"
         )
         self.lbl_wait_kpi.pack(side=tk.LEFT, padx=15)
 
         btn_book = PillButton(
             top_strip, text="🎟️ Book Token / Slot", font_size=9,
-            bg_color=THEME["primary"], fg_color="white", hover_color=THEME["primary_dark"],
+            bg_color="#003E5C", fg_color="white", hover_color="#002D42",
             padx=14, pady=6, command=self.open_booking_modal
         )
         btn_book.pack(side=tk.RIGHT)
@@ -306,10 +305,22 @@ class AppointmentBookingModal(tk.Toplevel):
         self._build_form()
 
     def _build_form(self):
-        form_frame = tk.Frame(self, bg="white", padx=25, pady=20)
-        form_frame.pack(fill=tk.BOTH, expand=True)
+        # 0. Modern Clinical Topbar
+        topbar = tk.Frame(self, bg="#003E5C", padx=20, pady=12)
+        topbar.pack(fill=tk.X)
 
-        tk.Label(form_frame, text="OPD Appointment Booking & Token", font=("Segoe UI", 12, "bold"), fg=THEME["primary"], bg="white").pack(anchor=tk.W, pady=(0, 15))
+        tk.Label(
+            topbar, text="✚  OPD Appointment Booking & Token", font=("Segoe UI", 12, "bold"),
+            fg="#FFFFFF", bg="#003E5C"
+        ).pack(side=tk.LEFT)
+
+        tk.Label(
+            topbar, text="TQM OPD Queue Sequencing", font=("Segoe UI", 8, "bold"),
+            fg="#38BDF8", bg="#003E5C"
+        ).pack(side=tk.RIGHT)
+
+        form_frame = tk.Frame(self, bg="white", padx=25, pady=16)
+        form_frame.pack(fill=tk.BOTH, expand=True)
 
         tk.Label(form_frame, text="Select Patient (Name / UHID) *", font=("Segoe UI", 9, "bold"), fg=THEME["text"], bg="white").pack(anchor=tk.W)
         self.cmb_patient = ttk.Combobox(form_frame, state="readonly", width=50)
@@ -358,7 +369,7 @@ class AppointmentBookingModal(tk.Toplevel):
 
         btn_confirm = PillButton(
             btn_frame, text="🎟️ Confirm Booking & Issue Token", font_size=9,
-            bg_color=THEME["primary"], fg_color="white", hover_color=THEME["primary_dark"],
+            bg_color="#003E5C", fg_color="white", hover_color="#002D42",
             padx=16, pady=7, command=self.save_booking
         )
         btn_confirm.pack(side=tk.RIGHT, padx=5)

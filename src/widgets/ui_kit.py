@@ -757,21 +757,88 @@ class AccentLineStatCard(RoundedCard):
     configure = config
 
 
-class HeroMetricCard(AccentLineStatCard):
+class HeroMetricCard(tk.Frame):
     """
-    Polished Clinical Metric Card with Left Color Accent Bar (Matching Reference Screenshots).
-    Provides large bold numbers, crisp titles, and smooth hover elevation.
+    Image 1 Clinical Metric Card:
+    - Pure white card (#FFFFFF) with subtle border (#E2E8F0)
+    - Floating circular badge with colorful 2D icon on top
+    - Muted category title (Segoe UI 8)
+    - Bold prominent metric value (Segoe UI 18 bold)
+    - Optional SLA / context subtitle (Segoe UI 8)
+    - Fully compatible with update_value(val, sub) and config(text=val)
     """
     def __init__(self, parent, title: str, value: str, sub: str = "", icon: str = "📊",
-                 bg_color: str = "#2563EB", **kwargs):
+                 bg_color: str = "#06B6D4", **kwargs):
+        kwargs.pop("radius", None)
+        kwargs.pop("pad_shadow", None)
+        kwargs.pop("hover_bg", None)
+        kwargs.pop("hover_border", None)
+
         super().__init__(
             parent,
-            value=value,
-            title=title,
-            sub_text=sub,
-            accent_color=bg_color,
+            bg="#FFFFFF",
+            highlightthickness=1,
+            highlightbackground="#E2E8F0",
+            padx=16,
+            pady=14,
             **kwargs
         )
+        self.badge_color = bg_color
+
+        # 1. Floating circular badge on top
+        self.badge = CircleBadge(
+            self, icon=icon, size=40,
+            bg_color=bg_color, border_color=bg_color,
+            fg_color="#FFFFFF", font_size=15
+        )
+        self.badge.pack(anchor=tk.W, pady=(0, 8))
+
+        # 2. Metric Title
+        self.lbl_title = tk.Label(
+            self, text=title, font=("Segoe UI", 8),
+            fg="#64748B", bg="#FFFFFF"
+        )
+        self.lbl_title.pack(anchor=tk.W)
+
+        # 3. Metric Value
+        self.lbl_value = tk.Label(
+            self, text=value, font=("Segoe UI", 18, "bold"),
+            fg="#0F172A", bg="#FFFFFF"
+        )
+        self.lbl_value.pack(anchor=tk.W, pady=(2, 0))
+
+        # 4. Optional Subtitle
+        if sub:
+            self.lbl_sub = tk.Label(
+                self, text=sub, font=("Segoe UI", 8),
+                fg="#94A3B8", bg="#FFFFFF"
+            )
+            self.lbl_sub.pack(anchor=tk.W, pady=(2, 0))
+        else:
+            self.lbl_sub = None
+
+    def set_value(self, val: str):
+        self.lbl_value.config(text=val)
+
+    def update_value(self, new_val: str, new_sub: Optional[str] = None):
+        self.lbl_value.config(text=new_val)
+        if new_sub:
+            if not self.lbl_sub:
+                self.lbl_sub = tk.Label(
+                    self, text=new_sub, font=("Segoe UI", 8),
+                    fg="#94A3B8", bg="#FFFFFF"
+                )
+                self.lbl_sub.pack(anchor=tk.W, pady=(2, 0))
+            else:
+                self.lbl_sub.config(text=new_sub)
+
+    def config(self, **kwargs):
+        if "text" in kwargs:
+            self.lbl_value.config(text=kwargs.pop("text"))
+        if kwargs:
+            super().config(**kwargs)
+
+    configure = config
 
 
 class OverviewMetricCard(RoundedCard):

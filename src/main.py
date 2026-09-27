@@ -49,7 +49,7 @@ class IntegratedLoginView(tk.Frame):
     """
 
     def __init__(self, parent, on_login_success: Callable[[Dict[str, Any]], None]):
-        super().__init__(parent, bg="#0B1728")
+        super().__init__(parent, bg="#003E5C")
         self.on_login_success = on_login_success
         self.show_password = False
 
@@ -57,39 +57,39 @@ class IntegratedLoginView(tk.Frame):
 
     def _build_ui(self):
         # 1. Left Hero Branding & Academic Attribution (40% width)
-        left_hero = tk.Frame(self, bg="#0B1728", padx=40, pady=50)
+        left_hero = tk.Frame(self, bg="#003E5C", padx=40, pady=50)
         left_hero.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-        brand_center = tk.Frame(left_hero, bg="#0B1728")
+        brand_center = tk.Frame(left_hero, bg="#003E5C")
         brand_center.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
         # 2D Medical Badge
         logo_badge = tk.Label(
-            brand_center, text="✚", font=("Segoe UI", 26, "bold"),
-            bg="#2563EB", fg="white", width=2, height=1
+            brand_center, text="✚", font=("Segoe UI", 24, "bold"),
+            bg="#00BCD4", fg="white", width=2, height=1
         )
         logo_badge.pack(anchor=tk.W, pady=(0, 14))
 
         tk.Label(
             brand_center, text="MediCare", font=("Segoe UI", 26, "bold"),
-            fg="white", bg="#0B1728"
+            fg="white", bg="#003E5C"
         ).pack(anchor=tk.W)
 
         tk.Label(
             brand_center, text="Hospital Management System",
-            font=("Segoe UI", 11), fg="#94A3B8", bg="#0B1728"
+            font=("Segoe UI", 11), fg="#7DD3FC", bg="#003E5C"
         ).pack(anchor=tk.W, pady=(2, 16))
 
         # TQM Subheader
         tk.Label(
             brand_center, text="TQM • Q02 IMPROVE PERFORMANCE",
-            font=("Segoe UI", 8, "bold"), fg="#38BDF8", bg="#0B1728"
+            font=("Segoe UI", 8, "bold"), fg="#38BDF8", bg="#003E5C"
         ).pack(anchor=tk.W, pady=(0, 12))
 
-        # Dark Glass Container with Feature Highlights (Matching Image 3)
+        # Deep Cyan / Teal Glass Container with Feature Highlights
         feat_box = tk.Frame(
-            brand_center, bg="#132238", padx=16, pady=16,
-            highlightthickness=1, highlightbackground="#1E3A5F"
+            brand_center, bg="#004B6E", padx=16, pady=16,
+            highlightthickness=1, highlightbackground="#02638A"
         )
         feat_box.pack(fill=tk.X, pady=(0, 20))
 
@@ -99,38 +99,38 @@ class IntegratedLoginView(tk.Frame):
             ("03", "Quality", "TQM analysis and Q02 performance"),
         ]
         for num, title, desc in features:
-            row = tk.Frame(feat_box, bg="#132238")
+            row = tk.Frame(feat_box, bg="#004B6E")
             row.pack(fill=tk.X, pady=5)
 
             tk.Label(
                 row, text=num, font=("Segoe UI", 9, "bold"),
-                fg="#38BDF8", bg="#132238"
+                fg="#38BDF8", bg="#004B6E"
             ).pack(side=tk.LEFT, padx=(0, 10))
 
-            t_col = tk.Frame(row, bg="#132238")
+            t_col = tk.Frame(row, bg="#004B6E")
             t_col.pack(side=tk.LEFT, fill=tk.X, expand=True)
 
             tk.Label(
                 t_col, text=title, font=("Segoe UI", 9, "bold"),
-                fg="white", bg="#132238"
+                fg="white", bg="#004B6E"
             ).pack(anchor=tk.W)
 
             tk.Label(
                 t_col, text=desc, font=("Segoe UI", 8),
-                fg="#94A3B8", bg="#132238"
+                fg="#BAE6FD", bg="#004B6E"
             ).pack(anchor=tk.W)
 
         # Bottom Secure Note
         tk.Label(
             brand_center, text="Secure role-based access • SQLite • Python",
-            font=("Segoe UI", 8), fg="#64748B", bg="#0B1728"
+            font=("Segoe UI", 8), fg="#7DD3FC", bg="#003E5C"
         ).pack(anchor=tk.W)
 
         # 2. Right Manual Authentication Panel (60% width)
-        right_panel = tk.Frame(self, bg="#F8FAFC", padx=30, pady=40)
+        right_panel = tk.Frame(self, bg="#F0F6FA", padx=30, pady=40)
         right_panel.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
 
-        card_wrapper = tk.Frame(right_panel, bg="#F8FAFC")
+        card_wrapper = tk.Frame(right_panel, bg="#F0F6FA")
         card_wrapper.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
         # Main Light Card with Soft Gaussian Drop Shadow (Matching Image 3)
@@ -144,7 +144,7 @@ class IntegratedLoginView(tk.Frame):
 
         tk.Label(
             c, text="WELCOME BACK",
-            font=("Segoe UI", 8, "bold"), fg="#2563EB", bg="#FFFFFF"
+            font=("Segoe UI", 8, "bold"), fg="#0284C7", bg="#FFFFFF"
         ).pack(anchor=tk.W)
 
         tk.Label(
@@ -166,7 +166,7 @@ class IntegratedLoginView(tk.Frame):
         self.txt_user = tk.Entry(
             c, font=("Segoe UI", 10), bg="#F8FAFC",
             relief="flat", bd=0, highlightthickness=1, highlightbackground="#CBD5E1",
-            highlightcolor="#2563EB", insertbackground="#2563EB", fg="#0F172A"
+            highlightcolor="#0284C7", insertbackground="#0284C7", fg="#0F172A"
         )
         self.txt_user.pack(fill=tk.X, pady=(0, 14), ipady=7)
         self.txt_user.focus_set()
@@ -183,7 +183,7 @@ class IntegratedLoginView(tk.Frame):
         self.txt_pass = tk.Entry(
             pass_row, font=("Segoe UI", 10), show="•",
             bg="#F8FAFC", relief="flat", bd=0, highlightthickness=1, highlightbackground="#CBD5E1",
-            highlightcolor="#2563EB", insertbackground="#2563EB", fg="#0F172A"
+            highlightcolor="#0284C7", insertbackground="#0284C7", fg="#0F172A"
         )
         self.txt_pass.pack(side=tk.LEFT, fill=tk.X, expand=True, ipady=7)
 
@@ -204,7 +204,7 @@ class IntegratedLoginView(tk.Frame):
         # Sign In Button
         self.btn_sign = PillButton(
             c, text="Sign In →", font_size=10,
-            bg_color="#2563EB", fg_color="white", hover_color="#1D4ED8",
+            bg_color="#003E5C", fg_color="white", hover_color="#002D42",
             padx=16, pady=8, command=self._do_login
         )
         self.btn_sign.pack(fill=tk.X, pady=(0, 18))

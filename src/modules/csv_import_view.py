@@ -40,35 +40,34 @@ class CSVImportView(tk.Frame):
         self.kpi_csv_cards = {}
         self.kpi_csv_cards["target"] = HeroMetricCard(
             kpi_strip, title="SLA Throughput Target", value="> 500 rps",
-            sub="Q02 Performance Benchmark", icon="⚡", bg_color="#059669"
+            sub="Q02 Performance Benchmark", icon="⚡", bg_color="#06B6D4"
         )
-        self.kpi_csv_cards["target"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 5))
+        self.kpi_csv_cards["target"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 4))
 
         self.kpi_csv_cards["speed"] = HeroMetricCard(
             kpi_strip, title="Last Ingestion Speed", value="612.2 rps",
-            sub="Transactional SQLite WAL Mode", icon="📊", bg_color="#2563EB"
+            sub="Transactional SQLite WAL Mode", icon="📊", bg_color="#84CC16"
         )
-        self.kpi_csv_cards["speed"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=5)
+        self.kpi_csv_cards["speed"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=4)
 
         self.kpi_csv_cards["duplicates"] = HeroMetricCard(
             kpi_strip, title="Collision Guard", value="100% Poka-Yoke",
-            sub="Automated Duplicate Filter", icon="🛡️", bg_color="#7C3AED"
+            sub="Automated Duplicate Filter", icon="🛡️", bg_color="#3B82F6"
         )
-        self.kpi_csv_cards["duplicates"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=5)
+        self.kpi_csv_cards["duplicates"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=4)
 
         self.kpi_csv_cards["latency"] = HeroMetricCard(
             kpi_strip, title="Batch Latency", value="24.5 ms",
-            sub="Sub-Second Batch Influx", icon="⏱️", bg_color="#E11D48"
+            sub="Sub-Second Batch Influx", icon="⏱️", bg_color="#EF4444"
         )
-        self.kpi_csv_cards["latency"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(5, 0))
+        self.kpi_csv_cards["latency"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(4, 0))
 
-        # 1. Main Ingestion Floating Rounded Card
-        main_card = RoundedCard(
-            container, bg_color="#FFFFFF", border_color="#E2E8F0",
-            radius=16, pad_shadow=6, padx=16, pady=14
+        # 1. Main Ingestion Container Card
+        card = tk.Frame(
+            container, bg="#FFFFFF", highlightthickness=1, highlightbackground="#E2E8F0",
+            padx=18, pady=16
         )
-        main_card.pack(fill=tk.BOTH, expand=True)
-        card = main_card.inner
+        card.pack(fill=tk.BOTH, expand=True)
 
         # 1a. Header Card
         top_box = tk.Frame(card, bg="white")
@@ -105,7 +104,7 @@ class CSVImportView(tk.Frame):
 
         self.btn_import = PillButton(
             file_row, text="⚡ Execute Bulk Ingestion", font_size=9,
-            bg_color=THEME["primary"], fg_color="white", hover_color=THEME["primary_dark"],
+            bg_color="#003E5C", fg_color="white", hover_color="#002D42",
             padx=14, pady=5, state=tk.DISABLED, command=self._execute_import
         )
         self.btn_import.pack(side=tk.LEFT, padx=(8, 0))

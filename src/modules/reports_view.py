@@ -41,35 +41,34 @@ class ReportsView(tk.Frame):
         self.kpi_report_cards = {}
         self.kpi_report_cards["latency"] = HeroMetricCard(
             kpi_strip, title="Vectorized Speed", value="< 25 ms",
-            sub="SLA: < 1500ms Target", icon="⚡", bg_color="#059669"
+            sub="SLA: < 1500ms Target", icon="⚡", bg_color="#84CC16"
         )
-        self.kpi_report_cards["latency"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 5))
+        self.kpi_report_cards["latency"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 4))
 
         self.kpi_report_cards["records"] = HeroMetricCard(
             kpi_strip, title="Aggregated Telemetry", value="0 Rows",
-            sub="Vectorized Influx", icon="📋", bg_color="#2563EB"
+            sub="Vectorized Influx", icon="📋", bg_color="#0EA5E9"
         )
-        self.kpi_report_cards["records"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=5)
+        self.kpi_report_cards["records"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=4)
 
         self.kpi_report_cards["compliance"] = HeroMetricCard(
             kpi_strip, title="TQM SLA Compliance", value="99.4%",
-            sub="Performance SLA Target", icon="🎯", bg_color="#7C3AED"
+            sub="Performance SLA Target", icon="🎯", bg_color="#06B6D4"
         )
-        self.kpi_report_cards["compliance"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=5)
+        self.kpi_report_cards["compliance"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=4)
 
         self.kpi_report_cards["sqc"] = HeroMetricCard(
             kpi_strip, title="SQC Control Tools", value="Pareto / Fishbone",
-            sub="Deming PDCA Active", icon="📊", bg_color="#E11D48"
+            sub="Deming PDCA Active", icon="📊", bg_color="#F97316"
         )
-        self.kpi_report_cards["sqc"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(5, 0))
+        self.kpi_report_cards["sqc"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(4, 0))
 
-        # 1. Main Analytics Floating Rounded Card
-        main_card = RoundedCard(
-            container, bg_color="#FFFFFF", border_color="#E2E8F0",
-            radius=16, pad_shadow=6, padx=16, pady=14
+        # 1. Main Analytics Container Card
+        card = tk.Frame(
+            container, bg="#FFFFFF", highlightthickness=1, highlightbackground="#E2E8F0",
+            padx=18, pady=16
         )
-        main_card.pack(fill=tk.BOTH, expand=True)
-        card = main_card.inner
+        card.pack(fill=tk.BOTH, expand=True)
 
         # 1a. Report Selector Toolbar
         top_strip = tk.Frame(card, bg="white")
@@ -90,7 +89,7 @@ class ReportsView(tk.Frame):
             r = tk.Radiobutton(
                 top_strip, text=label, value=val, variable=self.report_type_var,
                 font=("Segoe UI", 9, "bold"), bg="white", fg=THEME["text"],
-                activebackground="white", selectcolor=THEME["primary_light"],
+                activebackground="white", selectcolor="#DDF2FD",
                 cursor="hand2", command=self._on_type_change
             )
             r.pack(side=tk.LEFT, padx=6)
@@ -100,7 +99,7 @@ class ReportsView(tk.Frame):
             top_strip, 
             text="⚡ Latency: -- ms | SLA: < 1500ms", 
             font=("Segoe UI", 9, "bold"),
-            bg=THEME["success_light"], fg="#047857",
+            bg="#DDF2FD", fg="#0284C7",
             padx=12, pady=5, relief="flat"
         )
         self.lbl_report_latency.pack(side=tk.RIGHT)

@@ -44,35 +44,34 @@ class PatientView(tk.Frame):
         self.kpi_patient_cards = {}
         self.kpi_patient_cards["total"] = HeroMetricCard(
             kpi_strip, title="Registered Patients", value="0 Patients",
-            sub="Active Records in Database", icon="👥", bg_color="#2563EB"
+            sub="Active Records in Database", icon="👥", bg_color="#06B6D4"
         )
-        self.kpi_patient_cards["total"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 5))
+        self.kpi_patient_cards["total"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 4))
 
         self.kpi_patient_cards["latency"] = HeroMetricCard(
             kpi_strip, title="Fast Search Speed", value="< 5 ms",
-            sub="SLA: < 100ms (B-Tree Indexed)", icon="⚡", bg_color="#059669"
+            sub="SLA: < 100ms (B-Tree Indexed)", icon="⚡", bg_color="#84CC16"
         )
-        self.kpi_patient_cards["latency"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=5)
+        self.kpi_patient_cards["latency"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=4)
 
         self.kpi_patient_cards["pokayoke"] = HeroMetricCard(
             kpi_strip, title="Poka-Yoke Guard", value="100% Active",
-            sub="Unique Phone & UHID Collision Check", icon="🛡️", bg_color="#7C3AED"
+            sub="Unique Phone & UHID Collision Check", icon="🛡️", bg_color="#3B82F6"
         )
-        self.kpi_patient_cards["pokayoke"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=5)
+        self.kpi_patient_cards["pokayoke"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=4)
 
         self.kpi_patient_cards["blood"] = HeroMetricCard(
             kpi_strip, title="Top Blood Group", value="O+ Rh+",
-            sub="Predominant Donor Type", icon="🩸", bg_color="#E11D48"
+            sub="Predominant Donor Type", icon="🩸", bg_color="#EF4444"
         )
-        self.kpi_patient_cards["blood"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(5, 0))
+        self.kpi_patient_cards["blood"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(4, 0))
 
-        # 1. Main Table Floating Rounded Card
-        main_card = RoundedCard(
-            container, bg_color="#FFFFFF", border_color="#E2E8F0",
-            radius=16, pad_shadow=6, padx=16, pady=14
+        # 1. Main Table Container Card
+        card = tk.Frame(
+            container, bg="#FFFFFF", highlightthickness=1, highlightbackground="#E2E8F0",
+            padx=18, pady=16
         )
-        main_card.pack(fill=tk.BOTH, expand=True)
-        card = main_card.inner
+        card.pack(fill=tk.BOTH, expand=True)
 
         # 1a. Top Search and Action Strip
         top_strip = tk.Frame(card, bg="white")
@@ -103,15 +102,15 @@ class PatientView(tk.Frame):
             top_strip, 
             text="⚡ Search Latency: -- ms | SLA: < 100ms", 
             font=("Segoe UI", 9, "bold"),
-            bg=THEME["primary_light"], fg=THEME["primary"],
+            bg="#DDF2FD", fg="#0284C7",
             padx=12, pady=5, relief="flat"
         )
         self.lbl_latency.pack(side=tk.LEFT, padx=15)
 
-        # Register New Patient Button (Primary Brand Action)
+        # Register New Patient Button (Deep Prussian Navy matching Image 1)
         btn_add = PillButton(
             top_strip, text="➕ Register New Patient", font_size=9,
-            bg_color=THEME["primary"], fg_color="white", hover_color=THEME["primary_dark"],
+            bg_color="#003E5C", fg_color="white", hover_color="#002D42",
             padx=14, pady=6, command=self.open_add_patient_modal
         )
         btn_add.pack(side=tk.RIGHT)
@@ -283,10 +282,22 @@ class PatientFormModal(tk.Toplevel):
         self._build_form()
 
     def _build_form(self):
-        container = tk.Frame(self, bg="white", padx=25, pady=20)
-        container.pack(fill=tk.BOTH, expand=True)
+        # 0. Modern Clinical Topbar
+        topbar = tk.Frame(self, bg="#003E5C", padx=20, pady=12)
+        topbar.pack(fill=tk.X)
 
-        tk.Label(container, text="Patient Registration (TQM Poka-Yoke)", font=("Segoe UI", 13, "bold"), fg=THEME["primary"], bg="white").pack(anchor=tk.W, pady=(0, 15))
+        tk.Label(
+            topbar, text="✚  Patient Registration", font=("Segoe UI", 12, "bold"),
+            fg="#FFFFFF", bg="#003E5C"
+        ).pack(side=tk.LEFT)
+
+        tk.Label(
+            topbar, text="TQM Poka-Yoke Protected", font=("Segoe UI", 8, "bold"),
+            fg="#38BDF8", bg="#003E5C"
+        ).pack(side=tk.RIGHT)
+
+        container = tk.Frame(self, bg="white", padx=25, pady=16)
+        container.pack(fill=tk.BOTH, expand=True)
 
         # Full Name
         tk.Label(container, text="Full Name *", font=("Segoe UI", 9, "bold"), fg=THEME["text"], bg="white").pack(anchor=tk.W)
@@ -358,7 +369,7 @@ class PatientFormModal(tk.Toplevel):
 
         btn_save = PillButton(
             btn_frame, text="💾 Save Record", font_size=9,
-            bg_color=THEME["primary"], fg_color="white", hover_color=THEME["primary_dark"],
+            bg_color="#003E5C", fg_color="white", hover_color="#002D42",
             padx=16, pady=7, command=self.save_patient
         )
         btn_save.pack(side=tk.RIGHT, padx=5)

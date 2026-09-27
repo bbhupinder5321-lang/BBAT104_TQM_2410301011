@@ -35,35 +35,34 @@ class DoctorView(tk.Frame):
         self.kpi_doctor_cards = {}
         self.kpi_doctor_cards["total"] = HeroMetricCard(
             kpi_strip, title="Medical Faculty", value="0 Doctors",
-            sub="Certified Clinical Specialists", icon="👨‍⚕️", bg_color="#2563EB"
+            sub="Certified Clinical Specialists", icon="👨‍⚕️", bg_color="#06B6D4"
         )
-        self.kpi_doctor_cards["total"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 5))
+        self.kpi_doctor_cards["total"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 4))
 
         self.kpi_doctor_cards["avail"] = HeroMetricCard(
             kpi_strip, title="Active On Duty", value="0 On Duty",
-            sub="Ready for Patient Consultations", icon="🟢", bg_color="#059669"
+            sub="Ready for Patient Consultations", icon="🟢", bg_color="#84CC16"
         )
-        self.kpi_doctor_cards["avail"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=5)
+        self.kpi_doctor_cards["avail"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=4)
 
         self.kpi_doctor_cards["surgery"] = HeroMetricCard(
             kpi_strip, title="In Procedure / OT", value="0 Active",
-            sub="Operating Theaters Active", icon="🏥", bg_color="#7C3AED"
+            sub="Operating Theaters Active", icon="🏥", bg_color="#F97316"
         )
-        self.kpi_doctor_cards["surgery"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=5)
+        self.kpi_doctor_cards["surgery"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=4)
 
         self.kpi_doctor_cards["fee"] = HeroMetricCard(
             kpi_strip, title="Avg Consultation Fee", value="₹0.00",
-            sub="Standard OPD Tariff", icon="💰", bg_color="#E11D48"
+            sub="Standard OPD Tariff", icon="💰", bg_color="#0EA5E9"
         )
-        self.kpi_doctor_cards["fee"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(5, 0))
+        self.kpi_doctor_cards["fee"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(4, 0))
 
-        # 1. Main Table Floating Rounded Card
-        main_card = RoundedCard(
-            container, bg_color="#FFFFFF", border_color="#E2E8F0",
-            radius=16, pad_shadow=6, padx=16, pady=14
+        # 1. Main Table Container Card
+        card = tk.Frame(
+            container, bg="#FFFFFF", highlightthickness=1, highlightbackground="#E2E8F0",
+            padx=18, pady=16
         )
-        main_card.pack(fill=tk.BOTH, expand=True)
-        card = main_card.inner
+        card.pack(fill=tk.BOTH, expand=True)
 
         # 1a. Header filter row
         top_strip = tk.Frame(card, bg="white")
@@ -85,7 +84,7 @@ class DoctorView(tk.Frame):
 
         btn_add = PillButton(
             top_strip, text="➕ Onboard New Doctor", font_size=9,
-            bg_color=THEME["primary"], fg_color="white", hover_color=THEME["primary_dark"],
+            bg_color="#003E5C", fg_color="white", hover_color="#002D42",
             padx=14, pady=6, command=self.open_add_doctor_modal
         )
         btn_add.pack(side=tk.RIGHT)
@@ -255,10 +254,22 @@ class DoctorFormModal(tk.Toplevel):
         self._build_form()
 
     def _build_form(self):
-        form_frame = tk.Frame(self, bg="white", padx=25, pady=20)
-        form_frame.pack(fill=tk.BOTH, expand=True)
+        # 0. Modern Clinical Topbar
+        topbar = tk.Frame(self, bg="#003E5C", padx=20, pady=12)
+        topbar.pack(fill=tk.X)
 
-        tk.Label(form_frame, text="Doctor Profile Information", font=("Segoe UI", 12, "bold"), fg=THEME["primary"], bg="white").pack(anchor=tk.W, pady=(0, 15))
+        tk.Label(
+            topbar, text="✚  Doctor Profile & Onboarding", font=("Segoe UI", 12, "bold"),
+            fg="#FFFFFF", bg="#003E5C"
+        ).pack(side=tk.LEFT)
+
+        tk.Label(
+            topbar, text="Clinical Staff Roster", font=("Segoe UI", 8, "bold"),
+            fg="#38BDF8", bg="#003E5C"
+        ).pack(side=tk.RIGHT)
+
+        form_frame = tk.Frame(self, bg="white", padx=25, pady=16)
+        form_frame.pack(fill=tk.BOTH, expand=True)
 
         tk.Label(form_frame, text="Doctor Code (e.g. DOC-106) *", font=("Segoe UI", 9, "bold"), fg=THEME["text"], bg="white").pack(anchor=tk.W)
         self.txt_code = tk.Entry(form_frame, font=("Segoe UI", 10), bg="#F8FAFC", relief="solid", bd=1)
@@ -323,7 +334,7 @@ class DoctorFormModal(tk.Toplevel):
 
         btn_save = PillButton(
             btn_frame, text="💾 Save Doctor", font_size=9,
-            bg_color=THEME["primary"], fg_color="white", hover_color=THEME["primary_dark"],
+            bg_color="#003E5C", fg_color="white", hover_color="#002D42",
             padx=16, pady=7, command=self.save_doctor
         )
         btn_save.pack(side=tk.RIGHT, padx=5)
