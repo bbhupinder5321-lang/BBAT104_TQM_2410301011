@@ -793,117 +793,123 @@ class TQMAuditView(tk.Frame):
             {"id": 4, "phase": "Act", "activity": "Standardize successful optimizations and embed live SLA indicators.", "outcome": "90%+ risk reduction sustained across clinical operations."},
         ]
 
-        # Two-Column Container: Left = PDCA Log & Inputs, Right = Embedded Deming PDCA Cycle Diagram
-        split_frame = tk.Frame(f, bg="#FFFFFF")
-        split_frame.pack(fill=tk.X, expand=True)
+        # 1. TOP CARD: Full-Width Embedded Deming PDCA Cycle Visual Figure
+        chart_card = tk.Frame(f, bg="#FFFFFF", highlightthickness=1, highlightbackground="#E2E8F0", padx=6, pady=6)
+        chart_card.pack(fill=tk.X, expand=False, pady=(0, 10))
 
-        # LEFT PANE: Add/Edit Form & Activity Log (48% width)
-        left_pane = tk.Frame(split_frame, bg="#FFFFFF")
-        left_pane.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 10))
+        pdca_fig = create_pdca_cycle_figure(figsize=(9.2, 4.4), dpi=95)
+        pdca_canvas = FigureCanvasTkAgg(pdca_fig, master=chart_card)
+        pdca_widget = pdca_canvas.get_tk_widget()
+        pdca_widget.pack(fill=tk.X, expand=False)
+        pdca_canvas.draw()
 
-        # Add PDCA Activity Row
-        form_row = tk.Frame(left_pane, bg="#FFFFFF")
-        form_row.pack(fill=tk.X, pady=(0, 6))
+        chart_strip = tk.Frame(chart_card, bg="#FFFFFF")
+        chart_strip.pack(fill=tk.X, pady=(4, 0))
 
-        tk.Label(form_row, text="Add Activity:", font=("Segoe UI", 8, "bold"), fg="#0F172A", bg="#FFFFFF").pack(side=tk.LEFT, padx=(0, 4))
+        tk.Label(
+            chart_strip, text="✓ Continuous closed-loop Kaizen cycle ensures permanent Q02 performance gains across all clinical operations.",
+            font=("Segoe UI", 8, "bold"), fg="#15803D", bg="#FFFFFF"
+        ).pack(side=tk.LEFT)
 
-        self.cmb_phase = ttk.Combobox(form_row, values=["Plan", "Do", "Check", "Act"], width=6, state="readonly")
+        btn_export = PillButton(
+            chart_strip, text="💾 Export High-Res PDCA Diagram (PNG)", font_size=8,
+            bg_color="#0284C7", fg_color="white", hover_color="#0369A1",
+            padx=12, pady=4, command=self._export_pdca
+        )
+        btn_export.pack(side=tk.RIGHT)
+
+        # 2. BOTTOM CARD: PDCA Kaizen Action Items & Audit Log
+        log_card = tk.Frame(f, bg="#FFFFFF", highlightthickness=1, highlightbackground="#E2E8F0", padx=14, pady=12)
+        log_card.pack(fill=tk.X, expand=False, pady=(0, 10))
+
+        head_log = tk.Frame(log_card, bg="#FFFFFF")
+        head_log.pack(fill=tk.X, pady=(0, 8))
+        tk.Label(head_log, text="📋 PDCA Kaizen Improvement Log & Action Items", font=("Segoe UI", 10, "bold"), fg="#0F172A", bg="#FFFFFF").pack(side=tk.LEFT)
+        tk.Label(head_log, text="Click a row to edit • Form fields populate automatically", font=("Segoe UI", 7), fg="#64748B", bg="#FFFFFF").pack(side=tk.RIGHT)
+
+        # Add/Edit Form Inputs Row
+        form_row = tk.Frame(log_card, bg="#FFFFFF")
+        form_row.pack(fill=tk.X, pady=(0, 8))
+
+        tk.Label(form_row, text="Phase:", font=("Segoe UI", 8, "bold"), fg="#0F172A", bg="#FFFFFF").pack(side=tk.LEFT, padx=(0, 4))
+        self.cmb_phase = ttk.Combobox(form_row, values=["Plan", "Do", "Check", "Act"], width=7, state="readonly")
         self.cmb_phase.set("Plan")
-        self.cmb_phase.pack(side=tk.LEFT, padx=(0, 4))
+        self.cmb_phase.pack(side=tk.LEFT, padx=(0, 8))
 
-        self.txt_activity = tk.Entry(form_row, font=("Segoe UI", 8), bg="#FFFFFF", relief="solid", bd=1, width=18)
-        self.txt_activity.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 4), ipady=3)
+        tk.Label(form_row, text="Activity:", font=("Segoe UI", 8, "bold"), fg="#0F172A", bg="#FFFFFF").pack(side=tk.LEFT, padx=(0, 4))
+        self.txt_activity = tk.Entry(form_row, font=("Segoe UI", 8), bg="#FFFFFF", relief="solid", bd=1, width=28)
+        self.txt_activity.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 8), ipady=3)
         self.txt_activity.insert(0, "Activity description")
         self.txt_activity.bind("<FocusIn>", lambda e: self.txt_activity.delete(0, tk.END) if self.txt_activity.get() == "Activity description" else None)
 
-        self.txt_outcome = tk.Entry(form_row, font=("Segoe UI", 8), bg="#FFFFFF", relief="solid", bd=1, width=18)
-        self.txt_outcome.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 4), ipady=3)
+        tk.Label(form_row, text="Outcome:", font=("Segoe UI", 8, "bold"), fg="#0F172A", bg="#FFFFFF").pack(side=tk.LEFT, padx=(0, 4))
+        self.txt_outcome = tk.Entry(form_row, font=("Segoe UI", 8), bg="#FFFFFF", relief="solid", bd=1, width=28)
+        self.txt_outcome.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 8), ipady=3)
         self.txt_outcome.insert(0, "Result / outcome")
         self.txt_outcome.bind("<FocusIn>", lambda e: self.txt_outcome.delete(0, tk.END) if self.txt_outcome.get() == "Result / outcome" else None)
 
         btn_add = PillButton(
-            form_row, text="+ Add", font_size=8,
+            form_row, text="+ Add Activity", font_size=8,
             bg_color="#0284C7", fg_color="white", hover_color="#0369A1",
-            padx=8, pady=3, command=self._add_pdca_activity
+            padx=10, pady=3, command=self._add_pdca_activity
         )
         btn_add.pack(side=tk.LEFT)
 
-        # Table: PDCA Improvement Log
-        table_head = tk.Frame(left_pane, bg="#FFFFFF")
-        table_head.pack(fill=tk.X)
-        tk.Label(table_head, text="PDCA Improvement Log", font=("Segoe UI", 8, "bold"), fg="#0F172A", bg="#FFFFFF").pack(side=tk.LEFT)
-        tk.Label(table_head, text="Select a row to edit", font=("Segoe UI", 7), fg="#64748B", bg="#FFFFFF").pack(side=tk.RIGHT)
-
+        # Full-Width Table: PDCA Improvement Log
         cols = ("id", "phase", "activity", "outcome")
-        self.pdca_tree = ttk.Treeview(left_pane, columns=cols, show="headings", height=7)
+        self.pdca_tree = ttk.Treeview(log_card, columns=cols, show="headings", height=5)
 
         self.pdca_tree.heading("id", text="ID")
         self.pdca_tree.heading("phase", text="Phase")
-        self.pdca_tree.heading("activity", text="Activity")
-        self.pdca_tree.heading("outcome", text="Result / Outcome")
+        self.pdca_tree.heading("activity", text="Kaizen Activity / Measure")
+        self.pdca_tree.heading("outcome", text="Realized Result / Outcome")
 
-        self.pdca_tree.column("id", width=35, anchor=tk.CENTER)
-        self.pdca_tree.column("phase", width=60, anchor=tk.CENTER)
-        self.pdca_tree.column("activity", width=160, anchor=tk.W)
-        self.pdca_tree.column("outcome", width=160, anchor=tk.W)
+        self.pdca_tree.column("id", width=45, anchor=tk.CENTER)
+        self.pdca_tree.column("phase", width=75, anchor=tk.CENTER)
+        self.pdca_tree.column("activity", width=380, anchor=tk.W)
+        self.pdca_tree.column("outcome", width=380, anchor=tk.W)
 
-        self.pdca_tree.pack(fill=tk.X, expand=False, pady=(2, 6))
+        self.pdca_tree.pack(fill=tk.X, expand=False, pady=(0, 8))
+        self.pdca_tree.bind("<ButtonRelease-1>", lambda e: self._load_selected_pdca())
 
         # Action Buttons Bottom
-        act_row = tk.Frame(left_pane, bg="#FFFFFF")
+        act_row = tk.Frame(log_card, bg="#FFFFFF")
         act_row.pack(fill=tk.X)
 
         btn_load = PillButton(
-            act_row, text="Load", font_size=8,
+            act_row, text="Load Selected", font_size=8,
             bg_color="#0284C7", fg_color="white", hover_color="#0369A1",
-            padx=8, pady=3, command=self._load_selected_pdca
+            padx=10, pady=3, command=self._load_selected_pdca
         )
-        btn_load.pack(side=tk.LEFT, padx=(0, 4))
+        btn_load.pack(side=tk.LEFT, padx=(0, 6))
 
         btn_upd = PillButton(
-            act_row, text="Update", font_size=8,
+            act_row, text="Update Activity", font_size=8,
             bg_color="#0284C7", fg_color="white", hover_color="#0369A1",
-            padx=8, pady=3, command=self._update_pdca_activity
+            padx=10, pady=3, command=self._update_pdca_activity
         )
-        btn_upd.pack(side=tk.LEFT, padx=(0, 4))
+        btn_upd.pack(side=tk.LEFT, padx=(0, 6))
 
         btn_rem = PillButton(
-            act_row, text="Remove", font_size=8,
+            act_row, text="Remove Selected", font_size=8,
             bg_color="#EF4444", fg_color="white", hover_color="#DC2626",
-            padx=8, pady=3, command=self._remove_pdca_activity
+            padx=10, pady=3, command=self._remove_pdca_activity
         )
-        btn_rem.pack(side=tk.LEFT, padx=(0, 4))
+        btn_rem.pack(side=tk.LEFT, padx=(0, 6))
 
         btn_clr = PillButton(
-            act_row, text="Clear", font_size=8,
+            act_row, text="Clear Form", font_size=8,
             bg_color="#64748B", fg_color="white", hover_color="#475569",
-            padx=8, pady=3, command=self._clear_pdca_inputs
+            padx=10, pady=3, command=self._clear_pdca_inputs
         )
         btn_clr.pack(side=tk.LEFT)
 
         btn_ref = PillButton(
-            act_row, text="Refresh", font_size=8,
+            act_row, text="Refresh Table", font_size=8,
             bg_color="#0284C7", fg_color="white", hover_color="#0369A1",
-            padx=10, pady=3, command=self._refresh_pdca_table
+            padx=12, pady=3, command=self._refresh_pdca_table
         )
         btn_ref.pack(side=tk.RIGHT)
-
-        # RIGHT PANE: Embedded Deming PDCA Cycle Visual Figure (52% width)
-        right_chart_pane = tk.Frame(split_frame, bg="#FFFFFF", highlightthickness=1, highlightbackground="#E2E8F0", padx=4, pady=4)
-        right_chart_pane.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
-
-        pdca_fig = create_pdca_cycle_figure(figsize=(4.8, 3.4), dpi=90)
-        pdca_canvas = FigureCanvasTkAgg(pdca_fig, master=right_chart_pane)
-        pdca_widget = pdca_canvas.get_tk_widget()
-        pdca_widget.pack(fill=tk.BOTH, expand=True)
-        pdca_canvas.draw()
-
-        btn_export = PillButton(
-            right_chart_pane, text="💾 Export PDCA Diagram (PNG)", font_size=8,
-            bg_color="#0284C7", fg_color="white", hover_color="#0369A1",
-            padx=8, pady=2, command=self._export_pdca
-        )
-        btn_export.pack(anchor=tk.E, pady=(2, 0))
 
         self._refresh_pdca_table()
 
