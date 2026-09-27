@@ -31,26 +31,29 @@ SLA_TARGETS = {
     "CSV_MIN_RPS": 500.0,         # Bulk CSV Ingestion must exceed 500 records/sec
 }
 
-# Modern SaaS Healthcare UI Theme Palette (Matching Reference Screenshots)
+# Modern SaaS Healthcare UI Theme Palette (Matching Image 1 & Reference Design)
 THEME = {
-    "primary": "#2563EB",         # Vibrant SaaS Blue
-    "primary_dark": "#1D4ED8",    # Deep Blue
-    "primary_light": "#EFF6FF",   # Soft Blue Tint
-    "secondary": "#0284C7",       # Sky Blue Accent
-    "sidebar_bg": "#0B1728",      # Slate Navy 950 (Matching Screenshots)
-    "sidebar_hover": "#1E293B",   # Slate Hover
-    "sidebar_active": "#2563EB",  # Active Vibrant Blue Pill
-    "sidebar_text": "#94A3B8",    # Muted Nav Text
-    "sidebar_text_active": "#FFFFFF",
-    "hero_navy": "#0F172A",       # Hero Welcome Banner Slate Navy
-    "emergency_coral": "#EF4444", # Vibrant Emergency Alert Red
-    "pastel_blue": "#EFF6FF",     # Pastel Stat Card 1 (Patients)
+    "primary": "#0284C7",         # Vibrant Cyan-Blue
+    "primary_dark": "#0369A1",    # Deep Blue
+    "primary_light": "#DDF2FD",   # Soft Sky-Blue Active Pill (Image 1)
+    "secondary": "#06B6D4",       # Medical Cyan
+    "topbar_bg": "#003E5C",       # Deep Prussian / Teal Navy (Image 1 Header)
+    "topbar_text": "#FFFFFF",
+    "sidebar_bg": "#FFFFFF",      # Pure White Sidebar (Image 1)
+    "sidebar_border": "#E2E8F0",  # Soft Slate Border
+    "sidebar_hover": "#F0F9FF",   # Soft Light Blue Hover
+    "sidebar_active": "#DDF2FD",  # Soft Cyan-Blue Active Pill (Image 1)
+    "sidebar_text": "#334155",    # Dark Slate Menu Text
+    "sidebar_text_active": "#0284C7", # Active Cyan-Blue Text (Image 1)
+    "hero_navy": "#003E5C",       # Header Navy
+    "emergency_coral": "#EF4444", # Vibrant Alert Red
+    "pastel_blue": "#EFF6FF",     # Pastel Stat Card 1
     "pastel_blue_border": "#DBEAFE",
     "pastel_blue_hover": "#E0E7FF",
-    "pastel_amber": "#FFFBEB",    # Pastel Stat Card 2 (Pending)
+    "pastel_amber": "#FFFBEB",    # Pastel Stat Card 2
     "pastel_amber_border": "#FDE68A",
     "pastel_amber_hover": "#FEF3C7",
-    "pastel_rose": "#FEF2F2",     # Pastel Stat Card 3 (High Risk)
+    "pastel_rose": "#FEF2F2",     # Pastel Stat Card 3
     "pastel_rose_border": "#FECACA",
     "pastel_rose_hover": "#FEE2E2",
     "pastel_purple": "#FAF5FF",   # Pastel Specialist Card
@@ -64,7 +67,7 @@ THEME = {
     "danger_light": "#FEF2F2",
     "purple": "#8B5CF6",          # Violet Accent
     "purple_light": "#F5F3FF",
-    "background": "#F8FAFC",      # Clean Crisp Canvas
+    "background": "#F0F6FA",      # Soft Light Cool Gray-Blue (Image 1 Canvas)
     "surface": "#FFFFFF",         # Pure White Card
     "border": "#E2E8F0",          # Soft Border
     "text": "#0F172A",            # High Contrast Heading Navy

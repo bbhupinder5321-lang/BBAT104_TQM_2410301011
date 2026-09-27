@@ -358,3 +358,58 @@ def generate_checksheet_chart(defects_data: Optional[List[Tuple[str, int]]] = No
     plt.close(fig)
     return save_path
 
+
+def create_appointments_grouped_bar_figure(figsize: Tuple[float, float] = (7.2, 3.2), dpi: int = 100) -> plt.Figure:
+    """Creates the 12-month triple-bar Appointments chart matching Image 1."""
+    plt.style.use("default")
+    fig, ax = plt.subplots(figsize=figsize, dpi=dpi)
+    fig.patch.set_facecolor("white")
+    ax.set_facecolor("white")
+
+    months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    home_visit = [4.8, 2.8, 5.9, 5.1, 4.9, 2.8, 5.9, 5.1, 2.8, 5.9, 2.8, 5.9]
+    clinic_visit = [3.1, 1.3, 4.3, 2.0, 3.1, 1.3, 4.3, 2.0, 1.3, 4.3, 1.3, 4.3]
+    video_consult = [5.7, 4.3, 1.5, 2.8, 5.7, 4.3, 1.5, 2.8, 4.3, 1.5, 4.3, 1.5]
+
+    x = np.arange(len(months))
+    w = 0.22
+
+    ax.bar(x - w, home_visit, width=w, color="#0284C7", label="Home Visit", zorder=3)
+    ax.bar(x, clinic_visit, width=w, color="#FB923C", label="Clinic Visit", zorder=3)
+    ax.bar(x + w, video_consult, width=w, color="#84CC16", label="Video Consultation", zorder=3)
+
+    ax.set_xticks(x)
+    ax.set_xticklabels(months, fontsize=8, color="#64748B")
+    ax.set_yticks([0, 1, 2, 3, 4, 5, 6])
+    ax.set_yticklabels(["0", "1k", "2k", "3k", "4k", "5k", "6k"], fontsize=8, color="#64748B")
+    ax.set_ylim(0, 6.6)
+
+    ax.grid(axis="y", color="#F1F5F9", linestyle="-", linewidth=1, zorder=1)
+    ax.grid(visible=False, axis="x")
+    for s in ["top", "right", "left", "bottom"]:
+        ax.spines[s].set_visible(False)
+
+    ax.legend(loc="lower center", bbox_to_anchor=(0.5, -0.28), ncol=3, frameon=False, fontsize=8)
+    fig.tight_layout(pad=0.6)
+    return fig
+
+
+def create_appointment_donut_figure(figsize: Tuple[float, float] = (3.2, 2.2), dpi: int = 100) -> plt.Figure:
+    """Creates the Appointment Status Donut Chart matching Image 1."""
+    plt.style.use("default")
+    fig, ax = plt.subplots(figsize=figsize, dpi=dpi)
+    fig.patch.set_facecolor("white")
+    ax.set_facecolor("white")
+
+    sizes = [670, 230]
+    colors = ["#0284C7", "#84CC16"]
+
+    wedges, _ = ax.pie(
+        sizes, colors=colors, startangle=90, counterclock=False,
+        wedgeprops=dict(width=0.38, edgecolor="white", linewidth=2.5)
+    )
+    ax.axis("equal")
+    fig.tight_layout(pad=0.2)
+    return fig
+
+

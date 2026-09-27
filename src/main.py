@@ -310,89 +310,138 @@ class MainWindow(tk.Tk):
         self.workspace_frame = tk.Frame(self.main_container, bg=THEME["background"])
         self.workspace_frame.pack(fill=tk.BOTH, expand=True)
 
-        # 1. Left Sidebar Navigation
-        self.sidebar = tk.Frame(self.workspace_frame, bg=THEME["sidebar_bg"], width=240)
+        # =========================================================================
+        # 1. TOP HEADER BAR (Exact Deep Prussian Navy #003E5C from Image 1)
+        # =========================================================================
+        self.top_bar = tk.Frame(self.workspace_frame, bg="#003E5C", height=58, padx=16, pady=8)
+        self.top_bar.pack(side=tk.TOP, fill=tk.X)
+
+        # 1a. Top Bar Left: Circular Medical Logo + Brand + Hamburger + View Title
+        bar_left = tk.Frame(self.top_bar, bg="#003E5C")
+        bar_left.pack(side=tk.LEFT)
+
+        # Medical cross circular logo with cyan + lime border
+        CircleBadge(
+            bar_left, icon="✚", size=36,
+            bg_color="#00BCD4", border_color="#84CC16", fg_color="white", font_size=14
+        ).pack(side=tk.LEFT, padx=(0, 8))
+
+        brand_text = tk.Frame(bar_left, bg="#003E5C")
+        brand_text.pack(side=tk.LEFT, padx=(0, 16))
+
+        tk.Label(
+            brand_text, text="Hospital", font=("Segoe UI", 12, "bold"),
+            fg="white", bg="#003E5C"
+        ).pack(anchor=tk.W)
+
+        tk.Label(
+            brand_text, text="Medical Solution", font=("Segoe UI", 7, "bold"),
+            fg="#38BDF8", bg="#003E5C"
+        ).pack(anchor=tk.W)
+
+        # Hamburger Menu Icon
+        tk.Label(
+            bar_left, text="☰", font=("Segoe UI", 14),
+            fg="white", bg="#003E5C", padx=8
+        ).pack(side=tk.LEFT, padx=(0, 12))
+
+        # View Title Label
+        self.lbl_head_title = tk.Label(
+            bar_left, text="Dashboard",
+            font=("Segoe UI", 15, "bold"), fg="white", bg="#003E5C"
+        )
+        self.lbl_head_title.pack(side=tk.LEFT)
+
+        # Subtitle
+        self.lbl_head_sub = tk.Label(
+            bar_left, text=f"• {COURSE_CODE} ({STUDENT_NAME})",
+            font=("Segoe UI", 8), fg="#7DD3FC", bg="#003E5C"
+        )
+        self.lbl_head_sub.pack(side=tk.LEFT, padx=(8, 0))
+
+        # 1b. Top Bar Right: SLA Pill + Clock + Bell + Hospital Admin Chip
+        bar_right = tk.Frame(self.top_bar, bg="#003E5C")
+        bar_right.pack(side=tk.RIGHT)
+
+        # Real-time SLA Pill
+        self.sla_pill = tk.Label(
+            bar_right, text=" ● 0.8ms Latency | SLA Compliant ",
+            font=("Segoe UI", 8, "bold"),
+            bg="#004B6E", fg="#38BDF8",
+            padx=8, pady=4, relief="flat", bd=0
+        )
+        self.sla_pill.pack(side=tk.LEFT, padx=(0, 8))
+
+        # Clock
+        self.lbl_clock = tk.Label(
+            bar_right, text="", font=("Segoe UI", 8, "bold"),
+            bg="#004B6E", fg="white", padx=8, pady=4
+        )
+        self.lbl_clock.pack(side=tk.LEFT, padx=(0, 10))
+
+        # Notification Bell with Red Badge
+        bell_frame = tk.Frame(bar_right, bg="#003E5C", cursor="hand2")
+        bell_frame.pack(side=tk.LEFT, padx=(0, 12))
+        tk.Label(bell_frame, text="🔔", font=("Segoe UI", 12), fg="white", bg="#003E5C").pack(side=tk.LEFT)
+        tk.Label(bell_frame, text="●", font=("Segoe UI", 7), fg="#EF4444", bg="#003E5C").pack(side=tk.LEFT)
+
+        # Hospital Admin Profile Chip (Image 1 Pill)
+        hosp_chip = tk.Frame(
+            bar_right, bg="#004B6E", padx=8, pady=4,
+            highlightthickness=1, highlightbackground="#02638A"
+        )
+        hosp_chip.pack(side=tk.LEFT)
+
+        CircleBadge(hosp_chip, icon="🏥", size=28, bg_color="#0284C7", border_color="#0284C7", fg_color="white", font_size=10).pack(side=tk.LEFT, padx=(0, 6))
+
+        h_info = tk.Frame(hosp_chip, bg="#004B6E")
+        h_info.pack(side=tk.LEFT, padx=(0, 6))
+
+        tk.Label(h_info, text="Healthcare Hospital", font=("Segoe UI", 8, "bold"), fg="white", bg="#004B6E").pack(anchor=tk.W)
+        tk.Label(h_info, text="Hospital Admin", font=("Segoe UI", 7), fg="#7DD3FC", bg="#004B6E").pack(anchor=tk.W)
+
+        tk.Label(hosp_chip, text="⋮", font=("Segoe UI", 11, "bold"), fg="white", bg="#004B6E").pack(side=tk.RIGHT)
+
+        # =========================================================================
+        # 2. BODY CONTAINER: Left White Sidebar + Right Workspace
+        # =========================================================================
+        body_container = tk.Frame(self.workspace_frame, bg=THEME["background"])
+        body_container.pack(fill=tk.BOTH, expand=True)
+
+        # 2a. Left Sidebar Navigation (Matching Image 1: White background, 2D icons, soft cyan pill)
+        self.sidebar = tk.Frame(body_container, bg="#FFFFFF", width=220, highlightthickness=1, highlightbackground="#E2E8F0")
         self.sidebar.pack(side=tk.LEFT, fill=tk.Y)
         self.sidebar.pack_propagate(False)
 
-        # 1a. Brand Header in Sidebar (Matching Reference Screenshots)
-        brand_box = tk.Frame(self.sidebar, bg=THEME["sidebar_bg"], padx=18, pady=16)
-        brand_box.pack(fill=tk.X)
-
-        logo_badge = tk.Label(
-            brand_box, text="✚", font=("Segoe UI", 14, "bold"),
-            bg="#2563EB", fg="white", width=2, height=1
-        )
-        logo_badge.pack(side=tk.LEFT, padx=(0, 10))
-
-        brand_text = tk.Frame(brand_box, bg=THEME["sidebar_bg"])
-        brand_text.pack(side=tk.LEFT)
-
-        tk.Label(brand_text, text="MediCare", font=("Segoe UI", 13, "bold"), fg="white", bg=THEME["sidebar_bg"]).pack(anchor=tk.W)
-        tk.Label(brand_text, text="Hospital Management", font=("Segoe UI", 8), fg="#94A3B8", bg=THEME["sidebar_bg"]).pack(anchor=tk.W)
-
-        # 1b. User Profile Chip under Brand (Matching Screenshots)
-        user_role = self.user_data.get("role", "Admin")
-        name_parts = self.user_data.get("full_name", "User").split()
-        initials = "".join([p[0].upper() for p in name_parts[:2]]) or "A"
-
-        prof_chip = tk.Frame(self.sidebar, bg="#132238", padx=10, pady=8, highlightthickness=1, highlightbackground="#1E3A5F")
-        prof_chip.pack(fill=tk.X, padx=14, pady=(0, 14))
-
-        av_circle = tk.Label(
-            prof_chip, text=initials, font=("Segoe UI", 8, "bold"),
-            bg="#2563EB", fg="white", width=3, height=1
-        )
-        av_circle.pack(side=tk.LEFT, padx=(0, 8))
-
-        prof_info = tk.Frame(prof_chip, bg="#132238")
-        prof_info.pack(side=tk.LEFT, fill=tk.X, expand=True)
-
-        tk.Label(
-            prof_info, text=self.user_data.get("username", "admin"),
-            font=("Segoe UI", 8, "bold"), fg="white", bg="#132238"
-        ).pack(anchor=tk.W)
-
-        tk.Label(
-            prof_info, text=f"{user_role} account",
-            font=("Segoe UI", 7), fg="#94A3B8", bg="#132238"
-        ).pack(anchor=tk.W)
-
-        dot = tk.Label(prof_chip, text="●", font=("Segoe UI", 7), fg="#10B981", bg="#132238")
-        dot.pack(side=tk.RIGHT)
-
-        # 1c. MAIN MENU Section
-        tk.Label(
-            self.sidebar, text="MAIN MENU",
-            font=("Segoe UI", 7, "bold"), fg="#64748B", bg=THEME["sidebar_bg"], padx=18
-        ).pack(anchor=tk.W, pady=(0, 6))
-
-        main_menu_items = [
-            ("Dashboard", "📊", "Dashboard"),
-            ("Patients", "👥", "Patients"),
+        menu_items = [
+            ("Dashboard", "⊞", "Dashboard"),
             ("Doctors", "👨‍⚕️", "Doctors"),
             ("Appointments", "📅", "Appointments"),
+            ("Book Appointment", "📝", "Book Appointment"),
+            ("Doctors Review", "⭐", "Doctors Review"),
+            ("Patients", "👥", "Patients"),
             ("Billing", "💳", "Billing"),
             ("CSV Import", "📥", "CSV Import"),
             ("Reports", "📈", "Reports"),
             ("Performance", "⚡", "Performance"),
+            ("TQM Audit", "✓", "TQM Analysis"),
         ]
 
         self.nav_buttons = {}
-        for tab_id, icon, label in main_menu_items:
-            btn_frame = tk.Frame(self.sidebar, bg=THEME["sidebar_bg"], cursor="hand2")
-            btn_frame.pack(fill=tk.X, padx=12, pady=1)
+        for tab_id, icon, label in menu_items:
+            btn_frame = tk.Frame(self.sidebar, bg="#FFFFFF", cursor="hand2")
+            btn_frame.pack(fill=tk.X, padx=10, pady=2)
 
-            indicator = tk.Frame(btn_frame, bg=THEME["sidebar_bg"], width=3)
+            indicator = tk.Frame(btn_frame, bg="#FFFFFF", width=3)
             indicator.pack(side=tk.LEFT, fill=tk.Y)
 
             btn_lbl = tk.Label(
-                btn_frame, text=f"  {icon}  {label}", font=("Segoe UI", 8, "bold"),
-                fg=THEME["sidebar_text"], bg=THEME["sidebar_bg"], padx=8, pady=6, anchor=tk.W
+                btn_frame, text=f"  {icon}  {label}", font=("Segoe UI", 9, "bold"),
+                fg="#334155", bg="#FFFFFF", padx=8, pady=7, anchor=tk.W
             )
             btn_lbl.pack(side=tk.LEFT, fill=tk.X, expand=True)
 
-            target_id = "Reports" if tab_id == "Performance" else tab_id
+            target_id = "Reports" if tab_id == "Performance" else ("Appointments" if tab_id == "Book Appointment" else ("Doctors" if tab_id == "Doctors Review" else tab_id))
             btn_frame.bind("<Button-1>", lambda e, tid=target_id: self._show_view(tid))
             btn_lbl.bind("<Button-1>", lambda e, tid=target_id: self._show_view(tid))
             btn_frame.bind("<Enter>", lambda e, f=btn_frame, l=btn_lbl, tid=tab_id: self._on_hover(f, l, tid, True))
@@ -404,127 +453,25 @@ class MainWindow(tk.Tk):
                 "indicator": indicator
             }
 
-        # 1d. QUALITY MANAGEMENT Section
-        tk.Label(
-            self.sidebar, text="QUALITY MANAGEMENT",
-            font=("Segoe UI", 7, "bold"), fg="#64748B", bg=THEME["sidebar_bg"], padx=18
-        ).pack(anchor=tk.W, pady=(12, 6))
-
-        q_frame = tk.Frame(self.sidebar, bg=THEME["sidebar_bg"], cursor="hand2")
-        q_frame.pack(fill=tk.X, padx=12, pady=1)
-
-        q_indicator = tk.Frame(q_frame, bg=THEME["sidebar_bg"], width=3)
-        q_indicator.pack(side=tk.LEFT, fill=tk.Y)
-
-        q_lbl = tk.Label(
-            q_frame, text="  ✓  TQM Analysis", font=("Segoe UI", 8, "bold"),
-            fg=THEME["sidebar_text"], bg=THEME["sidebar_bg"], padx=8, pady=6, anchor=tk.W
-        )
-        q_lbl.pack(side=tk.LEFT, fill=tk.X, expand=True)
-
-        q_frame.bind("<Button-1>", lambda e: self._show_view("TQM Audit"))
-        q_lbl.bind("<Button-1>", lambda e: self._show_view("TQM Audit"))
-        q_frame.bind("<Enter>", lambda e, f=q_frame, l=q_lbl: self._on_hover(f, l, "TQM Audit", True))
-        q_frame.bind("<Leave>", lambda e, f=q_frame, l=q_lbl: self._on_hover(f, l, "TQM Audit", False))
-
-        self.nav_buttons["TQM Audit"] = {
-            "frame": q_frame,
-            "label": q_lbl,
-            "indicator": q_indicator
-        }
-
-        # 1e. Bottom System Online & Logout
-        bottom_box = tk.Frame(self.sidebar, bg=THEME["sidebar_bg"], padx=16, pady=12)
+        # Bottom System Online & Logout
+        bottom_box = tk.Frame(self.sidebar, bg="#FFFFFF", padx=14, pady=12)
         bottom_box.pack(side=tk.BOTTOM, fill=tk.X)
 
         tk.Label(
-            bottom_box, text="● System online", font=("Segoe UI", 7, "bold"),
-            fg="#10B981", bg=THEME["sidebar_bg"]
+            bottom_box, text="● System online", font=("Segoe UI", 8, "bold"),
+            fg="#10B981", bg="#FFFFFF"
         ).pack(anchor=tk.W, pady=(0, 6))
 
         btn_logout = tk.Button(
             bottom_box, text="🚪 Logout", font=("Segoe UI", 8, "bold"),
-            bg="#132238", fg="#EF4444", activebackground="#EF4444", activeforeground="white",
-            relief="flat", cursor="hand2", padx=6, pady=4, command=self._logout
+            bg="#F8FAFC", fg="#EF4444", activebackground="#EF4444", activeforeground="white",
+            relief="solid", bd=1, cursor="hand2", padx=6, pady=4, command=self._logout
         )
         btn_logout.pack(fill=tk.X)
 
-        # 2. Main Right Container
-        self.right_container = tk.Frame(self.workspace_frame, bg=THEME["background"])
-        self.right_container.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-
-        # 2a. Top Header Bar
-        self.header_bar = tk.Frame(
-            self.right_container, bg="white", height=65, padx=22, pady=10,
-            highlightthickness=1, highlightbackground=THEME["border"]
-        )
-        self.header_bar.pack(fill=tk.X)
-
-        head_left = tk.Frame(self.header_bar, bg="white")
-        head_left.pack(side=tk.LEFT)
-
-        self.lbl_head_title = tk.Label(
-            head_left, text="Executive Dashboard",
-            font=("Segoe UI", 13, "bold"), fg=THEME["text"], bg="white"
-        )
-        self.lbl_head_title.pack(anchor=tk.W)
-
-        self.lbl_head_sub = tk.Label(
-            head_left, 
-            text=f"Course: {COURSE_CODE} • Student: {STUDENT_NAME} ({STUDENT_ROLL})", 
-            font=("Segoe UI", 8), fg=THEME["text_muted"], bg="white"
-        )
-        self.lbl_head_sub.pack(anchor=tk.W)
-
-        head_right = tk.Frame(self.header_bar, bg="white")
-        head_right.pack(side=tk.RIGHT)
-
-        # Global Pill Search Box
-        self.header_search = ModernSearchBox(
-            head_right, 
-            placeholder="🔍 Search a Doctor or Patient...",
-            on_search_callback=self._on_global_search,
-            width=22
-        )
-        self.header_search.pack(side=tk.LEFT, padx=(0, 10))
-
-        # Real-time SLA Pill
-        self.sla_pill = tk.Label(
-            head_right, 
-            text=" ● 0.7ms Latency | SLA Compliant ", 
-            font=("Segoe UI", 8, "bold"),
-            bg=THEME["success_light"], fg="#047857",
-            padx=8, pady=4, relief="flat", bd=0
-        )
-        self.sla_pill.pack(side=tk.LEFT, padx=(0, 8))
-
-        # Live Digital Ticking Clock
-        self.lbl_clock = tk.Label(
-            head_right, text="", font=("Segoe UI", 8, "bold"),
-            bg="#EFF6FF", fg=THEME["primary"], padx=8, pady=4
-        )
-        self.lbl_clock.pack(side=tk.LEFT, padx=(0, 8))
-
-        # User Profile Chip
-        user_chip = tk.Frame(head_right, bg="#F0F4FA", padx=6, pady=3, highlightthickness=1, highlightbackground="#D2E4F9")
-        user_chip.pack(side=tk.LEFT)
-
-        role_col = {"Admin": "#2563EB", "Doctor": "#059669", "Receptionist": "#D97706", "Billing": "#7C3AED"}.get(user_role, "#2563EB")
-        av_circle = tk.Label(
-            user_chip, text=initials, font=("Segoe UI", 8, "bold"),
-            bg=role_col, fg="white", width=3, height=1
-        )
-        av_circle.pack(side=tk.LEFT, padx=(0, 5))
-
-        u_info = tk.Frame(user_chip, bg="#F0F4FA")
-        u_info.pack(side=tk.LEFT)
-
-        tk.Label(u_info, text=self.user_data["full_name"][:14], font=("Segoe UI", 8, "bold"), fg="#0C2340", bg="#F0F4FA").pack(anchor=tk.W)
-        tk.Label(u_info, text=user_role, font=("Segoe UI", 7), fg="#64748B", bg="#F0F4FA").pack(anchor=tk.W)
-
-        # 2b. Content Views Container
-        self.content_container = tk.Frame(self.right_container, bg=THEME["background"], padx=14, pady=8)
-        self.content_container.pack(fill=tk.BOTH, expand=True)
+        # 2b. Right Main Content Area
+        self.content_container = tk.Frame(body_container, bg=THEME["background"], padx=6, pady=6)
+        self.content_container.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         # Initialize View Modules
         self.views = {}
@@ -544,38 +491,42 @@ class MainWindow(tk.Tk):
         if tab_id == self.current_tab:
             return
         if is_entering:
-            frame.config(bg=THEME["sidebar_hover"])
-            label.config(bg=THEME["sidebar_hover"], fg="white")
+            frame.config(bg="#F0F9FF")
+            label.config(bg="#F0F9FF", fg="#0284C7")
         else:
-            frame.config(bg=THEME["sidebar_bg"])
-            label.config(bg=THEME["sidebar_bg"], fg=THEME["sidebar_text"])
+            frame.config(bg="#FFFFFF")
+            label.config(bg="#FFFFFF", fg="#334155")
 
     def _show_view(self, tab_id: str):
         self.current_tab = tab_id
 
         titles = {
-            "Dashboard": ("Executive Performance Dashboard", "Real-time clinical throughput, active queues, and wait-time telemetry"),
-            "Patients": ("Patient Directory & Fast Search", "Sub-100ms debounced patient lookup with Poka-Yoke duplicate validation"),
-            "Doctors": ("Medical Staff & Physician Roster", "Doctor availability status toggles, room allocations, and specializations"),
-            "Appointments": ("OPD Queue & Token Sequencer", "Live appointment lifecycle: Scheduled → Waiting → In-Consultation → Done"),
-            "Billing": ("Patient Invoicing & Settlement Desk", "Itemized hospital billing, GST calculation, receipts, and payment reconciliation"),
-            "CSV Import": ("High-Throughput Bulk CSV Ingestion", "Batch transactional patient import (> 500 rps) with duplicate collision protection"),
-            "Reports": ("Vectorized Analytical Reports", "Vectorized Pandas aggregations for daily OPD, workloads, revenue, and SLAs"),
-            "TQM Audit": ("TQM Quality Audit & Accreditation (CO1, CO2, CO3)", "Review 1-4 Artifacts: FMEA Matrix, SIPOC Map, SQC Pareto & Fishbone, Deming PDCA"),
+            "Dashboard": ("Dashboard", "Real-time clinical throughput and active queues"),
+            "Patients": ("Patients", "Sub-100ms debounced patient directory with Poka-Yoke uniqueness"),
+            "Doctors": ("Doctors", "Medical staff roster, specialties, and room allocation"),
+            "Appointments": ("Appointments", "Live appointment lifecycle: Scheduled → Waiting → Done"),
+            "Billing": ("Billing", "Itemized patient invoicing, 5% GST tax settlement"),
+            "CSV Import": ("CSV Import", "High-throughput bulk CSV ingestion engine"),
+            "Reports": ("Reports", "Vectorized Pandas aggregations and analytics"),
+            "TQM Audit": ("TQM Analysis", "Total Quality Management, SQC charts, and FMEA matrix"),
         }
         main_t, sub_t = titles.get(tab_id, ("Hospital Management", "Operations Management"))
         self.lbl_head_title.config(text=main_t)
-        self.lbl_head_sub.config(text=sub_t)
+        self.lbl_head_sub.config(text=f"• {sub_t}")
 
         for tid, widgets in self.nav_buttons.items():
-            if tid == tab_id or (tab_id == "Reports" and tid == "Performance"):
-                widgets["frame"].config(bg="#2563EB")
-                widgets["label"].config(bg="#2563EB", fg="white")
-                widgets["indicator"].config(bg="#2563EB")
+            is_active = (tid == tab_id or 
+                         (tab_id == "Reports" and tid == "Performance") or
+                         (tab_id == "Appointments" and tid == "Book Appointment") or
+                         (tab_id == "Doctors" and tid == "Doctors Review"))
+            if is_active:
+                widgets["frame"].config(bg="#DDF2FD")
+                widgets["label"].config(bg="#DDF2FD", fg="#0284C7")
+                widgets["indicator"].config(bg="#0284C7")
             else:
-                widgets["frame"].config(bg=THEME["sidebar_bg"])
-                widgets["label"].config(bg=THEME["sidebar_bg"], fg=THEME["sidebar_text"])
-                widgets["indicator"].config(bg=THEME["sidebar_bg"])
+                widgets["frame"].config(bg="#FFFFFF")
+                widgets["label"].config(bg="#FFFFFF", fg="#334155")
+                widgets["indicator"].config(bg="#FFFFFF")
 
         for v in self.views.values():
             v.pack_forget()

@@ -26,7 +26,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 
 from src.config import THEME, STUDENT_NAME, STUDENT_ROLL, COURSE_CODE, QUALITY_GOAL, EXPORTS_DIR
-from src.widgets.ui_kit import RoundedCard, AccentLineStatCard, PillButton, CircleBadge
+from src.widgets.ui_kit import PillButton, CircleBadge
 from src.utils.sqc_visualizer import (
     create_pareto_figure,
     create_fishbone_figure,
@@ -45,6 +45,7 @@ class TQMAuditView(tk.Frame):
     """
     Dedicated TQM Quality Audit & Accreditation View for BBAT104.
     Displays all statistical quality control charts, diagrams, and matrices directly in-app.
+    Natural geometry propagation and auto-sizing scroll container eliminates all clipping/overlaying.
     """
 
     def __init__(self, parent):
@@ -64,7 +65,7 @@ class TQMAuditView(tk.Frame):
 
         self.content_frame.bind(
             "<Configure>",
-            lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all"))
+            lambda e: self._on_frame_configure()
         )
 
         self.canvas_window = self.canvas.create_window((0, 0), window=self.content_frame, anchor="nw")
@@ -76,6 +77,9 @@ class TQMAuditView(tk.Frame):
         self.canvas.bind_all("<MouseWheel>", self._on_mousewheel)
         self.bind("<Configure>", self._on_canvas_configure)
 
+    def _on_frame_configure(self):
+        self.canvas.configure(scrollregion=self.canvas.bbox("all"))
+
     def _on_canvas_configure(self, event):
         self.canvas.itemconfig(self.canvas_window, width=max(1, event.width - 15))
 
@@ -84,7 +88,7 @@ class TQMAuditView(tk.Frame):
             self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
     def _build_ui(self):
-        container = tk.Frame(self.content_frame, bg=THEME["background"], padx=6, pady=4)
+        container = tk.Frame(self.content_frame, bg=THEME["background"], padx=8, pady=8)
         container.pack(fill=tk.BOTH, expand=True)
 
         # 0. Top Header Bar
@@ -104,43 +108,41 @@ class TQMAuditView(tk.Frame):
             font=("Segoe UI", 9), fg="#64748B", bg=THEME["background"]
         ).pack(anchor=tk.W, pady=(1, 0))
 
-        # 1. 4 Metric Cards Strip with Left Color Accent Lines
+        # 1. 4 Metric Cards Strip (Matching Image 1 Circular Badge Aesthetic)
         kpi_row = tk.Frame(container, bg=THEME["background"])
         kpi_row.pack(fill=tk.X, pady=(0, 12))
 
-        self.kpi_modes = AccentLineStatCard(
-            kpi_row, value="6", title="Failure Modes",
-            sub_text="Performance risks identified", accent_color="#2563EB"
-        )
-        self.kpi_modes.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 5))
+        kpi_defs = [
+            ("⚡", "#0284C7", "Failure Modes", "6", "Performance risks identified"),
+            ("🛡️", "#EF4444", "High Risk Modes", "0", "High risk (RPN ≥ 250) resolved"),
+            ("✓", "#10B981", "Mitigated Modes", "6", "All post RPN < 50 verified"),
+            ("📉", "#8B5CF6", "Max Post RPN", "32", "Reduced from 392 (↓ 96%)"),
+        ]
 
-        self.kpi_high = AccentLineStatCard(
-            kpi_row, value="0", title="High Risk",
-            sub_text="High risk (RPN ≥ 250) resolved", accent_color="#EF4444"
-        )
-        self.kpi_high.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=5)
+        self.kpi_cards = []
+        for icon, color, title, val, sub in kpi_defs:
+            card = tk.Frame(
+                kpi_row, bg="#FFFFFF", highlightthickness=1, highlightbackground="#E2E8F0",
+                padx=14, pady=10
+            )
+            card.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=4)
 
-        self.kpi_med = AccentLineStatCard(
-            kpi_row, value="6", title="Mitigated Modes",
-            sub_text="All post RPN < 50 verified", accent_color="#10B981"
-        )
-        self.kpi_med.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=5)
+            # Floating circle icon
+            CircleBadge(card, icon=icon, size=38, bg_color=color, border_color=color, fg_color="white", font_size=13).pack(anchor=tk.W)
+            tk.Label(card, text=title, font=("Segoe UI", 8, "bold"), fg="#64748B", bg="#FFFFFF").pack(anchor=tk.W, pady=(6, 0))
+            tk.Label(card, text=val, font=("Segoe UI", 16, "bold"), fg="#0F172A", bg="#FFFFFF").pack(anchor=tk.W)
+            tk.Label(card, text=sub, font=("Segoe UI", 7), fg="#94A3B8", bg="#FFFFFF").pack(anchor=tk.W)
+            self.kpi_cards.append(card)
 
-        self.kpi_rpn = AccentLineStatCard(
-            kpi_row, value="32", title="Max Post RPN",
-            sub_text="Reduced from 392 (↓ 96%)", accent_color="#8B5CF6"
+        # 2. Main Content Card (Native Frame allowing natural height propagation - NO CLIPPING)
+        self.main_card = tk.Frame(
+            container, bg="#FFFFFF", highlightthickness=1, highlightbackground="#E2E8F0",
+            padx=18, pady=16
         )
-        self.kpi_rpn.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(5, 0))
-
-        # 2. Main Content Card
-        main_card = RoundedCard(
-            container, bg_color="#FFFFFF", border_color="#E2E8F0",
-            radius=16, pad_shadow=6, padx=16, pady=14
-        )
-        main_card.pack(fill=tk.BOTH, expand=True)
+        self.main_card.pack(fill=tk.X, expand=True)
 
         # Sub-Navigation Tabs Bar (Pills matching Reference Screenshots)
-        tab_bar = tk.Frame(main_card.inner, bg="#FFFFFF", pady=2)
+        tab_bar = tk.Frame(self.main_card, bg="#FFFFFF", pady=2)
         tab_bar.pack(anchor=tk.CENTER, pady=(0, 14))
 
         self.tab_buttons = {}
@@ -158,13 +160,13 @@ class TQMAuditView(tk.Frame):
         for tab_id, label in tabs_meta:
             btn = tk.Button(
                 tab_bar, text=label, font=("Segoe UI", 9, "bold"),
-                relief="flat", cursor="hand2", padx=14, pady=5, bd=0,
+                relief="flat", cursor="hand2", padx=14, pady=6, bd=0,
                 command=lambda tid=tab_id: self._switch_tab(tid)
             )
-            btn.pack(side=tk.LEFT, padx=3)
+            btn.pack(side=tk.LEFT, padx=4)
             self.tab_buttons[tab_id] = btn
 
-            frame = tk.Frame(main_card.inner, bg="#FFFFFF")
+            frame = tk.Frame(self.main_card, bg="#FFFFFF")
             self.tab_frames[tab_id] = frame
 
         # Build each tab's contents
@@ -192,7 +194,7 @@ class TQMAuditView(tk.Frame):
 
         for tid, btn in self.tab_buttons.items():
             if tid == resolved_id:
-                btn.config(bg="#2563EB", fg="#FFFFFF", relief="flat")
+                btn.config(bg="#0284C7", fg="#FFFFFF", relief="flat")
             else:
                 btn.config(bg="#F1F5F9", fg="#64748B", relief="flat")
 
@@ -205,19 +207,20 @@ class TQMAuditView(tk.Frame):
         self.update_idletasks()
         if hasattr(self, "canvas"):
             self.canvas.configure(scrollregion=self.canvas.bbox("all"))
+            self.canvas.yview_moveto(0.0)
 
     # ---------------- TAB 1: SIPOC PROCESS MAP ----------------
     def _build_sipoc_tab(self):
         f = self.tab_frames["sipoc"]
 
         head = tk.Frame(f, bg="#FFFFFF")
-        head.pack(fill=tk.X, pady=(0, 6))
+        head.pack(fill=tk.X, pady=(0, 8))
 
         tk.Label(head, text="SIPOC Process Mapping & Visual Flow Pipeline", font=("Segoe UI", 13, "bold"), fg="#0F172A", bg="#FFFFFF").pack(anchor=tk.W)
         tk.Label(head, text="Suppliers → Inputs → Process Workflow → Outputs → Customers with Critical To Quality (CTQ) Metrics", font=("Segoe UI", 8), fg="#64748B", bg="#FFFFFF").pack(anchor=tk.W)
 
         # 1. Visual 5-Stage Pipeline Container
-        pipe_container = tk.Frame(f, bg="#F8FAFC", highlightthickness=1, highlightbackground="#E2E8F0", padx=12, pady=10)
+        pipe_container = tk.Frame(f, bg="#F8FAFC", highlightthickness=1, highlightbackground="#E2E8F0", padx=10, pady=10)
         pipe_container.pack(fill=tk.X, pady=(4, 10))
 
         stages_info = [
@@ -265,36 +268,30 @@ class TQMAuditView(tk.Frame):
         for i, (badge_letter, title, bg_c, border_c, text_c, items) in enumerate(stages_info):
             card = tk.Frame(pipe_row, bg=bg_c, highlightthickness=1, highlightbackground=border_c, padx=8, pady=8)
             card.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=2)
-            card._keep_own_bg = True
 
             c_head = tk.Frame(card, bg=bg_c)
             c_head.pack(fill=tk.X, pady=(0, 4))
-            c_head._keep_own_bg = True
 
-            badge = tk.Label(c_head, text=badge_letter, font=("Segoe UI", 9, "bold"), bg=text_c, fg="white", width=2, height=1)
+            badge = tk.Label(c_head, text=badge_letter, font=("Segoe UI", 8, "bold"), bg=text_c, fg="white", width=2, height=1)
             badge.pack(side=tk.LEFT, padx=(0, 4))
-            badge._keep_own_bg = True
 
             lbl_title = tk.Label(c_head, text=title, font=("Segoe UI", 8, "bold"), fg=text_c, bg=bg_c)
             lbl_title.pack(side=tk.LEFT)
-            lbl_title._keep_own_bg = True
 
             for itm in items:
                 lbl_itm = tk.Label(card, text=itm, font=("Segoe UI", 7), fg="#334155", bg=bg_c, anchor=tk.W, justify=tk.LEFT)
                 lbl_itm.pack(fill=tk.X, pady=0)
-                lbl_itm._keep_own_bg = True
 
             if i < len(stages_info) - 1:
-                arr_lbl = tk.Label(pipe_row, text="➔", font=("Segoe UI", 12, "bold"), fg="#94A3B8", bg="#F8FAFC", padx=2)
+                arr_lbl = tk.Label(pipe_row, text="➔", font=("Segoe UI", 11, "bold"), fg="#94A3B8", bg="#F8FAFC", padx=2)
                 arr_lbl.pack(side=tk.LEFT)
-                arr_lbl._keep_own_bg = True
 
         # 2. Critical to Quality (CTQ) Highlights Banner
         ctq_bar = tk.Frame(f, bg="#FFFFFF", pady=2)
-        ctq_bar.pack(fill=tk.X, pady=(0, 8))
+        ctq_bar.pack(fill=tk.X, pady=(0, 10))
 
         ctq_items = [
-            ("⚡ CTQ 1: Search Speed", "< 100ms SLA (Actual: 1.06ms)", "#2563EB", "#EFF6FF"),
+            ("⚡ CTQ 1: Search Speed", "< 100ms SLA (Actual: 1.06ms)", "#0284C7", "#E0F2FE"),
             ("🛡️ CTQ 2: Duplicate Prevention", "100% Unique UHID & Phone", "#10B981", "#ECFDF5"),
             ("⏱️ CTQ 3: Queue Waiting Time", "< 15.0 min (Actual: 10.1m)", "#D97706", "#FFFBEB"),
             ("🔢 CTQ 4: FIFO Token Order", "Sequential & Fair Dispatch", "#7C3AED", "#FAF5FF"),
@@ -302,9 +299,8 @@ class TQMAuditView(tk.Frame):
         ]
 
         for title, val, fg_c, bg_c in ctq_items:
-            b = tk.Frame(ctq_bar, bg=bg_c, highlightthickness=1, highlightbackground="#E2E8F0", padx=8, pady=4)
+            b = tk.Frame(ctq_bar, bg=bg_c, highlightthickness=1, highlightbackground="#E2E8F0", padx=8, pady=5)
             b.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=2)
-            b._keep_own_bg = True
 
             tk.Label(b, text=title, font=("Segoe UI", 7, "bold"), fg=fg_c, bg=bg_c).pack(anchor=tk.W)
             tk.Label(b, text=val, font=("Segoe UI", 7), fg="#1E293B", bg=bg_c).pack(anchor=tk.W)
@@ -331,7 +327,7 @@ class TQMAuditView(tk.Frame):
         tree.column("customer", width=120, anchor=tk.W)
         tree.column("ctq", width=140, anchor=tk.W)
 
-        tree.pack(fill=tk.BOTH, expand=True, pady=(2, 6))
+        tree.pack(fill=tk.X, expand=False, pady=(2, 6))
 
         sipoc_data = [
             ("1", "Ambulatory Patients", "Name, Phone, Age, Gender", "Fast Search & Verification", "Verified Profile / Match", "Front Desk Staff", "Search Latency < 100ms"),
@@ -355,7 +351,7 @@ class TQMAuditView(tk.Frame):
         tk.Label(head, text="Failure Mode and Effects Analysis (FMEA) Matrix & RPN Reduction Chart", font=("Segoe UI", 13, "bold"), fg="#0F172A", bg="#FFFFFF").pack(anchor=tk.W)
         tk.Label(head, text="Formula: RPN = Severity (S) × Occurrence (O) × Detection (D) • Target: Post-Mitigation RPN < 50 for All Failure Modes", font=("Segoe UI", 8), fg="#64748B", bg="#FFFFFF").pack(anchor=tk.W)
 
-        # 1. FMEA Treeview Table
+        # 1. FMEA Treeview Table (Spacious, non-overlapping)
         cols = ("code", "failure_mode", "effect", "s", "o", "d", "pre_rpn", "countermeasure", "post_rpn")
         tree = ttk.Treeview(f, columns=cols, show="headings", height=6)
 
@@ -379,7 +375,7 @@ class TQMAuditView(tk.Frame):
         tree.column("countermeasure", width=220, anchor=tk.W)
         tree.column("post_rpn", width=75, anchor=tk.CENTER)
 
-        tree.pack(fill=tk.BOTH, expand=True, pady=(4, 8))
+        tree.pack(fill=tk.X, expand=False, pady=(4, 10))
 
         fmea_data = [
             ("FM-01", "Slow Patient Record Search", "Queue congestion, triage delays", "7", "8", "7", "392", "B-Tree Composite Indexes + Fast Search (<100ms)", "14 (↓ 96%)"),
@@ -399,14 +395,12 @@ class TQMAuditView(tk.Frame):
 
         # 2. Embedded Visual Figure: FMEA Pre vs Post RPN Reduction Chart
         chart_card = tk.Frame(f, bg="#FFFFFF", highlightthickness=1, highlightbackground="#E2E8F0", padx=6, pady=6)
-        chart_card.pack(fill=tk.BOTH, expand=True, pady=(2, 6))
-        chart_card._keep_own_bg = True
+        chart_card.pack(fill=tk.X, expand=False, pady=(4, 10))
 
-        fmea_fig = create_fmea_comparison_figure(figsize=(9.2, 3.0), dpi=95)
+        fmea_fig = create_fmea_comparison_figure(figsize=(9.0, 3.1), dpi=95)
         fmea_canvas = FigureCanvasTkAgg(fmea_fig, master=chart_card)
         fmea_widget = fmea_canvas.get_tk_widget()
-        fmea_widget._keep_own_bg = True
-        fmea_widget.pack(fill=tk.BOTH, expand=True)
+        fmea_widget.pack(fill=tk.X, expand=False)
         fmea_canvas.draw()
 
         # Action / Summary row
@@ -420,7 +414,7 @@ class TQMAuditView(tk.Frame):
 
         btn_export = PillButton(
             fmea_bottom, text="💾 Export FMEA Comparison Chart (PNG)", font_size=8,
-            bg_color="#2563EB", fg_color="white", hover_color="#1D4ED8",
+            bg_color="#0284C7", fg_color="white", hover_color="#0369A1",
             padx=12, pady=4, command=self._export_fmea
         )
         btn_export.pack(side=tk.RIGHT)
@@ -444,14 +438,12 @@ class TQMAuditView(tk.Frame):
 
         # 1. Embedded Visual Ishikawa Figure
         chart_card = tk.Frame(f, bg="#FFFFFF", highlightthickness=1, highlightbackground="#E2E8F0", padx=4, pady=4)
-        chart_card.pack(fill=tk.BOTH, expand=True, pady=(4, 6))
-        chart_card._keep_own_bg = True
+        chart_card.pack(fill=tk.X, expand=False, pady=(6, 10))
 
-        fish_fig = create_fishbone_figure(figsize=(9.4, 3.7), dpi=95)
+        fish_fig = create_fishbone_figure(figsize=(9.2, 3.6), dpi=95)
         fish_canvas = FigureCanvasTkAgg(fish_fig, master=chart_card)
         fish_widget = fish_canvas.get_tk_widget()
-        fish_widget._keep_own_bg = True
-        fish_widget.pack(fill=tk.BOTH, expand=True)
+        fish_widget.pack(fill=tk.X, expand=False)
         fish_canvas.draw()
 
         # 2. Category Detail Cards Row
@@ -463,12 +455,11 @@ class TQMAuditView(tk.Frame):
         ]
 
         b_frame = tk.Frame(f, bg="#FFFFFF")
-        b_frame.pack(fill=tk.X, pady=(2, 6))
+        b_frame.pack(fill=tk.X, pady=(2, 10))
 
         for i, (title, bg_c, fg_c, text) in enumerate(branches):
-            col = tk.Frame(b_frame, bg=bg_c, highlightthickness=1, highlightbackground="#E2E8F0", padx=10, pady=6)
+            col = tk.Frame(b_frame, bg=bg_c, highlightthickness=1, highlightbackground="#E2E8F0", padx=10, pady=8)
             col.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=3)
-            col._keep_own_bg = True
 
             tk.Label(col, text=title, font=("Segoe UI", 8, "bold"), fg=fg_c, bg=bg_c).pack(anchor=tk.W)
             tk.Label(col, text=text, font=("Segoe UI", 7), fg="#1E293B", bg=bg_c, justify=tk.LEFT).pack(anchor=tk.W, pady=(2, 0))
@@ -508,20 +499,17 @@ class TQMAuditView(tk.Frame):
 
         # 1. Embedded Visual Pareto Figure
         chart_card = tk.Frame(f, bg="#FFFFFF", highlightthickness=1, highlightbackground="#E2E8F0", padx=4, pady=4)
-        chart_card.pack(fill=tk.BOTH, expand=True, pady=(4, 6))
-        chart_card._keep_own_bg = True
+        chart_card.pack(fill=tk.X, expand=False, pady=(6, 10))
 
-        pareto_fig = create_pareto_figure(figsize=(9.2, 3.5), dpi=95)
+        pareto_fig = create_pareto_figure(figsize=(9.0, 3.4), dpi=95)
         pareto_canvas = FigureCanvasTkAgg(pareto_fig, master=chart_card)
         pareto_widget = pareto_canvas.get_tk_widget()
-        pareto_widget._keep_own_bg = True
-        pareto_widget.pack(fill=tk.BOTH, expand=True)
+        pareto_widget.pack(fill=tk.X, expand=False)
         pareto_canvas.draw()
 
         # 2. Vital Few Summary Card
-        summary_box = tk.Frame(f, bg="#F8FAFC", highlightthickness=1, highlightbackground="#E2E8F0", padx=12, pady=8)
-        summary_box.pack(fill=tk.X, pady=(2, 6))
-        summary_box._keep_own_bg = True
+        summary_box = tk.Frame(f, bg="#F8FAFC", highlightthickness=1, highlightbackground="#E2E8F0", padx=14, pady=10)
+        summary_box.pack(fill=tk.X, pady=(2, 10))
 
         tk.Label(summary_box, text="⚡ Vital Few Root Causes Identified (82.7% Total Delay Impact):", font=("Segoe UI", 8, "bold"), fg="#0F172A", bg="#F8FAFC").pack(anchor=tk.W)
         tk.Label(
@@ -539,12 +527,12 @@ class TQMAuditView(tk.Frame):
 
         tk.Label(
             p_bottom, text="✓ Vilfredo Pareto 80/20 verification confirmed for BBAT104 Review 4.",
-            font=("Segoe UI", 8, "bold"), fg="#2563EB", bg="#FFFFFF"
+            font=("Segoe UI", 8, "bold"), fg="#0284C7", bg="#FFFFFF"
         ).pack(side=tk.LEFT)
 
         btn = PillButton(
             p_bottom, text="💾 Export High-Res Pareto Chart (PNG)", font_size=8,
-            bg_color="#2563EB", fg_color="white", hover_color="#1D4ED8",
+            bg_color="#0284C7", fg_color="white", hover_color="#0369A1",
             padx=12, pady=4, command=self._export_pareto
         )
         btn.pack(side=tk.RIGHT)
@@ -580,7 +568,6 @@ class TQMAuditView(tk.Frame):
             b = tk.Frame(stat_bar, bg="#F1F5F9", padx=10, pady=5, width=w)
             b.pack(side=tk.LEFT, padx=(0, 8))
             b.pack_propagate(False)
-            b._keep_own_bg = True
 
             tk.Label(b, text=title, font=("Segoe UI", 7), fg="#64748B", bg="#F1F5F9").pack(anchor=tk.W)
             lbl_v = tk.Label(b, text=val, font=("Segoe UI", 9, "bold"), fg="#0F172A", bg="#F1F5F9")
@@ -599,11 +586,11 @@ class TQMAuditView(tk.Frame):
 
         # Two-Column Container: Left = Form + Table, Right = Embedded Live Matplotlib Chart
         split_frame = tk.Frame(f, bg="#FFFFFF")
-        split_frame.pack(fill=tk.BOTH, expand=True)
+        split_frame.pack(fill=tk.X, expand=True)
 
-        # LEFT PANE: Form & Table (52% width)
+        # LEFT PANE: Form & Table (50% width)
         left_pane = tk.Frame(split_frame, bg="#FFFFFF")
-        left_pane.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 8))
+        left_pane.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 10))
 
         # Add / Record Defect Row
         form_row = tk.Frame(left_pane, bg="#FFFFFF")
@@ -622,7 +609,7 @@ class TQMAuditView(tk.Frame):
 
         btn_add = PillButton(
             form_row, text="+ Add", font_size=8,
-            bg_color="#2563EB", fg_color="white", hover_color="#1D4ED8",
+            bg_color="#0284C7", fg_color="white", hover_color="#0369A1",
             padx=10, pady=3, command=self._add_defect
         )
         btn_add.pack(side=tk.LEFT)
@@ -634,7 +621,7 @@ class TQMAuditView(tk.Frame):
         tk.Label(table_head, text="Double-click to +1", font=("Segoe UI", 7), fg="#64748B", bg="#FFFFFF").pack(side=tk.RIGHT)
 
         cols = ("num", "defect", "occurrences", "percentage")
-        self.check_tree = ttk.Treeview(left_pane, columns=cols, show="headings", height=6)
+        self.check_tree = ttk.Treeview(left_pane, columns=cols, show="headings", height=7)
 
         self.check_tree.heading("num", text="#")
         self.check_tree.heading("defect", text="Performance Defect")
@@ -642,11 +629,11 @@ class TQMAuditView(tk.Frame):
         self.check_tree.heading("percentage", text="% Share")
 
         self.check_tree.column("num", width=35, anchor=tk.CENTER)
-        self.check_tree.column("defect", width=200, anchor=tk.W)
+        self.check_tree.column("defect", width=190, anchor=tk.W)
         self.check_tree.column("occurrences", width=65, anchor=tk.CENTER)
         self.check_tree.column("percentage", width=65, anchor=tk.CENTER)
 
-        self.check_tree.pack(fill=tk.BOTH, expand=True, pady=(2, 6))
+        self.check_tree.pack(fill=tk.X, expand=False, pady=(2, 6))
         self.check_tree.bind("<Double-1>", lambda e: self._increment_selected_defect())
 
         # Action Buttons Bottom
@@ -655,7 +642,7 @@ class TQMAuditView(tk.Frame):
 
         btn_inc = PillButton(
             act_row, text="+1 Occurrence", font_size=8,
-            bg_color="#2563EB", fg_color="white", hover_color="#1D4ED8",
+            bg_color="#0284C7", fg_color="white", hover_color="#0369A1",
             padx=8, pady=3, command=self._increment_selected_defect
         )
         btn_inc.pack(side=tk.LEFT, padx=(0, 4))
@@ -674,17 +661,16 @@ class TQMAuditView(tk.Frame):
         )
         btn_ref.pack(side=tk.RIGHT)
 
-        # RIGHT PANE: Embedded Live Matplotlib Chart (48% width)
+        # RIGHT PANE: Embedded Live Matplotlib Chart (50% width)
         self.right_chart_pane = tk.Frame(split_frame, bg="#FFFFFF", highlightthickness=1, highlightbackground="#E2E8F0", padx=4, pady=4)
         self.right_chart_pane.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
-        self.right_chart_pane._keep_own_bg = True
 
         self._refresh_checksheet_table()
 
         # Export button below chart
         btn_export = PillButton(
             self.right_chart_pane, text="💾 Export Checksheet Chart (PNG)", font_size=8,
-            bg_color="#2563EB", fg_color="white", hover_color="#1D4ED8",
+            bg_color="#0284C7", fg_color="white", hover_color="#0369A1",
             padx=8, pady=2, command=self._export_checksheet
         )
         btn_export.pack(anchor=tk.E, pady=(2, 0))
@@ -700,7 +686,6 @@ class TQMAuditView(tk.Frame):
         self.checksheet_fig = create_checksheet_chart_figure(data, figsize=(4.8, 3.2), dpi=95)
         self.checksheet_canvas = FigureCanvasTkAgg(self.checksheet_fig, master=self.right_chart_pane)
         widget = self.checksheet_canvas.get_tk_widget()
-        widget._keep_own_bg = True
         widget.pack(fill=tk.BOTH, expand=True)
         self.checksheet_canvas.draw()
 
@@ -794,7 +779,6 @@ class TQMAuditView(tk.Frame):
             b = tk.Frame(stat_bar, bg="#F1F5F9", padx=10, pady=5, width=w)
             b.pack(side=tk.LEFT, padx=(0, 8))
             b.pack_propagate(False)
-            b._keep_own_bg = True
 
             tk.Label(b, text=title, font=("Segoe UI", 7), fg="#64748B", bg="#F1F5F9").pack(anchor=tk.W)
             lbl_v = tk.Label(b, text=val, font=("Segoe UI", 9, "bold"), fg="#0F172A", bg="#F1F5F9")
@@ -811,11 +795,11 @@ class TQMAuditView(tk.Frame):
 
         # Two-Column Container: Left = PDCA Log & Inputs, Right = Embedded Deming PDCA Cycle Diagram
         split_frame = tk.Frame(f, bg="#FFFFFF")
-        split_frame.pack(fill=tk.BOTH, expand=True)
+        split_frame.pack(fill=tk.X, expand=True)
 
         # LEFT PANE: Add/Edit Form & Activity Log (48% width)
         left_pane = tk.Frame(split_frame, bg="#FFFFFF")
-        left_pane.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 8))
+        left_pane.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 10))
 
         # Add PDCA Activity Row
         form_row = tk.Frame(left_pane, bg="#FFFFFF")
@@ -839,7 +823,7 @@ class TQMAuditView(tk.Frame):
 
         btn_add = PillButton(
             form_row, text="+ Add", font_size=8,
-            bg_color="#2563EB", fg_color="white", hover_color="#1D4ED8",
+            bg_color="#0284C7", fg_color="white", hover_color="#0369A1",
             padx=8, pady=3, command=self._add_pdca_activity
         )
         btn_add.pack(side=tk.LEFT)
@@ -851,7 +835,7 @@ class TQMAuditView(tk.Frame):
         tk.Label(table_head, text="Select a row to edit", font=("Segoe UI", 7), fg="#64748B", bg="#FFFFFF").pack(side=tk.RIGHT)
 
         cols = ("id", "phase", "activity", "outcome")
-        self.pdca_tree = ttk.Treeview(left_pane, columns=cols, show="headings", height=6)
+        self.pdca_tree = ttk.Treeview(left_pane, columns=cols, show="headings", height=7)
 
         self.pdca_tree.heading("id", text="ID")
         self.pdca_tree.heading("phase", text="Phase")
@@ -863,7 +847,7 @@ class TQMAuditView(tk.Frame):
         self.pdca_tree.column("activity", width=160, anchor=tk.W)
         self.pdca_tree.column("outcome", width=160, anchor=tk.W)
 
-        self.pdca_tree.pack(fill=tk.BOTH, expand=True, pady=(2, 6))
+        self.pdca_tree.pack(fill=tk.X, expand=False, pady=(2, 6))
 
         # Action Buttons Bottom
         act_row = tk.Frame(left_pane, bg="#FFFFFF")
@@ -871,14 +855,14 @@ class TQMAuditView(tk.Frame):
 
         btn_load = PillButton(
             act_row, text="Load", font_size=8,
-            bg_color="#2563EB", fg_color="white", hover_color="#1D4ED8",
+            bg_color="#0284C7", fg_color="white", hover_color="#0369A1",
             padx=8, pady=3, command=self._load_selected_pdca
         )
         btn_load.pack(side=tk.LEFT, padx=(0, 4))
 
         btn_upd = PillButton(
             act_row, text="Update", font_size=8,
-            bg_color="#2563EB", fg_color="white", hover_color="#1D4ED8",
+            bg_color="#0284C7", fg_color="white", hover_color="#0369A1",
             padx=8, pady=3, command=self._update_pdca_activity
         )
         btn_upd.pack(side=tk.LEFT, padx=(0, 4))
@@ -899,7 +883,7 @@ class TQMAuditView(tk.Frame):
 
         btn_ref = PillButton(
             act_row, text="Refresh", font_size=8,
-            bg_color="#2563EB", fg_color="white", hover_color="#1D4ED8",
+            bg_color="#0284C7", fg_color="white", hover_color="#0369A1",
             padx=10, pady=3, command=self._refresh_pdca_table
         )
         btn_ref.pack(side=tk.RIGHT)
@@ -907,18 +891,16 @@ class TQMAuditView(tk.Frame):
         # RIGHT PANE: Embedded Deming PDCA Cycle Visual Figure (52% width)
         right_chart_pane = tk.Frame(split_frame, bg="#FFFFFF", highlightthickness=1, highlightbackground="#E2E8F0", padx=4, pady=4)
         right_chart_pane.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
-        right_chart_pane._keep_own_bg = True
 
         pdca_fig = create_pdca_cycle_figure(figsize=(4.8, 3.4), dpi=90)
         pdca_canvas = FigureCanvasTkAgg(pdca_fig, master=right_chart_pane)
         pdca_widget = pdca_canvas.get_tk_widget()
-        pdca_widget._keep_own_bg = True
         pdca_widget.pack(fill=tk.BOTH, expand=True)
         pdca_canvas.draw()
 
         btn_export = PillButton(
             right_chart_pane, text="💾 Export PDCA Diagram (PNG)", font_size=8,
-            bg_color="#2563EB", fg_color="white", hover_color="#1D4ED8",
+            bg_color="#0284C7", fg_color="white", hover_color="#0369A1",
             padx=8, pady=2, command=self._export_pdca
         )
         btn_export.pack(anchor=tk.E, pady=(2, 0))
