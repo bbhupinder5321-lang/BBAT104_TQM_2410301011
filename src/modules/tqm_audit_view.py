@@ -131,7 +131,7 @@ class TQMAuditView(tk.Frame):
             CircleBadge(card, icon=icon, size=38, bg_color=color, border_color=color, fg_color="white", font_size=13).pack(anchor=tk.W)
             tk.Label(card, text=title, font=("Segoe UI", 8, "bold"), fg="#64748B", bg="#FFFFFF").pack(anchor=tk.W, pady=(6, 0))
             tk.Label(card, text=val, font=("Segoe UI", 16, "bold"), fg="#0F172A", bg="#FFFFFF").pack(anchor=tk.W)
-            tk.Label(card, text=sub, font=("Segoe UI", 7), fg="#94A3B8", bg="#FFFFFF").pack(anchor=tk.W)
+            tk.Label(card, text=sub, font=("Segoe UI", 8), fg="#94A3B8", bg="#FFFFFF").pack(anchor=tk.W)
             self.kpi_cards.append(card)
 
         # 2. Main Content Card (Native Frame allowing natural height propagation - NO CLIPPING)

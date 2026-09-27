@@ -321,7 +321,7 @@ class DashboardView(tk.Frame):
         """Fetches live real-time metrics from SQLite database and updates Image 1 stat values."""
         try:
             with get_db_cursor() as cur:
-                cur.execute("SELECT COUNT(*) FROM doctors WHERE is_available = 1")
+                cur.execute("SELECT COUNT(*) FROM doctors WHERE status = 'Available'")
                 doc_cnt = cur.fetchone()[0]
 
                 cur.execute("SELECT COUNT(*) FROM patients")
@@ -330,7 +330,7 @@ class DashboardView(tk.Frame):
                 cur.execute("SELECT COUNT(*) FROM appointments")
                 appt_cnt = cur.fetchone()[0]
 
-                cur.execute("SELECT COALESCE(SUM(total_amount), 0) FROM billing WHERE status = 'Paid'")
+                cur.execute("SELECT COALESCE(SUM(total_amount), 0) FROM billing WHERE payment_status = 'Paid'")
                 rev_cnt = cur.fetchone()[0]
 
                 # Update if non-zero, otherwise keep the pristine reference figures from Image 1

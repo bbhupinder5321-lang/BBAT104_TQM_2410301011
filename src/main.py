@@ -386,21 +386,26 @@ class MainWindow(tk.Tk):
         tk.Label(bell_frame, text="●", font=("Segoe UI", 7), fg="#EF4444", bg="#003E5C").pack(side=tk.LEFT)
 
         # Hospital Admin Profile Chip (Image 1 Pill)
+        user_role = self.user_data.get("role", "Admin") if self.user_data else "Hospital Admin"
+        user_name = self.user_data.get("full_name", "Healthcare Hospital") if self.user_data else "Healthcare Hospital"
+
         hosp_chip = tk.Frame(
             bar_right, bg="#004B6E", padx=8, pady=4,
-            highlightthickness=1, highlightbackground="#02638A"
+            highlightthickness=1, highlightbackground="#02638A", cursor="hand2"
         )
         hosp_chip.pack(side=tk.LEFT)
 
         CircleBadge(hosp_chip, icon="🏥", size=28, bg_color="#0284C7", border_color="#0284C7", fg_color="white", font_size=10).pack(side=tk.LEFT, padx=(0, 6))
 
-        h_info = tk.Frame(hosp_chip, bg="#004B6E")
+        h_info = tk.Frame(hosp_chip, bg="#004B6E", cursor="hand2")
         h_info.pack(side=tk.LEFT, padx=(0, 6))
 
-        tk.Label(h_info, text="Healthcare Hospital", font=("Segoe UI", 8, "bold"), fg="white", bg="#004B6E").pack(anchor=tk.W)
-        tk.Label(h_info, text="Hospital Admin", font=("Segoe UI", 7), fg="#7DD3FC", bg="#004B6E").pack(anchor=tk.W)
+        tk.Label(h_info, text=user_name, font=("Segoe UI", 8, "bold"), fg="white", bg="#004B6E").pack(anchor=tk.W)
+        tk.Label(h_info, text=f"Staff • {user_role}", font=("Segoe UI", 7), fg="#7DD3FC", bg="#004B6E").pack(anchor=tk.W)
 
         tk.Label(hosp_chip, text="⋮", font=("Segoe UI", 11, "bold"), fg="white", bg="#004B6E").pack(side=tk.RIGHT)
+        hosp_chip.bind("<Button-1>", lambda e: self._on_profile_click())
+        h_info.bind("<Button-1>", lambda e: self._on_profile_click())
 
         # =========================================================================
         # 2. BODY CONTAINER: Left White Sidebar + Right Workspace
@@ -533,8 +538,27 @@ class MainWindow(tk.Tk):
 
         if tab_id in self.views:
             self.views[tab_id].pack(fill=tk.BOTH, expand=True)
-            if tab_id == "Dashboard":
+            if tab_id == "Dashboard" and hasattr(self.views["Dashboard"], "refresh_dashboard"):
                 self.views["Dashboard"].refresh_dashboard()
+            elif tab_id == "Patients" and hasattr(self.views["Patients"], "load_patients"):
+                self.views["Patients"].load_patients()
+            elif tab_id == "Doctors" and hasattr(self.views["Doctors"], "load_doctors"):
+                self.views["Doctors"].load_doctors()
+            elif tab_id == "Appointments" and hasattr(self.views["Appointments"], "load_appointments"):
+                self.views["Appointments"].load_appointments()
+            elif tab_id == "Billing" and hasattr(self.views["Billing"], "load_invoices"):
+                self.views["Billing"].load_invoices()
+
+    def _on_profile_click(self):
+        full_name = self.user_data.get("full_name", "User") if self.user_data else "User"
+        role = self.user_data.get("role", "Staff") if self.user_data else "Staff"
+        confirm = messagebox.askyesno(
+            "Account Session",
+            f"Active Session: {full_name}\nRole: {role}\n\nWould you like to sign out from MedCare?",
+            icon="question"
+        )
+        if confirm:
+            self._logout()
 
     def _on_global_search(self, query: str):
         q = query.strip()
@@ -594,7 +618,7 @@ class MainWindow(tk.Tk):
         self.login_view.reset_fields()
         self.login_view.pack(fill=tk.BOTH, expand=True)
 
-    def _on_close(self):
+    def destroy(self):
         if hasattr(self, "_clock_timer") and self._clock_timer:
             try:
                 self.after_cancel(self._clock_timer)
@@ -602,7 +626,13 @@ class MainWindow(tk.Tk):
                 pass
             self._clock_timer = None
         if hasattr(self, "ecg_wave"):
-            self.ecg_wave.stop()
+            try:
+                self.ecg_wave.stop()
+            except Exception:
+                pass
+        super().destroy()
+
+    def _on_close(self):
         self.destroy()
 
 
