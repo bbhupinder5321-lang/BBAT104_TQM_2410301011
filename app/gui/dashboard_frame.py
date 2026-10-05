@@ -1314,11 +1314,6 @@ class DashboardFrame(ctk.CTkFrame):
             self.load_metrics()
             self.rebuild_dynamic_sections()
 
-            if self.last_refresh_label is not None:
-                self.last_refresh_label.configure(
-                    text=self.get_refresh_text()
-                )
-
         finally:
             if self.refresh_button is not None:
                 self.refresh_button.configure(
