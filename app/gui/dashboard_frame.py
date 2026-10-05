@@ -1174,7 +1174,7 @@ class DashboardFrame(ctk.CTkFrame):
             ctk.CTkLabel(
                 badge,
                 text=icon,
-                text_color=self.WHITE,
+                text_color="#FFFFFF",
                 font=ctk.CTkFont(size=10, weight="bold")
             ).pack(expand=True)
 
