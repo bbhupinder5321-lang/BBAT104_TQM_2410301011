@@ -1,16 +1,15 @@
 import time
 
 from app.database.database import get_connection
+from app.services.dashboard_service import DashboardService
 
 
 class PerformanceService:
 
     def measure_database_query(self):
         """
-        Measures the time required to execute
-        an optimized database query.
+        Measure a focused indexed patient lookup.
         """
-
         start_time = time.perf_counter()
 
         connection = get_connection()
@@ -18,7 +17,10 @@ class PerformanceService:
         try:
             connection.execute(
                 """
-                SELECT patient_id, full_name, phone
+                SELECT
+                    patient_id,
+                    full_name,
+                    phone
                 FROM patients
                 WHERE phone LIKE ?
                 LIMIT 100
@@ -29,18 +31,15 @@ class PerformanceService:
         finally:
             connection.close()
 
-        end_time = time.perf_counter()
-
         return round(
-            (end_time - start_time) * 1000,
+            (time.perf_counter() - start_time) * 1000,
             2
         )
 
     def measure_patient_search(self):
         """
-        Measures patient search performance.
+        Measure the same filtered search pattern used by the application.
         """
-
         start_time = time.perf_counter()
 
         connection = get_connection()
@@ -71,90 +70,41 @@ class PerformanceService:
         finally:
             connection.close()
 
-        end_time = time.perf_counter()
-
         return round(
-            (end_time - start_time) * 1000,
+            (time.perf_counter() - start_time) * 1000,
             2
         )
 
     def measure_dashboard_load(self):
         """
-        Measures dashboard metric calculation time.
-        """
+        Measure the actual Q02 dashboard snapshot.
 
+        This intentionally calls DashboardService so the performance
+        result represents the real dashboard query path rather than a
+        simplified test that omits queue/capacity data.
+        """
         start_time = time.perf_counter()
 
-        connection = get_connection()
-
-        try:
-
-            connection.execute(
-                """
-                SELECT COUNT(*)
-                FROM patients
-                WHERE registration_date = date('now')
-                """
-            ).fetchone()
-
-            connection.execute(
-                """
-                SELECT COUNT(*)
-                FROM appointments
-                WHERE appointment_date = date('now')
-                """
-            ).fetchone()
-
-            connection.execute(
-                """
-                SELECT COUNT(*)
-                FROM appointments
-                WHERE
-                    appointment_date = date('now')
-                    AND status = 'Scheduled'
-                """
-            ).fetchone()
-
-            connection.execute(
-                """
-                SELECT
-                    COUNT(*) AS total_beds,
-                    SUM(
-                        CASE
-                            WHEN status = 'Occupied'
-                            THEN 1
-                            ELSE 0
-                        END
-                    ) AS occupied_beds
-                FROM beds
-                """
-            ).fetchone()
-
-        finally:
-            connection.close()
-
-        end_time = time.perf_counter()
+        service = DashboardService()
+        service.get_dashboard_metrics()
 
         return round(
-            (end_time - start_time) * 1000,
+            (time.perf_counter() - start_time) * 1000,
             2
         )
 
     def measure_report_generation(self):
         """
-        Measures optimized report query performance.
+        Measure the focused report queries used by the report module.
         """
-
         start_time = time.perf_counter()
 
         connection = get_connection()
 
         try:
-
             connection.execute(
                 """
-                SELECT
-                    COUNT(*) AS total_patients
+                SELECT COUNT(*) AS total_patients
                 FROM patients
                 """
             ).fetchone()
@@ -187,15 +137,12 @@ class PerformanceService:
         finally:
             connection.close()
 
-        end_time = time.perf_counter()
-
         return round(
-            (end_time - start_time) * 1000,
+            (time.perf_counter() - start_time) * 1000,
             2
         )
 
     def measure_all(self):
-
         return {
             "database_query": self.measure_database_query(),
             "patient_search": self.measure_patient_search(),
@@ -203,15 +150,12 @@ class PerformanceService:
             "report_generation": self.measure_report_generation()
         }
 
-    def get_performance_status(
-        self,
-        dashboard_time
-    ):
+    def get_performance_status(self, dashboard_time):
         """
         Q02 target:
-        Dashboard should load in less than 1 second.
+        Dashboard should load in less than 1 second under normal
+        local project conditions.
         """
-
         if dashboard_time < 1000:
             return "Within Target"
 
