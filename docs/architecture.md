@@ -98,7 +98,11 @@ Frequently accessed fields have SQLite indexes.
 
 The dashboard uses a dedicated repository so the GUI does not execute SQL directly.
 
+The dashboard loads today's KPIs, appointment queue, bed capacity, ward utilization and recent records through a focused snapshot query using one SQLite connection. This reduces repeated connection overhead while keeping the GUI free of SQL.
+
 Search and report queries use filtered/limited results where appropriate.
+
+The Performance module measures this real dashboard service path rather than a simplified subset of dashboard queries.
 
 Waiting-time data is calculated from recorded check-in and consultation-start timestamps.
 
