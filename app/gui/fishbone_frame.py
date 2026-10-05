@@ -357,12 +357,12 @@ class FishboneFrame(ctk.CTkFrame):
 
         width = max(
             canvas.winfo_width(),
-            900
+            1000
         )
 
         height = max(
             canvas.winfo_height(),
-            455
+            500
         )
 
         canvas.delete("all")
@@ -371,8 +371,11 @@ class FishboneFrame(ctk.CTkFrame):
             self.service.get_categories().items()
         )
 
-        # Main fishbone geometry
-        spine_start_x = 75
+        # =====================================================
+        # MAIN FISHBONE GEOMETRY
+        # =====================================================
+
+        spine_start_x = 100
         spine_end_x = width - 205
         spine_y = height / 2
 
@@ -386,7 +389,7 @@ class FishboneFrame(ctk.CTkFrame):
             width=5
         )
 
-        # Direction arrow into the problem
+        # Arrow pointing toward the effect
         canvas.create_polygon(
             spine_end_x,
             spine_y,
@@ -398,10 +401,13 @@ class FishboneFrame(ctk.CTkFrame):
             outline=self.PRIMARY
         )
 
-        # Effect / problem box
-        effect_x = width - 160
-        effect_width = 145
-        effect_height = 92
+        # =====================================================
+        # EFFECT BOX
+        # =====================================================
+
+        effect_x = width - 105
+        effect_width = 165
+        effect_height = 100
 
         canvas.create_rectangle(
             effect_x - effect_width / 2,
@@ -415,7 +421,7 @@ class FishboneFrame(ctk.CTkFrame):
 
         canvas.create_text(
             effect_x,
-            spine_y - 27,
+            spine_y - 30,
             text="EFFECT",
             fill=self.PRIMARY,
             font=("Segoe UI", 9, "bold")
@@ -423,15 +429,18 @@ class FishboneFrame(ctk.CTkFrame):
 
         canvas.create_text(
             effect_x,
-            spine_y + 5,
+            spine_y + 7,
             text="Slow System\nPerformance",
             fill=self.TEXT,
             font=("Segoe UI", 10, "bold"),
-            width=115,
+            width=135,
             justify="center"
         )
 
-        # Category branch colors
+        # =====================================================
+        # CATEGORY BRANCHES
+        # =====================================================
+
         branch_colors = [
             self.PRIMARY,
             self.PURPLE,
@@ -441,18 +450,19 @@ class FishboneFrame(ctk.CTkFrame):
             self.DANGER
         ]
 
-        # Six categories: three above and three below.
-        positions = [
-            ("top", 0.10),
-            ("top", 0.29),
-            ("top", 0.48),
-            ("bottom", 0.10),
-            ("bottom", 0.29),
-            ("bottom", 0.48)
+        # Deliberately spaced positions.
+        # Three branches above and three below the spine.
+        branch_positions = [
+            ("top", 0.20),
+            ("top", 0.43),
+            ("top", 0.66),
+            ("bottom", 0.20),
+            ("bottom", 0.43),
+            ("bottom", 0.66)
         ]
 
         for index, ((category, causes), (side, ratio)) in enumerate(
-            zip(categories, positions)
+            zip(categories, branch_positions)
         ):
 
             color = branch_colors[
@@ -464,26 +474,27 @@ class FishboneFrame(ctk.CTkFrame):
                 + (spine_end_x - spine_start_x) * ratio
             )
 
+            # Keep the upper and lower branches clearly separated.
             branch_y = (
-                spine_y - 135
+                spine_y - 155
                 if side == "top"
-                else spine_y + 135
+                else spine_y + 155
             )
 
-            # Diagonal branch
+            node_x = branch_x - 72
+            node_y = branch_y
+
+            # Diagonal category branch
             canvas.create_line(
                 branch_x,
                 spine_y,
-                branch_x - 62,
-                branch_y,
+                node_x,
+                node_y,
                 fill=color,
                 width=3
             )
 
-            # Small category node
-            node_x = branch_x - 62
-            node_y = branch_y
-
+            # Category node
             canvas.create_oval(
                 node_x - 5,
                 node_y - 5,
@@ -493,11 +504,11 @@ class FishboneFrame(ctk.CTkFrame):
                 outline=color
             )
 
-            # Category title
+            # Category heading
             title_y = (
-                node_y - 20
+                node_y - 18
                 if side == "top"
-                else node_y + 20
+                else node_y + 18
             )
 
             canvas.create_text(
@@ -509,58 +520,68 @@ class FishboneFrame(ctk.CTkFrame):
                 anchor="s" if side == "top" else "n"
             )
 
-            # Display the first three causes on the branch.
+            # =================================================
+            # CAUSES
+            # =================================================
+
+            # Keep each cause in its own horizontal row.
+            # This prevents long cause text from sitting on
+            # top of neighbouring category branches.
             display_causes = causes[:3]
 
             for cause_index, cause in enumerate(display_causes):
 
-                cause_x = (
-                    node_x
-                    - 8
-                    - (cause_index * 3)
-                )
+                if side == "top":
 
-                cause_y = (
-                    node_y
-                    - 33
-                    - (cause_index * 25)
-                    if side == "top"
-                    else node_y
-                    + 33
-                    + (cause_index * 25)
-                )
+                    cause_y = (
+                        node_y
+                        - 48
+                        - (cause_index * 28)
+                    )
+
+                else:
+
+                    cause_y = (
+                        node_y
+                        + 48
+                        + (cause_index * 28)
+                    )
 
                 canvas.create_text(
-                    cause_x,
+                    node_x,
                     cause_y,
                     text=f"• {cause}",
                     fill=self.TEXT,
                     font=("Segoe UI", 8),
-                    anchor="e" if side == "top" else "e",
-                    width=205
+                    anchor="e",
+                    width=190,
+                    justify="right"
                 )
 
-            # Indicate additional causes if the category has more.
+            # Additional cause indicator
             if len(causes) > 3:
 
                 extra_y = (
-                    node_y - 98
+                    node_y - 132
                     if side == "top"
-                    else node_y + 98
+                    else node_y + 132
                 )
 
                 canvas.create_text(
                     node_x,
                     extra_y,
-                    text=f"+ {len(causes) - 3} more causes",
+                    text=f"+ {len(causes) - 3} more",
                     fill=self.SECONDARY_TEXT,
                     font=("Segoe UI", 7, "italic"),
                     anchor="e"
                 )
 
-        # Left tail / root-cause starting point
+        # =====================================================
+        # ROOT CAUSE TAIL
+        # =====================================================
+
         canvas.create_line(
-            40,
+            45,
             spine_y,
             spine_start_x,
             spine_y,
@@ -569,22 +590,28 @@ class FishboneFrame(ctk.CTkFrame):
         )
 
         canvas.create_text(
-            45,
-            spine_y - 22,
+            50,
+            spine_y - 23,
             text="ROOT\nCAUSES",
             fill=self.SECONDARY_TEXT,
             font=("Segoe UI", 8, "bold"),
             anchor="w"
         )
 
-        # Footer legend
+        # =====================================================
+        # LEGEND
+        # =====================================================
+
         canvas.create_text(
-            20,
-            height - 13,
-            text="People • Process • Technology • Database • Environment • Measurement",
+            width / 2,
+            height - 16,
+            text=(
+                "People • Process • Technology • Database • "
+                "Environment • Measurement"
+            ),
             fill=self.SECONDARY_TEXT,
             font=("Segoe UI", 8),
-            anchor="w"
+            anchor="center"
         )
 
     def _on_diagram_resize(self, event=None):
