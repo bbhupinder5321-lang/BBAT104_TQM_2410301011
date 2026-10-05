@@ -53,7 +53,8 @@ class DashboardRepository:
                         SELECT COUNT(*)
                         FROM appointments
                         WHERE appointment_date = ?
-                          AND status = 'Checked In'
+                          AND check_in_time IS NOT NULL
+                          AND consultation_start_time IS NULL
                     ) AS checked_in_appointments,
 
                     (
@@ -109,7 +110,13 @@ class DashboardRepository:
                     p.full_name AS patient_name,
                     d.full_name AS doctor_name,
                     a.appointment_time,
-                    a.status,
+                    CASE
+                        WHEN a.consultation_start_time IS NOT NULL
+                            THEN 'Completed'
+                        WHEN a.check_in_time IS NOT NULL
+                            THEN 'Checked In'
+                        ELSE a.status
+                    END AS status,
                     a.check_in_time,
                     a.consultation_start_time
                 FROM appointments a
