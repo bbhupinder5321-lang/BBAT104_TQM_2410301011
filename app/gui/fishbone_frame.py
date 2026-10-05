@@ -522,12 +522,12 @@ class FishboneFrame(ctk.CTkFrame):
 
                 cause_y = (
                     node_y
-                    - 43
-                    - (cause_index * 30)
+                    - 33
+                    - (cause_index * 25)
                     if side == "top"
                     else node_y
-                    + 43
-                    + (cause_index * 30)
+                    + 33
+                    + (cause_index * 25)
                 )
 
                 canvas.create_text(
@@ -544,9 +544,9 @@ class FishboneFrame(ctk.CTkFrame):
             if len(causes) > 3:
 
                 extra_y = (
-                    node_y - 132
+                    node_y - 98
                     if side == "top"
-                    else node_y + 132
+                    else node_y + 98
                 )
 
                 canvas.create_text(
