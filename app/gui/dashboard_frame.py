@@ -700,8 +700,75 @@ class DashboardFrame(ctk.CTkFrame):
         ).pack(
             anchor="w",
             padx=18,
-            pady=(0, 14)
+            pady=(0, 9)
         )
+
+        wards = self.metrics.get("bed_wards", [])
+        if wards:
+            ctk.CTkLabel(
+                card,
+                text="BY WARD",
+                text_color=self.MUTED,
+                font=ctk.CTkFont(size=7, weight="bold")
+            ).pack(
+                anchor="w",
+                padx=18,
+                pady=(0, 4)
+            )
+
+            for ward in wards[:3]:
+                ward_name = str(ward["ward"])
+                ward_total = int(ward["total_beds"] or 0)
+                ward_occupied = int(ward["occupied_beds"] or 0)
+                ward_ratio = (
+                    ward_occupied / ward_total
+                    if ward_total
+                    else 0
+                )
+
+                ward_row = ctk.CTkFrame(
+                    card,
+                    fg_color="transparent"
+                )
+                ward_row.pack(
+                    fill="x",
+                    padx=18,
+                    pady=2
+                )
+
+                ctk.CTkLabel(
+                    ward_row,
+                    text=ward_name,
+                    text_color=self.SECONDARY,
+                    font=ctk.CTkFont(size=7, weight="bold")
+                ).pack(side="left")
+
+                ctk.CTkLabel(
+                    ward_row,
+                    text=f"{ward_occupied}/{ward_total}",
+                    text_color=self.TEXT,
+                    font=ctk.CTkFont(size=7, weight="bold")
+                ).pack(side="right")
+
+                track = ctk.CTkProgressBar(
+                    card,
+                    height=5,
+                    corner_radius=3,
+                    fg_color="#E9EEF5",
+                    progress_color=self.GREEN if ward_ratio < 0.85 else self.AMBER if ward_ratio < 0.95 else self.RED
+                )
+                track.pack(
+                    fill="x",
+                    padx=18,
+                    pady=(0, 3)
+                )
+                track.set(ward_ratio)
+
+        ctk.CTkLabel(
+            card,
+            text="",
+            font=ctk.CTkFont(size=1)
+        ).pack(pady=(0, 4))
 
     def draw_bed_ring(self, percentage):
         canvas = self.bed_canvas
