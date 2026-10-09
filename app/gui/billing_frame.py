@@ -41,41 +41,13 @@ class BillingFrame(HospitalFrame):
 
     def create_ui(self):
 
-        # Header
-        header = ctk.CTkFrame(
+        self.page_header(
             self,
-            fg_color=self.CARD,
-            corner_radius=20,
-            border_width=1,
-            border_color=self.BORDER
+            "Billing Management",
+            "Create, review and maintain patient bills with clear financial records.",
+            icon="billing",
+            accent=self.SUCCESS,
         )
-
-        header.pack(
-            fill="x",
-            padx=30,
-            pady=(25, 15)
-        )
-
-        title = ctk.CTkLabel(
-            header,
-            text="▣  Billing Management",
-            font=ctk.CTkFont(
-                size=30,
-                weight="bold"
-            ),
-            text_color="#172033"
-        )
-
-        title.pack(anchor="w")
-
-        subtitle = ctk.CTkLabel(
-            header,
-            text="Generate and manage patient bills",
-            font=ctk.CTkFont(size=11),
-            text_color=self.SECONDARY
-        )
-
-        subtitle.pack(anchor="w")
 
         # -----------------------------------------------------
         # Form
