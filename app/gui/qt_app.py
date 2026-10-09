@@ -43,6 +43,10 @@ QFrame#Sidebar { background: #111827; border: none; }
 QFrame#Sidebar QLabel { background: transparent; color: #D7DFEA; }
 QLabel#Brand { color: #FFFFFF; font-size: 19pt; font-weight: 700; }
 QLabel#BrandSub { color: #94A3B8; font-size: 8pt; }
+QLabel#TopbarTitle { font-size: 15pt; font-weight: 700; color: #101828; }
+QFrame#Topbar { background: #FFFFFF; border: none; border-bottom: 1px solid #E3EAF3; }
+QLineEdit#WorkspaceSearch { background: #F8FAFC; border: 1px solid #E2E8F0; }
+QLineEdit#WorkspaceSearch:focus { background: #FFFFFF; border: 1px solid #2563EB; }
 QLabel#PageTitle { font-size: 23pt; font-weight: 700; color: #101828; }
 QLabel#PageSub { color: #667085; font-size: 10pt; }
 QLabel#CardTitle { color: #667085; font-size: 9pt; font-weight: 600; }
@@ -637,10 +641,71 @@ class HospitalWindow(QMainWindow):
         logout.clicked.connect(self.logout)
         side_layout.addWidget(logout)
 
+        # Main workspace: persistent top bar + the existing page stack.
+        # Keeping the stack intact means every service-backed page and action remains available.
+        workspace = QWidget()
+        workspace_layout = QVBoxLayout(workspace)
+        workspace_layout.setContentsMargins(0, 0, 0, 0)
+        workspace_layout.setSpacing(0)
+
+        topbar = QFrame()
+        topbar.setObjectName("Topbar")
+        topbar.setStyleSheet(
+            "QFrame#Topbar { background:#FFFFFF; border:0; "
+            "border-bottom:1px solid #E3EAF3; }"
+        )
+        topbar_layout = QHBoxLayout(topbar)
+        topbar_layout.setContentsMargins(28, 15, 28, 15)
+        topbar_layout.setSpacing(18)
+
+        heading_group = QVBoxLayout()
+        heading_group.setSpacing(2)
+        self.page_heading = make_label("Dashboard", "TopbarTitle")
+        self.page_heading.setStyleSheet(
+            "font-size:15pt;font-weight:700;color:#101828;background:transparent;"
+        )
+        self.page_breadcrumb = make_label("Workspace  /  Overview", "PageSub")
+        heading_group.addWidget(self.page_heading)
+        heading_group.addWidget(self.page_breadcrumb)
+        topbar_layout.addLayout(heading_group, 1)
+
+        self.page_search = QLineEdit()
+        self.page_search.setObjectName("WorkspaceSearch")
+        self.page_search.setPlaceholderText("Quick jump to a page…")
+        self.page_search.setClearButtonEnabled(True)
+        self.page_search.setMaximumWidth(300)
+        self.page_search.setMinimumHeight(38)
+        self.page_search.returnPressed.connect(self.navigate_from_search)
+        topbar_layout.addWidget(self.page_search)
+
+        user_chip = QFrame()
+        user_chip.setStyleSheet(
+            "QFrame { background:#F1F5F9;border:1px solid #E2E8F0;border-radius:10px; }"
+        )
+        chip_layout = QHBoxLayout(user_chip)
+        chip_layout.setContentsMargins(11, 7, 11, 7)
+        chip_layout.setSpacing(9)
+        avatar = make_label(self.user.get("username", "U")[:1].upper())
+        avatar.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        avatar.setFixedSize(31, 31)
+        avatar.setStyleSheet(
+            "background:#DBEAFE;color:#1D4ED8;border-radius:8px;font-weight:700;"
+        )
+        chip_layout.addWidget(avatar)
+        identity = QVBoxLayout()
+        identity.setSpacing(0)
+        identity.addWidget(make_label(self.user.get("username", "User")))
+        role_label = make_label(self.role.title() + " account", "PageSub")
+        identity.addWidget(role_label)
+        chip_layout.addLayout(identity)
+        topbar_layout.addWidget(user_chip)
+
         self.stack = QStackedWidget()
         self.stack.setContentsMargins(0, 0, 0, 0)
+        workspace_layout.addWidget(topbar)
+        workspace_layout.addWidget(self.stack, 1)
         shell_layout.addWidget(sidebar)
-        shell_layout.addWidget(self.stack, 1)
+        shell_layout.addWidget(workspace, 1)
         self.setCentralWidget(shell)
         self.statusBar().showMessage("MediCare · Q02 Improve Performance")
         self.show_page("Dashboard")
@@ -662,6 +727,11 @@ class HospitalWindow(QMainWindow):
             self.pages[name] = page
             self.stack.addWidget(page)
         self.stack.setCurrentWidget(self.pages[name])
+        if hasattr(self, "page_heading"):
+            self.page_heading.setText(name)
+            self.page_breadcrumb.setText("Workspace  /  " + name)
+        if hasattr(self, "page_search"):
+            self.page_search.clear()
         for label, button in self.nav_buttons.items():
             button.setProperty("active", label == name)
             button.style().unpolish(button)
@@ -774,6 +844,31 @@ class HospitalWindow(QMainWindow):
         if name == "TQM Analysis":
             return TQMPage()
         return None
+
+    def navigate_from_search(self):
+        query = self.page_search.text().strip().casefold()
+        if not query:
+            return
+        available = list(self.nav_buttons.keys())
+        exact = next((name for name in available if name.casefold() == query), None)
+        matches = [name for name in available if query in name.casefold()]
+        if exact:
+            self.show_page(exact)
+        elif len(matches) == 1:
+            self.show_page(matches[0])
+        elif matches:
+            QMessageBox.information(
+                self, "Choose a page",
+                "More than one page matches. Enter a more specific name:\n\n"
+                + "\n".join(matches)
+            )
+        else:
+            QMessageBox.information(
+                self, "Page not found",
+                "No available page matches that search. Try Dashboard, Patients, "
+                "Doctors, Appointments, Billing, CSV Import, Reports, Performance, "
+                "or TQM Analysis."
+            )
 
     def logout(self):
         answer = QMessageBox.question(self, "Sign out", "Return to the sign-in screen?")
