@@ -72,7 +72,7 @@ class TQMFrame(HospitalFrame):
             "TQM Analysis",
             "Quality improvement workspace • Q02 — Improve Performance",
             icon="tqm",
-            accent=self.PURPLE,
+            accent="#7C3AED",
         )
 
     # =========================================================
