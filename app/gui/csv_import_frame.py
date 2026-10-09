@@ -317,6 +317,7 @@ class CSVImportFrame(HospitalFrame):
         )
 
         self.preview_tree = ttk.Treeview(
+            style="Hospital.Treeview",
             table_container,
             show="headings"
         )
