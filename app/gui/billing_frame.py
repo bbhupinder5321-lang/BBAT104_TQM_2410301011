@@ -387,8 +387,8 @@ class BillingFrame(HospitalFrame):
         )
 
         self.tree = ttk.Treeview(
-            style="Hospital.Treeview",
             table_frame,
+            style="Hospital.Treeview",
             columns=columns,
             show="headings"
         )
