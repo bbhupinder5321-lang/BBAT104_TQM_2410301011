@@ -581,6 +581,7 @@ class TQMFrame(HospitalFrame):
 
         self.fmea_tree = ttk.Treeview(
             table_container,
+            style="Hospital.Treeview",
             columns=columns,
             show="headings",
             height=12
