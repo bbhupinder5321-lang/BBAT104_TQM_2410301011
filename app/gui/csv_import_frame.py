@@ -37,40 +37,12 @@ class CSVImportFrame(HospitalFrame):
 
     def create_ui(self):
 
-        header = ctk.CTkFrame(
+        self.page_header(
             self,
-            fg_color=self.CARD,
-            corner_radius=20,
-            border_width=1,
-            border_color=self.BORDER
+            "CSV Patient Import",
+            "Preview, validate and bulk-import patient records with duplicate checks.",
+            icon="import",
         )
-
-        header.pack(
-            fill="x",
-            padx=30,
-            pady=(25, 15)
-        )
-
-        title = ctk.CTkLabel(
-            header,
-            text="⇧  CSV Patient Import",
-            font=ctk.CTkFont(
-                size=28,
-                weight="bold"
-            ),
-            text_color=self.TEXT_DARK
-        )
-
-        title.pack(anchor="w")
-
-        subtitle = ctk.CTkLabel(
-            header,
-            text="Bulk import patient records using Pandas",
-            font=ctk.CTkFont(size=12),
-            text_color=self.SECONDARY
-        )
-
-        subtitle.pack(anchor="w")
 
         # -----------------------------------------------------
         # File Selection
