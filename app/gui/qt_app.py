@@ -188,7 +188,7 @@ class DataPage(QWidget):
     """Searchable table with service-backed add, edit, and delete actions."""
 
     def __init__(self, title, subtitle, columns, loader, fields, add_fn, edit_fn,
-                 delete_fn, parent=None, search_hint="Search records..."):
+                 delete_fn, parent=None, search_hint="Search records...", extra_actions=None):
         super().__init__(parent)
         self.page_title = title
         self.columns = columns
@@ -197,6 +197,7 @@ class DataPage(QWidget):
         self.add_fn = add_fn
         self.edit_fn = edit_fn
         self.delete_fn = delete_fn
+        self.extra_actions = extra_actions or []
         self.records = []
         self.search = QLineEdit()
         self.search.setPlaceholderText(search_hint)
@@ -222,6 +223,13 @@ class DataPage(QWidget):
         delete_button.setObjectName("Secondary")
         delete_button.clicked.connect(self.delete_record)
         toolbar.addWidget(delete_button)
+        for action_label, _action in self.extra_actions:
+            action_button = QPushButton(action_label)
+            action_button.setObjectName("Secondary")
+            action_button.clicked.connect(
+                lambda _checked=False, action=_action: self.run_extra_action(action)
+            )
+            toolbar.addWidget(action_button)
         refresh_button = QPushButton("Refresh")
         refresh_button.setObjectName("Secondary")
         refresh_button.clicked.connect(self.refresh)
@@ -309,6 +317,18 @@ class DataPage(QWidget):
             QMessageBox.information(self, "Saved", "The record was updated successfully.")
         except Exception as error:
             QMessageBox.warning(self, "Could not update record", str(error))
+
+    def run_extra_action(self, action):
+        record = self.selected_record()
+        if not record:
+            return
+        try:
+            message = action(record)
+            self.refresh()
+            if message:
+                QMessageBox.information(self, "Appointment updated", message)
+        except Exception as error:
+            QMessageBox.warning(self, "Action failed", str(error))
 
     def delete_record(self):
         record = self.selected_record()
@@ -712,7 +732,18 @@ class HospitalWindow(QMainWindow):
                  ("appointment_date", "Date"), ("appointment_time", "Time"), ("status", "Status"),
                  ("check_in_time", "Checked in"), ("consultation_start_time", "Consultation started")],
                 service.get_all_appointments, fields, add, edit,
-                lambda r: service.delete_appointment(r["appointment_id"]), search_hint="Search patient, doctor, or appointment ID…")
+                lambda r: service.delete_appointment(r["appointment_id"]),
+                search_hint="Search patient, doctor, or appointment ID…",
+                extra_actions=[
+                    ("Record check-in", lambda r: (
+                        service.check_in_patient(r["appointment_id"])
+                        and f"Check-in recorded for appointment #{r['appointment_id']}."
+                    )),
+                    ("Start consultation", lambda r: (
+                        service.start_consultation(r["appointment_id"])
+                        and f"Consultation start recorded for appointment #{r['appointment_id']}."
+                    )),
+                ])
         if name == "Billing":
             service = BillService()
             patients = [as_dict(x) for x in PatientService().get_all_patients()]
