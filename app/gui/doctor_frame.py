@@ -41,7 +41,7 @@ class DoctorFrame(HospitalFrame):
             "Doctor Management",
             "Manage clinicians, specializations and availability.",
             icon="doctors",
-            accent=self.SUCCESS,
+            accent="#10B981",
         )
 
         # -----------------------------------------------------
