@@ -389,19 +389,46 @@ class LoginWindow(ctk.CTk):
             )
 
     def open_main_application(self, user):
+        application = None
+
         try:
             from app.gui.main_app import MainApplication
 
-            self.destroy()
+            # Keep the login Tcl interpreter alive while the main window starts.
+            # Destroying this root before CustomTkinter has completed its scheduled
+            # callbacks can produce "invalid command name ... update/check_dpi_scaling"
+            # errors in Tk's after-script queue.
+            self.withdraw()
 
             application = MainApplication(user)
+            application.protocol("WM_DELETE_WINDOW", application.destroy)
             application.mainloop()
 
         except Exception as error:
+            try:
+                self.deiconify()
+                self.lift()
+            except Exception:
+                pass
+
             messagebox.showerror(
                 "Application Error",
                 f"Unable to open the hospital application.\n\n{error}"
             )
+
+        finally:
+            if application is not None:
+                try:
+                    if application.winfo_exists():
+                        application.destroy()
+                except Exception:
+                    pass
+
+            try:
+                if self.winfo_exists():
+                    self.destroy()
+            except Exception:
+                pass
 
     def on_close(self):
         self.destroy()
