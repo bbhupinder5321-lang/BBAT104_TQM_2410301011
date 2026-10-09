@@ -36,35 +36,12 @@ class PatientFrame(HospitalFrame):
     # ---------------------------------------------------------
 
     def create_ui(self):
-        # Header
-        header = ctk.CTkFrame(
+        self.page_header(
             self,
-            fg_color=self.CARD,
-            corner_radius=20,
-            border_width=1,
-            border_color=self.BORDER
+            "Patient Management",
+            "Register, find and maintain accurate patient records.",
+            icon="patients",
         )
-        header.pack(
-            fill="x",
-            padx=30,
-            pady=(25, 15)
-        )
-
-        title = ctk.CTkLabel(
-            header,
-            text="♙  Patient Management",
-            font=ctk.CTkFont(size=28, weight="bold"),
-            text_color=self.TEXT_DARK
-        )
-        title.pack(anchor="w")
-
-        subtitle = ctk.CTkLabel(
-            header,
-            text="Register, search and manage patient records",
-            font=ctk.CTkFont(size=11),
-            text_color=self.SECONDARY
-        )
-        subtitle.pack(anchor="w", pady=(2, 0))
 
         # Live operations snapshot
         snapshot = ctk.CTkFrame(self, fg_color="transparent")
