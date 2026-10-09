@@ -51,7 +51,7 @@ class AppointmentFrame(HospitalFrame):
             "Appointment Management",
             "Schedule visits, manage the queue and track patient waiting time.",
             icon="appointments",
-            accent=self.PURPLE,
+            accent="#7C3AED",
         )
 
         # -----------------------------------------------------
