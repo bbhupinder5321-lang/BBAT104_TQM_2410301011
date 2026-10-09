@@ -46,47 +46,12 @@ class AppointmentFrame(HospitalFrame):
 
     def create_ui(self):
         # -----------------------------------------------------
-        # Header
-        # -----------------------------------------------------
-
-        header = ctk.CTkFrame(
+        self.page_header(
             self,
-            fg_color=self.CARD,
-            corner_radius=20,
-            border_width=1,
-            border_color=self.BORDER
-        )
-
-        header.pack(
-            fill="x",
-            padx=30,
-            pady=(25, 15)
-        )
-
-        title = ctk.CTkLabel(
-            header,
-            text="◷  Appointment Management",
-            font=ctk.CTkFont(
-                size=30,
-                weight="bold"
-            ),
-            text_color="#172033"
-        )
-
-        title.pack(
-            anchor="w"
-        )
-
-        subtitle = ctk.CTkLabel(
-            header,
-            text="Schedule appointments and measure patient waiting time",
-            font=ctk.CTkFont(size=11),
-            text_color=self.SECONDARY
-        )
-
-        subtitle.pack(
-            anchor="w",
-            pady=(2, 0)
+            "Appointment Management",
+            "Schedule visits, manage the queue and track patient waiting time.",
+            icon="appointments",
+            accent=self.PURPLE,
         )
 
         # -----------------------------------------------------
