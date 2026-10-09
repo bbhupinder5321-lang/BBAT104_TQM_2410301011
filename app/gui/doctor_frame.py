@@ -401,6 +401,7 @@ class DoctorFrame(HospitalFrame):
         )
 
         self.tree = ttk.Treeview(
+            style="Hospital.Treeview",
             tree_frame,
             columns=columns,
             show="headings",
