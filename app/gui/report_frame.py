@@ -237,7 +237,7 @@ class ReportFrame(HospitalFrame):
             font=ctk.CTkFont(size=10)
         ).pack(side="right", pady=4)
 
-        self.notebook = ttk.Notebook(card)
+        self.notebook = ttk.Notebook(card, style="Hospital.TNotebook")
         self.notebook.pack(fill="both", expand=True, padx=15, pady=(0, 18))
 
         self.doctor_tab = ctk.CTkFrame(self.notebook, fg_color=self.CARD)
