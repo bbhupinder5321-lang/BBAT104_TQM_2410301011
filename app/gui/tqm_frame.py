@@ -67,40 +67,12 @@ class TQMFrame(HospitalFrame):
     # =========================================================
 
     def create_header(self):
-
-        header = ctk.CTkFrame(
+        self.page_header(
             self.main,
-            fg_color=self.CARD
-        )
-
-        header.pack(
-            fill="x",
-            padx=30,
-            pady=(25, 15)
-        )
-
-        title = ctk.CTkLabel(
-            header,
-            text="✓  TQM Analysis",
-            text_color=self.TEXT,
-            font=ctk.CTkFont(
-                size=28,
-                weight="bold"
-            )
-        )
-
-        title.pack(anchor="w")
-
-        subtitle = ctk.CTkLabel(
-            header,
-            text="Quality analysis for Q02 - Improve Performance",
-            text_color=self.SECONDARY_TEXT,
-            font=ctk.CTkFont(size=14)
-        )
-
-        subtitle.pack(
-            anchor="w",
-            pady=(4, 0)
+            "TQM Analysis",
+            "Quality improvement workspace • Q02 — Improve Performance",
+            icon="tqm",
+            accent=self.PURPLE,
         )
 
     # =========================================================
