@@ -46,7 +46,7 @@ class BillingFrame(HospitalFrame):
             "Billing Management",
             "Create, review and maintain patient bills with clear financial records.",
             icon="billing",
-            accent=self.SUCCESS,
+            accent="#10B981",
         )
 
         # -----------------------------------------------------
