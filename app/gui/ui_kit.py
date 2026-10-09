@@ -107,6 +107,24 @@ class HospitalFrame(ctk.CTkFrame):
             background=[("selected", self.TABLE_SELECTED)],
             foreground=[("selected", self.TABLE_SELECTED_TEXT)],
         )
+        style.configure(
+            "Hospital.TNotebook",
+            background=self.BACKGROUND,
+            borderwidth=0,
+            tabmargins=(2, 8, 2, 0),
+        )
+        style.configure(
+            "Hospital.TNotebook.Tab",
+            background="#E8EEF7",
+            foreground="#475569",
+            padding=(16, 10),
+            font=("Segoe UI", 10, "bold"),
+        )
+        style.map(
+            "Hospital.TNotebook.Tab",
+            background=[("selected", self.CARD), ("active", "#DBEAFE")],
+            foreground=[("selected", self.PRIMARY), ("active", "#1D4ED8")],
+        )
 
     def style_treeview(self, tree, headings=None, widths=None):
         """Apply shared table styling and optional column definitions."""
