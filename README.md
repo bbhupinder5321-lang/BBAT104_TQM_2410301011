@@ -43,47 +43,114 @@ The following diagram illustrates the outpatient journey from reception arrival 
 
 ```mermaid
 flowchart TD
-    Arrival([🚶 Patient Arrives at Reception]) --> TriageCheck{Registered in HMS?}
+    %% Global Class Styling
+    classDef startPill fill:#0284C7,stroke:#0369A1,stroke-width:2.5px,color:#FFFFFF,font-weight:bold;
+    classDef endPill fill:#0A1128,stroke:#00E5FF,stroke-width:2.5px,color:#FFFFFF,font-weight:bold;
+    classDef decision fill:#FEF3C7,stroke:#D97706,stroke-width:2px,color:#92400E,font-weight:bold;
+    classDef alertRed fill:#FEE2E2,stroke:#DC2626,stroke-width:2.5px,color:#991B1B,font-weight:bold;
+    classDef successGreen fill:#DCFCE7,stroke:#16A34A,stroke-width:2px,color:#15803D,font-weight:bold;
+    classDef searchBlue fill:#E0F2FE,stroke:#0284C7,stroke-width:2px,color:#0369A1,font-weight:bold;
+    classDef queueAmber fill:#FFF7ED,stroke:#EA580C,stroke-width:2px,color:#9A3412,font-weight:bold;
+    classDef clinicalGreen fill:#F0FDF4,stroke:#22C55E,stroke-width:2px,color:#166534,font-weight:bold;
+    classDef billingPurple fill:#F5F3FF,stroke:#8B5CF6,stroke-width:2px,color:#5B21B6,font-weight:bold;
+    classDef tqmTeal fill:#CCFBF1,stroke:#0D9488,stroke-width:2.5px,color:#115E59,font-weight:bold;
+    classDef dbCylinder fill:#F1F5F9,stroke:#475569,stroke-width:2px,color:#0F172A,font-weight:bold;
+
+    Arrival([🚶 1. Patient Arrives at Reception]):::startPill --> TriageCheck{Registered in HMS?}:::decision
     
-    TriageCheck -- "No (New Patient)" --> NewReg[Fill Demographic Details]
-    NewReg --> PokaYoke{"🛡️ Poka-Yoke Shield:<br/>Phone (10 digits) Unique?<br/>Age in [0, 125]?"}
-    PokaYoke -- "Duplicate Collision" --> DuplicateAlert["⚠️ DUPLICATE COLLISION!<br/>Display Existing UHID & File"]
-    PokaYoke -- "Unique & Valid" --> GenUHID["Generate Permanent UHID<br/>e.g., UHID-2026-0042"]
-    GenUHID --> SavePatient[(Insert into SQLite 'patients'<br/>Indexed via idx_patients_phone)]
+    subgraph Stage1 ["Stage 1: Registration & Poka-Yoke Triage Verification"]
+        NewReg[Fill Demographic Details]:::searchBlue
+        PokaYoke{"🛡️ Poka-Yoke Shield:<br/>Phone 10 Digits & Unique?<br/>Age in [0, 125]?"}:::decision
+        DuplicateAlert["⚠️ DUPLICATE COLLISION DETECTED!<br/>Display Existing UHID & Medical Profile"]:::alertRed
+        GenUHID["✅ Generate Unique UHID:<br/>UHID-2026-XXXX"]:::successGreen
+        SavePatient[(Insert into SQLite 'patients'<br/>Indexed via idx_patients_phone)]:::dbCylinder
+        SearchBox[Fast Search-as-You-Type]:::searchBlue
+        FastSearch["⚡ Sub-1ms B-Tree Search<br/>Debounced 200ms Engine"]:::searchBlue
+        SelectPatient[Select Verified Patient Record]:::successGreen
+    end
     
-    TriageCheck -- "Yes (Existing)" --> SearchBox[Fast Search-as-You-Type]
-    SearchBox --> FastSearch["⚡ Sub-1ms B-Tree Search<br/>200ms Debounced Query"]
-    FastSearch --> SelectPatient[Select Patient Record]
+    subgraph Stage2 ["Stage 2: Specialist Allocation & OPD Queue Sequencing"]
+        SelectDoctor[Select Attending Specialist]:::clinicalGreen
+        CheckRoster{Doctor Status == 'Available'?}:::decision
+        RosterWait[Select Alternate Specialist / Wait]:::queueAmber
+        IssueToken["🎟️ Issue Sequential OPD Token<br/>e.g., Token #014 (Room 104)"]:::queueAmber
+        QueueState["⏳ Patient in Waiting Lounge<br/>Status: 'Waiting' | Telemetry Timer Running"]:::queueAmber
+    end
+    
+    subgraph Stage3 ["Stage 3: Physician Consultation & Clinical Telemetry"]
+        CallPatient["📢 Doctor Calls Patient Token<br/>Status: 'In-Consultation'"]:::clinicalGreen
+        DiagNotes[Clinical Examination & Prescription Notes]:::clinicalGreen
+        CompleteConsult["✅ Doctor Completes Consultation<br/>Status: 'Completed'"]:::successGreen
+        WaitTelemetry["⏱️ Compute Wait Time Telemetry:<br/>Wait Time = Call Time - Checkin Time<br/>Log into performance_logs"]:::tqmTeal
+    end
+    
+    subgraph Stage4 ["Stage 4: Financial Settlement & 5% GST Invoicing"]
+        BillingQueue["🧾 Proceed to Billing Counter"]:::billingPurple
+        ItemizeBill[Itemize Consultation Fee + Diagnostics]:::billingPurple
+        ComputeTax["Calculate 5% Healthcare GST<br/>Total = Subtotal + 5% GST"]:::billingPurple
+        GenerateInvoice["Generate Formal Invoice<br/>e.g., INV-2026-0008"]:::billingPurple
+        PayMethod{Select Payment Mode}:::decision
+        CashPay[💵 Cash]:::billingPurple
+        UPIPay[📱 UPI / QR Code]:::billingPurple
+        CardPay[💳 Credit/Debit Card]:::billingPurple
+        InsurancePay[🏥 TPA Insurance Claim]:::billingPurple
+        IssueReceipt["🖨️ Issue Itemized Tax Receipt<br/>with Official Hospital Stamp"]:::successGreen
+    end
+
+    Discharge([🏁 5. Patient Discharged]):::endPill
+    TQMAudit["📊 TQM Deming PDCA Telemetry Audit:<br/>• OPD Wait Time SLA Compliance (< 15 min)<br/>• Real-Time Pareto Defect Frequency Check<br/>• Zero Duplicate UHID Guarantee"]:::tqmTeal
+
+    %% Stage 1 Routing
+    TriageCheck -- "No (New Patient)" --> NewReg
+    NewReg --> PokaYoke
+    PokaYoke -- "Collision Detected" --> DuplicateAlert
     DuplicateAlert --> SelectPatient
+    PokaYoke -- "Unique & Valid" --> GenUHID
+    GenUHID --> SavePatient
     SavePatient --> SelectPatient
     
-    SelectPatient --> SelectDoctor[Select Attending Specialist]
-    SelectDoctor --> CheckRoster{Doctor Status == 'Available'?}
-    CheckRoster -- "No" --> RosterWait[Select Alternate Specialist] --> SelectDoctor
-    CheckRoster -- "Yes" --> IssueToken["🎟️ Issue Sequential OPD Token<br/>e.g., Token #014 (Room 104)"]
+    TriageCheck -- "Yes (Existing Patient)" --> SearchBox
+    SearchBox --> FastSearch
+    FastSearch --> SelectPatient
     
-    IssueToken --> QueueState["⏳ Patient in Waiting Lounge<br/>Status: 'Waiting' | Timer Running"]
-    QueueState --> CallPatient["📢 Doctor Calls Next Patient<br/>Status: 'In-Consultation'"]
-    CallPatient --> DiagNotes[Clinical Examination & Prescription]
-    DiagNotes --> CompleteConsult["✅ Doctor Completes Consultation<br/>Status: 'Completed'"]
-    CompleteConsult --> WaitTelemetry["⏱️ Compute Wait Time Telemetry<br/>Log into performance_logs"]
+    %% Stage 2 Routing
+    SelectPatient ==> SelectDoctor
+    SelectDoctor --> CheckRoster
+    CheckRoster -- "No (Busy)" --> RosterWait
+    RosterWait --> SelectDoctor
+    CheckRoster -- "Yes (Available)" --> IssueToken
+    IssueToken --> QueueState
     
-    WaitTelemetry --> BillingQueue["🧾 Proceed to Billing & Accounts"]
-    BillingQueue --> ItemizeBill[Itemize Consultation + Diagnostics]
-    ItemizeBill --> ComputeTax["Calculate 5% Healthcare GST<br/>Total = Net Amount + 5% GST"]
-    ComputeTax --> PayMethod{Select Payment Mode}
-    PayMethod --> CashPay[Cash]
-    PayMethod --> UPIPay[UPI / QR Code]
-    PayMethod --> CardPay[Credit/Debit Card]
-    PayMethod --> InsurancePay[TPA Insurance]
+    %% Stage 3 Routing
+    QueueState ==> CallPatient
+    CallPatient --> DiagNotes
+    DiagNotes --> CompleteConsult
+    CompleteConsult --> WaitTelemetry
     
-    CashPay --> IssueReceipt["🖨️ Issue Itemized Tax Receipt<br/>with Official Hospital Stamp"]
+    %% Stage 4 Routing
+    WaitTelemetry ==> BillingQueue
+    BillingQueue --> ItemizeBill
+    ItemizeBill --> ComputeTax
+    ComputeTax --> GenerateInvoice
+    GenerateInvoice --> PayMethod
+    PayMethod --> CashPay
+    PayMethod --> UPIPay
+    PayMethod --> CardPay
+    PayMethod --> InsurancePay
+    CashPay --> IssueReceipt
     UPIPay --> IssueReceipt
     CardPay --> IssueReceipt
     InsurancePay --> IssueReceipt
     
-    IssueReceipt --> Discharge([🏁 Patient Discharged])
-    Discharge --> TQMAudit["📊 Deming PDCA Telemetry Audit:<br/>Wait Time SLA Compliance (< 15 min)<br/>Pareto Defect Reduction Log"]
+    %% Discharge & TQM Routing
+    IssueReceipt ==> Discharge
+    Discharge -.-> TQMAudit
+
+    %% Subgraph Styling
+    style Stage1 fill:#F8FAFC,stroke:#0284C7,stroke-width:2px;
+    style Stage2 fill:#FFFBEB,stroke:#F59E0B,stroke-width:2px;
+    style Stage3 fill:#F0FDF4,stroke:#10B981,stroke-width:2px;
+    style Stage4 fill:#F5F3FF,stroke:#8B5CF6,stroke-width:2px;
 ```
 
 ---
@@ -92,35 +159,47 @@ flowchart TD
 
 ```mermaid
 graph TD
-    subgraph Tier1["1. Presentation Tier (Modern PySide6 SaaS Suite)"]
-        UI_Login["🔐 Split-Panel SaaS Login View (1-Click Role Chips)"]
-        UI_Dash["📊 Hospital Operations Dashboard (KPI Cards & Splines)"]
-        UI_Patients["👥 Patient Directory Registry (Poka-Yoke & Fast Search)"]
-        UI_Doctors["👨‍⚕️ Doctor Duty Roster (Live Availability Toggle)"]
-        UI_Queue["📅 OPD Queue & Tokens (Sequential Token Dispatcher)"]
-        UI_Billing["🧾 Billing & Accounts Settlement (5% GST Itemization)"]
-        UI_TQM["🎯 TQM Quality & Audits View (PDCA, Pareto, Fishbone, FMEA)"]
-        UI_Reports["📈 Vectorized Reporting Cockpit (Sub-25ms Pandas Aggregations)"]
+    classDef tierHeader fill:#0A1128,stroke:#00E5FF,stroke-width:2.5px,color:#FFFFFF,font-weight:bold;
+    classDef presNode fill:#EFF6FF,stroke:#3B82F6,stroke-width:1.5px,color:#1E3A8A,font-weight:bold;
+    classDef logicNode fill:#F0FDF4,stroke:#22C55E,stroke-width:1.5px,color:#166534,font-weight:bold;
+    classDef dataNode fill:#FFF7ED,stroke:#EA580C,stroke-width:1.5px,color:#9A3412,font-weight:bold;
+
+    subgraph Tier1 ["Tier 1: Presentation Tier (PySide6 SaaS Modern UI)"]
+        UI_Head["🖥️ Client Presentation Layer"]:::tierHeader
+        UI_Login["🔐 Split-Panel SaaS Login View (1-Click Role Chips)"]:::presNode
+        UI_Dash["📊 Hospital Operations Dashboard (KPI Cards & Splines)"]:::presNode
+        UI_Patients["👥 Patient Directory Registry (Poka-Yoke & Fast Search)"]:::presNode
+        UI_Doctors["👨‍⚕️ Doctor Duty Roster (Live Availability Status)"]:::presNode
+        UI_Queue["📅 OPD Queue & Tokens (Sequential Token Dispatcher)"]:::presNode
+        UI_Billing["🧾 Billing & Accounts Settlement (5% GST Itemization)"]:::presNode
+        UI_TQM["🎯 TQM Quality & Audits View (PDCA, Pareto, Fishbone, FMEA)"]:::presNode
+        UI_Reports["📈 Vectorized Reporting Cockpit (Sub-25ms Pandas Aggregations)"]:::presNode
     end
 
-    subgraph Tier2["2. Business Logic & Performance Engine"]
-        Engine_RBAC["Role-Based Access Control: Admin | Reception | Doctor | Billing"]
-        Engine_Search["Debounced Fast Search Controller (200ms Timer)"]
-        Engine_PokaYoke["Poka-Yoke Error Prevention Shield (Phone & UHID)"]
-        Engine_Queue["Queue Sequencer & SLA Wait-Time Telemetry"]
-        Engine_Pandas["Vectorized Analytical Aggregator (Pandas Matrix C-Engine)"]
-        Engine_SQC["Statistical Quality Control Visualizers (Matplotlib)"]
+    subgraph Tier2 ["Tier 2: Business Logic & Performance Engine"]
+        Logic_Head["⚡ Core Application Services"]:::tierHeader
+        Engine_RBAC["Role-Based Access Control: Admin | Reception | Doctor | Billing"]:::logicNode
+        Engine_Search["Debounced Fast Search Controller (200ms Delay Timer)"]:::logicNode
+        Engine_PokaYoke["Poka-Yoke Error Prevention Shield (Phone & UHID Collision)"]:::logicNode
+        Engine_Queue["Queue Sequencer & SLA Wait-Time Telemetry Tracking"]:::logicNode
+        Engine_Pandas["Vectorized Analytical Aggregator (Pandas Matrix C-Engine)"]:::logicNode
+        Engine_SQC["Statistical Quality Control Visualizers (Matplotlib)"]:::logicNode
     end
 
-    subgraph Tier3["3. Data Persistence Tier (Optimized SQLite Engine)"]
-        PRAGMA_WAL["Write-Ahead Logging (WAL): PRAGMA journal_mode = WAL"]
-        MemoryCache["64 MB Shared Memory Cache: PRAGMA cache_size = -64000"]
-        DB_Core[("SQLite Database File: hms_database.db")]
-        BTree_Idx["10 Composite B-Tree Indexes:<br/>idx_patients_phone, idx_patients_name, idx_patients_uhid..."]
+    subgraph Tier3 ["Tier 3: Data Persistence Tier (Optimized SQLite Engine)"]
+        Data_Head["🗄️ Relational Persistence & Cache"]:::tierHeader
+        PRAGMA_WAL["Write-Ahead Logging (WAL): PRAGMA journal_mode = WAL"]:::dataNode
+        MemoryCache["64 MB Shared Memory Cache: PRAGMA cache_size = -64000"]:::dataNode
+        DB_Core[("SQLite Database File: hms_database.db")]:::dataNode
+        BTree_Idx["10 Composite B-Tree Indexes:<br/>idx_patients_phone, idx_patients_name, idx_patients_uhid..."]:::dataNode
     end
 
-    Tier1 --> Tier2
-    Tier2 --> Tier3
+    Tier1 ==> Tier2
+    Tier2 ==> Tier3
+
+    style Tier1 fill:#F8FAFC,stroke:#3B82F6,stroke-width:2px;
+    style Tier2 fill:#F0FDF4,stroke:#22C55E,stroke-width:2px;
+    style Tier3 fill:#FFF7ED,stroke:#EA580C,stroke-width:2px;
 ```
 
 ---
