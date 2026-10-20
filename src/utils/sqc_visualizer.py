@@ -12,11 +12,13 @@ Includes embedded Figure generators and export helpers:
 5. Checksheet Defect Frequency Bar Chart
 """
 
+import logging
 from pathlib import Path
 from typing import List, Tuple, Optional
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import numpy as np
+logging.getLogger("matplotlib.font_manager").setLevel(logging.ERROR)
 from src.config import EXPORTS_DIR, STUDENT_NAME, STUDENT_ROLL, COURSE_CODE, QUALITY_GOAL
 
 
@@ -387,6 +389,9 @@ def create_checksheet_chart_figure(defects_data: List[Tuple[str, int]],
     fig.patch.set_facecolor("white")
     ax.set_facecolor("white")
 
+    if isinstance(defects_data, dict):
+        defects_data = list(defects_data.items())
+
     if not defects_data:
         defects_data = [
             ("Slow patient search", 18),
@@ -398,8 +403,8 @@ def create_checksheet_chart_figure(defects_data: List[Tuple[str, int]],
         ]
 
     # Invert order for top-to-bottom bar display
-    names = [d[0] for d in defects_data][::-1]
-    counts = [d[1] for d in defects_data][::-1]
+    names = [str(d[0]) for d in defects_data][::-1]
+    counts = [float(d[1]) for d in defects_data][::-1]
 
     bars = ax.barh(names, counts, color="#2563EB", height=0.55, edgecolor="#1D4ED8", linewidth=1, alpha=0.9)
 
